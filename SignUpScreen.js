@@ -66,7 +66,7 @@ export default function SignUpScreen() {
     return (
         <KeyboardAvoidingView style={styles.container} behavior="padding">
             <Image
-                source={require('./b1.jpg')}
+                source={require('./assets/b1.jpg')}
                 style={styles.logo}
             />
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 40 }}>

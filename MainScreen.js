@@ -22,6 +22,12 @@ export default function Main() {
 
     const navigation = useNavigation();
 
+    const gotoMyInfo = () => {
+        console.log(`${context.numplate}님이 도로를 정화시켜 준 시간`);
+        navigation.navigate('MyInfo');
+    };
+
+
     useEffect(() => {
         (async () => {
             let { status } = await Location.requestForegroundPermissionsAsync();
@@ -90,7 +96,7 @@ export default function Main() {
     return (
         <View style={styles.image}>
             <View style={styles.logoview}>
-                <Image source={require('./logocrop.png')} style={styles.logo}></Image>
+                <Image source={require('./assets/logocrop.png')} style={styles.logo}></Image>
             </View>
             <View style={styles.topview}>
                 <View style={styles.kmfontview}>
@@ -101,12 +107,10 @@ export default function Main() {
                 <View style={styles.viewst}>
                     <TouchableOpacity
                         style={styles.topbutton}
-                        onPress={() => console.log("'qwer'님이 도로를 정화시켜 준 시간")}
+                        onPress={gotoMyInfo}
                     >
                         <View style={{ flexDirection: 'row', flex: 0, justifyContent: 'space-between', width: '100%' }}>
-                            <Text style={{ justifyContent: 'flex-start', fontSize: 22 }}>
-                                'qwer'님이{'\n'} 도로를 정화시켜 준 시간🏎
-                            </Text>
+                            <Text>{context.numplate}님이 도로를 정화시켜 준 시간</Text>
                             <Image source={require('./icons/usericon.png')} style={{ width: 50, height: 50 }}></Image>
                         </View>
                         <View

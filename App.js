@@ -5,6 +5,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import LoginScreen from './LoginScreen';
 import SignUpScreen from './SignUpScreen';
 import MainScreen from './MainScreen';
+import MyInfoScreen from './MyInfoScreen';
 import IpContext from './IpContext';
 
 const Stack = createStackNavigator();
@@ -22,6 +23,7 @@ export default function App() {
           <Stack.Screen name="Main" component={MainScreen} options={{ headerShown: false }}/>
           <Stack.Screen name="Login" component={LoginScreen}/>
           <Stack.Screen name="SignUp" component={SignUpScreen}/>
+          <Stack.Screen name="MyInfo" component={MyInfoScreen}/>
         </Stack.Navigator>
       </NavigationContainer>
     </IpContext.Provider>
