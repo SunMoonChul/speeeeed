@@ -22,6 +22,11 @@ export default function Main() {
 
     const navigation = useNavigation();
 
+    const gotoMyInfo = () => {
+        console.log(`${context.numplate}님이 도로를 정화시켜 준 시간`);
+        navigation.navigate('MyInfo');
+    };
+
     useEffect(() => {
         (async () => {
             let { status } = await Location.requestForegroundPermissionsAsync();
@@ -94,18 +99,14 @@ export default function Main() {
             </View>
             <View style={styles.topview}>
                 <View style={styles.kmfontview}>
-                    <Text style={styles.speedfont}>현재 : </Text>
                     <Text style={styles.speedfont2}>{Math.max(0, speed).toFixed(0)} km/h</Text>
                 </View>
 
                 <View style={styles.viewst}>
-                    <TouchableOpacity
-                        style={styles.topbutton}
-                        onPress={() => console.log("'qwer'님이 도로를 정화시켜 준 시간")}
-                    >
+                    <TouchableOpacity style={styles.topbutton} onPress={gotoMyInfo}>
                         <View style={{ flexDirection: 'row', flex: 0, justifyContent: 'space-between', width: '100%' }}>
                             <Text style={{ justifyContent: 'flex-start', fontSize: 22, fontFamily: 'Kingt' }}>
-                                '<Text style={{ color: '#3b5998' }}>{user}</Text>'님이{'\n'} 도로를 정화시켜 준 시간🏎
+                                '<Text style={{ color: '#3b5998' }}>{user}</Text>'님이{'\n'} 도로를 정화시켜 준 시간🌈
                             </Text>
                             <Image source={require('./icons/usericon.png')} style={{ width: 50, height: 50 }}></Image>
                         </View>
@@ -298,28 +299,12 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     kmfontview: {
-        marginTop: -50,
+        marginTop: -60,
         paddingStart: '10%',
         paddingEnd: '5%',
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-end',
         alignItems: 'flex-end',
         width: '100%',
-    },
-    wrapper: {
-        flex: 1,
-        paddingHorizontal: 10, // 슬라이더 좌우 패딩
-        backgroundColor: '#fff', // 배경색
-    },
-    slide1: {
-        flex: 1,
-        justifyContent: 'center', // 세로 방향으로 중앙 정렬
-        alignItems: 'center', // 가로 방향으로 중앙 정렬
-        backgroundColor: '#9DD6EB', // 배경색
-    },
-    text: {
-        color: '#fff', // 글자색
-        fontSize: 30, // 글자 크기
-        fontWeight: 'bold', // 글자 굵기
     },
 });
