@@ -46,7 +46,7 @@ export default function LoginScreen() {
 
     return (
         <KeyboardAvoidingView style={styles.container} behavior="padding">
-            <Image source={require('./로고크롭.png')} style={styles.logo2} resizeMode="contain" />
+            <Image source={require('./logocrop.png')} style={styles.logo2} resizeMode="contain" />
 
             <TextInput style={styles.input} placeholder="Id" value={id} onChangeText={(text) => setId(text)} />
             <TextInput

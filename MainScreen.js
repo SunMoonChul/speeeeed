@@ -5,6 +5,8 @@ import IpContext from './IpContext';
 import * as Location from 'expo-location';
 import axios from 'axios';
 import * as Progress from 'react-native-progress';
+import Swiper from 'react-native-swiper';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 export default function Main() {
     const context = useContext(IpContext);
@@ -117,8 +119,8 @@ export default function Main() {
                                 paddingHorizontal: '2%',
                             }}
                         >
-                            <Progress.Bar progress={0.2} width={200} height={15} />
-                            <Text>경험치 100/100</Text>
+                            <Progress.Bar progress={0.2} width={250} height={15} />
+                            <Text>100/100</Text>
                             {/* 경험치에 따라 레벨도 같이 증가 */}
                         </View>
                         <Text
@@ -139,11 +141,12 @@ export default function Main() {
                         style={styles.twinbutton}
                         onPress={() => console.log('도로 위의 무법자 신고 횟수')}
                     >
-                        <Text style={{ justifyContent: 'flex-start', width: '100%', fontSize: 20 }}>
+                        <Text style={{ justifyContent: 'flex-start', width: '100%', fontSize: 18 }}>
                             도로 위의{'\n'}무법자 신고 횟수
                         </Text>
+                        <Text style={{ color: '#BFBFBF' }}>───────────</Text>
                         {/* 이거 디비에서 끌고와서 바뀌게 해야함 */}
-                        <View style={{ flexDirection: 'row', marginTop: 10, marginBottom: 5, alignItems: 'flex-end' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
                             <Text style={{ fontSize: 50 }}>05</Text>
                             <Text style={{ fontSize: 30, marginStart: 20, marginBottom: 5 }}>회</Text>
                         </View>
@@ -155,8 +158,9 @@ export default function Main() {
                         <Text style={{ justifyContent: 'flex-start', width: '100%', fontSize: 18 }}>
                             내가 잠시 도로 위의 무법자가 되었던 횟수
                         </Text>
+                        <Text style={{ color: '#BFBFBF' }}>───────────</Text>
                         {/* 이거 디비에서 끌고와서 바뀌게 해야함 */}
-                        <View style={{ flexDirection: 'row', marginTop: 10, marginBottom: 5, alignItems: 'flex-end' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
                             <Text style={{ fontSize: 50 }}>05</Text>
                             <Text style={{ fontSize: 30, marginStart: 20, marginBottom: 5 }}>회</Text>
                         </View>
@@ -165,8 +169,35 @@ export default function Main() {
                 <View style={styles.viewst}>
                     <TouchableOpacity style={styles.reportbutton} onPress={() => console.log('신고하기')}>
                         <Image source={require('./icons/report.png')} style={{ width: 50, height: 50 }}></Image>
-                        <Text style={{ fontSize: 40 }}>신고하기</Text>
+                        <Text style={{ fontSize: 40 }}>제보하기</Text>
                     </TouchableOpacity>
+                </View>
+                {/* 광고 배너 */}
+                <View style={styles.addview}>
+                    <Swiper style={styles.wrapper} height={200} horizontal={false} autoplay loop spaceBetween={20}>
+                        <TouchableOpacity
+                            style={{ flex: 1 }}
+                            onPress={() => this.handleAttendance(this.props.navigation)}
+                        >
+                            <ImageBackground source={require('./icons/report.png')} style={styles.slide1}>
+                                <Text style={styles.text}>출석 포인트 받고{'\n'}쿠폰으로 교환하자!</Text>
+                            </ImageBackground>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={{ flex: 1 }} onPress={() => this.handleTip2(this.props.navigation)}>
+                            <ImageBackground
+                                source={require('./icons/report.png')}
+                                // {/* zIndex 는 요소의 레이어 순서를 제어하는 것이고 값이 높을 수록 화면 위쪽에 표시 */}
+                                style={[styles.slide1]}
+                            >
+                                <Text style={styles.text}>무상수거{'\n'}알고 있어?</Text>
+                            </ImageBackground>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={{ flex: 1 }} onPress={() => this.handleTip3(this.props.navigation)}>
+                            <ImageBackground source={require('./icons/report.png')} style={styles.slide1}>
+                                <Text style={styles.text}>자취생을 위한{'\n'}분리수거 꿀팁!</Text>
+                            </ImageBackground>
+                        </TouchableOpacity>
+                    </Swiper>
                 </View>
             </View>
         </View>
@@ -191,6 +222,7 @@ const styles = StyleSheet.create({
         flex: 1,
         resizeMode: 'cover',
         justifyContent: 'center',
+        backgroundColor: '#F2F2F2',
     },
     logo: {
         width: '40%',
@@ -198,21 +230,22 @@ const styles = StyleSheet.create({
     },
     logoview: {
         flex: 0.2,
-        marginTop: 80,
+        marginTop: 60,
         marginStart: 20,
     },
     topbutton: {
-        flex: 0,
+        flex: 1,
         alignItems: 'center',
         backgroundColor: '#E3E3E3',
         padding: 10,
         borderColor: 'black', // 테두리 색상 설정
         margin: '2%',
         width: '100%',
-
         borderRadius: 15,
         flexDirection: 'column', // 세로방향 배치
         justifyContent: 'space-between', // 컴포넌트들 사이의 공간 고르게 분배
+        borderWidth: 1,
+        borderColor: '#BFBFBF',
     },
 
     reportbutton: {
@@ -225,6 +258,8 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         borderRadius: 15,
+        borderWidth: 1,
+        borderColor: '#BFBFBF',
     },
     twinbutton: {
         flex: 1,
@@ -235,10 +270,18 @@ const styles = StyleSheet.create({
         margin: '2%',
         borderRadius: 15,
         width: '100%',
+        borderWidth: 1,
+        borderColor: '#BFBFBF',
     },
     viewst: {
         margin: '2%',
         flexDirection: 'row',
+        marginVertical: '-0.5%',
+    },
+    addview: {
+        margin: '2%',
+        flex: 1,
+        height: '100%',
     },
     kmfontview: {
         marginTop: -50,
@@ -248,5 +291,25 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'flex-end',
         width: '100%',
+    },
+    shadow: {
+        //그림자
+        backgroundColor: '#fff',
+        width: 200,
+        height: 200,
+        ...Platform.select({
+            ios: {
+                shadowColor: '#000',
+                shadowOffset: {
+                    width: 10,
+                    height: 10,
+                },
+                shadowOpacity: 0.5,
+                shadowRadius: 10,
+            },
+            android: {
+                elevation: 20,
+            },
+        }),
     },
 });
