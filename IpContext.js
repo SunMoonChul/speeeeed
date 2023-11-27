@@ -5,8 +5,6 @@ const IpContext = createContext({
     setIpRas: () => {},
     ipLap: null,
     setIpLap: () => {},
-    ipLoc: null,
-    setIpLoc: () => {},
 });
 
 export default IpContext;

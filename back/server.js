@@ -22,7 +22,7 @@ app.use(cors());
 const port = 3003;
 
 app.use(session({
-    key: 'userInfo',
+    key: 'userinfo',
     secret: 'nhth453recasd',
     store: sessionStore,
     resave: false,
@@ -44,96 +44,65 @@ app.listen(port, '0.0.0.0', () => {
 });
 
   
-app.post('/join', (req, res) => {
-    const {email, id, password, nickname, phoneNumber} = req.body;
+app.post('/signUp', (req, res) => {
+    const {id, password, numplate} = req.body;
 
-    const checkEmail = 'SELECT * FROM users WHERE email = ?';
-    connection.query(checkEmail, [email], (errCheck,resultCheck)=>{
+    const checkId = 'SELECT * FROM userinfo WHERE id = ?';
+    connection.query(checkId, [id], (errCheck, resultCheck) => {
         if(errCheck) {
             console.error('데이터 조회 실패',errCheck);
             return;
         }
-
         if(resultCheck.length > 0){
             res.json({ 
                 success: false,
-                message: '해당 이메일은 이미 가입되어있습니다.'
+                message: '해당 아이디는 이미 가입되어있습니다.'
             });
-            console.log('해당 이메일은 이미 가입되어있습니다.');
+            console.log('해당 아이디는 이미 가입되어있습니다.');
             return;
         }
 
-        const checkId = 'SELECT * FROM users WHERE id = ?';
-        connection.query(checkId, [id], (errCheck, resultCheck) => {
+        const checkNumplate = 'SELECT * FROM userinfo WHERE numplate = ?';
+        connection.query(checkNumplate, [numplate], (errCheck,resultCheck)=>{
             if(errCheck) {
                 console.error('데이터 조회 실패',errCheck);
                 return;
             }
+
             if(resultCheck.length > 0){
                 res.json({ 
                     success: false,
-                    message: '해당 아이디는 이미 가입되어있습니다.'
+                    message: '해당 번호의 차량은 이미 가입되어있습니다.'
                 });
-                console.log('해당 아이디는 이미 가입되어있습니다.');
+                console.log('해당 번호의 차량은 이미 가입되어있습니다.');
                 return;
             }
-
-            const checkNickname = 'SELECT * FROM users WHERE nickname = ?';
-            connection.query(checkNickname, [nickname], (errCheck,resultCheck)=>{
-                if(errCheck) {
-                    console.error('데이터 조회 실패',errCheck);
-                    return;
-                }
-
-                if(resultCheck.length > 0){
-                    res.json({ 
-                        success: false,
-                        message: '해당 닉네임은 이미 가입되어있습니다.'
-                    });
-                    console.log('해당 닉네임은 이미 가입되어있습니다.');
-                    return;
-                }
-                    
-                const insertSql = `INSERT INTO users(email,id,password,nickname,phoneNumber)
-                VALUES(?,?,?,?,?)`;
                 
-                connection.query(insertSql,[email,id,password,nickname,phoneNumber],(errInsert,resultInsert)=>{
-                    if(errInsert) {
-                        console.error('데이터 저장 실패',errInsert);
-                        res.json({
-                            success: false,
-                            message: 'Internal Server Error'
-                        });
+            const insertSql = `INSERT INTO userinfo(id,pw,numplate)
+            VALUES(?,?,?)`;
+            
+            connection.query(insertSql,[id,password,numplate],(errInsert,resultInsert)=>{
+                if(errInsert) {
+                    console.error('데이터 저장 실패',errInsert);
+                    res.json({
+                        success: false,
+                        message: 'Internal Server Error'
+                    });
+                    return;
+                }
+
+                console.log('데이터 저장 성공');
+
+                req.session.uid = id;
+                req.session.isLogined = true;
+                
+                req.session.save(err => {
+                    if (err) {
+                        console.error('세션 저장 실패:', err);
                         return;
                     }
-
-                    console.log('데이터 저장 성공');
-
-                    req.session.uid = id;
-                    req.session.uemail = email;
-                    req.session.isLogined = true;
-                    
-                    req.session.save(err => {
-                        if (err) {
-                            console.error('세션 저장 실패:', err);
-                            return;
-                        }
-                    });
-                    const createTableSql = `CREATE TABLE ${id} (id VARCHAR(20) PRIMARY KEY NOT NULL ,search VARCHAR(20),count INT(255))`;
-                          
-                          connection.query(createTableSql, (errCreate, resultCreate) => {
-                            if(errCreate) {
-                                console.error('테이블 생성 실패', errCreate);
-                                res.json({
-                                    success: false,
-                                    message: 'Internal Server Error'
-                                });
-                                return;
-                            }
-                        });
-                    res.json({success: true, message: '회원가입 성공'});
-                    
                 });
+                res.json({success: true, message: '회원가입 성공'});
             });
         });
     });
@@ -141,8 +110,8 @@ app.post('/join', (req, res) => {
 
 app.post('/login', (req, res) => {
     const { id, password } = req.body;
-    //db에서 email, password 컬럼에 있는값 가져오기
-    const sql = `SELECT id, pw FROM userInfo WHERE id=?`;
+    
+    const sql = `SELECT id, pw FROM userinfo WHERE id=?`;
   
     connection.query(sql, [id], (err, results) => {
         if (err) {
@@ -178,50 +147,6 @@ app.post('/login', (req, res) => {
     });
 });
 
-app.post('/findId', (req, res) => {
-    const { email, phoneNumber } = req.body;
-
-    const sql = `SELECT id FROM users WHERE email='${email}' and phoneNumber='${phoneNumber}'`;
-  
-    connection.query(sql, (err, results) => {
-        if (err) {
-            console.error('쿼리 실행 실패:', err);
-            res.status(500).send('Internal Server Error');
-            return;
-        }
-  
-        if (results.length === 0) {
-            // 일치하는 이메일이 없는 경우
-            res.json({ success: false, message: '일치하는 아이디가 없습니다.' });
-        } else {
-            const user = results[0];
-            res.json({ success: true, message: `'${user.id}'` });
-        }
-    });
-});
-
-app.post('/findPw', (req, res) => {
-    const { id, email, phoneNumber } = req.body;
-
-    const sql = `SELECT password FROM users WHERE id='${id}' and email='${email}' and phoneNumber='${phoneNumber}'`;
-  
-    connection.query(sql, (err, results) => {
-        if (err) {
-            console.error('쿼리 실행 실패:', err);
-            res.status(500).send('Internal Server Error');
-            return;
-        }
-  
-        if (results.length === 0) {
-            // 일치하는 이메일이 없는 경우
-            res.json({ success: false, message: '일치하는 아이디가 없습니다.' });
-        } else {
-            const user = results[0];
-            res.json({ success: true, message: `'${user.password}'` });
-        }
-    });
-});
-
 app.post('/logout', (req, res) => {
     req.session.destroy((err) => {
         if(err) {
@@ -235,7 +160,7 @@ app.post('/logout', (req, res) => {
 
 app.post('/delAccount', (req, res) => {
     const { id } = req.body;
-    const sql = `DELETE FROM users WHERE id=?`;
+    const sql = `DELETE FROM userinfo WHERE id=?`;
     req.session.destroy((err) => {
         if(err) {
             console.log(err);

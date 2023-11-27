@@ -32,8 +32,8 @@ export default function LoginScreen() {
         // });
     };
 
-    const handleJoin = () => {
-        navigation.navigate('Join');
+    const handleSignUp = () => {
+        navigation.navigate('SignUp');
     };
 
     const handleID = () => {
@@ -60,7 +60,7 @@ export default function LoginScreen() {
                 <TouchableOpacity onPress={handleLogin} style={[styles.buttonContainer, { width: '40%' }]}>
                     <Text style={[styles.buttonText]}>Login</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleJoin} style={[styles.buttonContainer, { width: '40%' }]}>
+                <TouchableOpacity onPress={handleSignUp} style={[styles.buttonContainer, { width: '40%' }]}>
                     <Text style={[styles.buttonText]}>Sign up</Text>
                 </TouchableOpacity>
             </View>
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     buttonContainer: {
         width: '80%',
         height: 'auto',
-        backgroundColor: '#98C593',
+        backgroundColor: '#aac7fe',
         paddingVertical: 10,
         borderRadius: 10,
         margin: 10,
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     buttonText: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#FFF',
+        color: '#2f2f2f',
         textAlign: 'center',
     },
 });
