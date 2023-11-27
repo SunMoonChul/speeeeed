@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Button, ImageBackground, Alert, Image } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, ImageBackground, Alert, Image } from 'react-native';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import IpContext from './IpContext';
 import * as Location from 'expo-location';
 import axios from 'axios';
 import * as Progress from 'react-native-progress';
 import Swiper from 'react-native-swiper';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 export default function Main() {
+    const [fontsLoaded, setFontsLoaded] = useState(false);
     const context = useContext(IpContext);
 
     const [speed, setSpeed] = useState(0);
@@ -17,7 +17,7 @@ export default function Main() {
     const [longitude, setLongitude] = useState(null);
     const [message, setMessage] = useState(''); // 급가속 또는 급정거 메시지
     const [cnt, setCnt] = useState(0); // 급가속 또는 급정거 횟수
-    const user = 'qwer';
+    const user = '222부8327';
     const address = `http://${context.ipLap}:8000/example/`;
 
     const navigation = useNavigation();
@@ -90,12 +90,12 @@ export default function Main() {
     return (
         <View style={styles.image}>
             <View style={styles.logoview}>
-                <Image source={require('./logocrop.png')} style={styles.logo}></Image>
+                <Image source={require('./assets/logocrop.png')} style={styles.logo}></Image>
             </View>
             <View style={styles.topview}>
                 <View style={styles.kmfontview}>
                     <Text style={styles.speedfont}>현재 : </Text>
-                    <Text style={styles.speedfont2}>{speed.toFixed(0)} km/h</Text>
+                    <Text style={styles.speedfont2}>{Math.max(0, speed).toFixed(0)} km/h</Text>
                 </View>
 
                 <View style={styles.viewst}>
@@ -104,8 +104,8 @@ export default function Main() {
                         onPress={() => console.log("'qwer'님이 도로를 정화시켜 준 시간")}
                     >
                         <View style={{ flexDirection: 'row', flex: 0, justifyContent: 'space-between', width: '100%' }}>
-                            <Text style={{ justifyContent: 'flex-start', fontSize: 22 }}>
-                                'qwer'님이{'\n'} 도로를 정화시켜 준 시간🏎
+                            <Text style={{ justifyContent: 'flex-start', fontSize: 22, fontFamily: 'Kingt' }}>
+                                '<Text style={{ color: '#3b5998' }}>{user}</Text>'님이{'\n'} 도로를 정화시켜 준 시간🏎
                             </Text>
                             <Image source={require('./icons/usericon.png')} style={{ width: 50, height: 50 }}></Image>
                         </View>
@@ -119,8 +119,10 @@ export default function Main() {
                                 paddingHorizontal: '2%',
                             }}
                         >
-                            <Progress.Bar progress={0.2} width={250} height={15} />
-                            <Text>100/100</Text>
+                            <View style={{ height: 10 }}>
+                                <Progress.Bar progress={0.2} width={250} height={15} color={'#3b5998'} />
+                            </View>
+                            <Text style={{ fontFamily: 'Kingt' }}>100/100</Text>
                             {/* 경험치에 따라 레벨도 같이 증가 */}
                         </View>
                         <Text
@@ -129,6 +131,7 @@ export default function Main() {
                                 width: '100%',
                                 paddingStart: '2%',
                                 fontSize: 20,
+                                fontFamily: 'Kingt',
                             }}
                         >
                             Lv.1
@@ -141,35 +144,43 @@ export default function Main() {
                         style={styles.twinbutton}
                         onPress={() => console.log('도로 위의 무법자 신고 횟수')}
                     >
-                        <Text style={{ justifyContent: 'flex-start', width: '100%', fontSize: 18 }}>
+                        <Text
+                            style={{ justifyContent: 'flex-start', width: '100%', fontSize: 17, fontFamily: 'Kingt' }}
+                        >
                             도로 위의{'\n'}무법자 신고 횟수
                         </Text>
                         <Text style={{ color: '#BFBFBF' }}>───────────</Text>
                         {/* 이거 디비에서 끌고와서 바뀌게 해야함 */}
                         <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-                            <Text style={{ fontSize: 50 }}>05</Text>
-                            <Text style={{ fontSize: 30, marginStart: 20, marginBottom: 5 }}>회</Text>
+                            <Text style={{ fontSize: 50, fontFamily: 'Kingt', color: '#3b5998' }}>05</Text>
+                            <Text style={{ fontSize: 30, marginStart: 20, marginBottom: 5, fontFamily: 'Kingt' }}>
+                                회
+                            </Text>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.twinbutton}
                         onPress={() => console.log('내가 잠시 도로 위의 무법자가 되었던 횟수')}
                     >
-                        <Text style={{ justifyContent: 'flex-start', width: '100%', fontSize: 18 }}>
+                        <Text
+                            style={{ justifyContent: 'flex-start', width: '100%', fontSize: 17, fontFamily: 'Kingt' }}
+                        >
                             내가 잠시 도로 위의 무법자가 되었던 횟수
                         </Text>
                         <Text style={{ color: '#BFBFBF' }}>───────────</Text>
                         {/* 이거 디비에서 끌고와서 바뀌게 해야함 */}
                         <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-                            <Text style={{ fontSize: 50 }}>05</Text>
-                            <Text style={{ fontSize: 30, marginStart: 20, marginBottom: 5 }}>회</Text>
+                            <Text style={{ fontSize: 50, fontFamily: 'Kingt', color: '#3b5998' }}>05</Text>
+                            <Text style={{ fontSize: 30, marginStart: 20, marginBottom: 5, fontFamily: 'Kingt' }}>
+                                회
+                            </Text>
                         </View>
                     </TouchableOpacity>
                 </View>
                 <View style={styles.viewst}>
                     <TouchableOpacity style={styles.reportbutton} onPress={() => console.log('신고하기')}>
                         <Image source={require('./icons/report.png')} style={{ width: 50, height: 50 }}></Image>
-                        <Text style={{ fontSize: 40 }}>제보하기</Text>
+                        <Text style={{ fontSize: 40, fontFamily: 'Kingt' }}>제보하기</Text>
                     </TouchableOpacity>
                 </View>
                 {/* 광고 배너 */}
@@ -214,9 +225,11 @@ const styles = StyleSheet.create({
     },
     speedfont: {
         fontSize: 40,
+        fontFamily: 'Kingt',
     },
     speedfont2: {
         fontSize: 70,
+        fontFamily: 'Kingt',
     },
     image: {
         flex: 1,
@@ -279,6 +292,7 @@ const styles = StyleSheet.create({
         marginVertical: '-0.5%',
     },
     addview: {
+        marginTop: 20,
         margin: '2%',
         flex: 1,
         height: '100%',
@@ -292,24 +306,20 @@ const styles = StyleSheet.create({
         alignItems: 'flex-end',
         width: '100%',
     },
-    shadow: {
-        //그림자
-        backgroundColor: '#fff',
-        width: 200,
-        height: 200,
-        ...Platform.select({
-            ios: {
-                shadowColor: '#000',
-                shadowOffset: {
-                    width: 10,
-                    height: 10,
-                },
-                shadowOpacity: 0.5,
-                shadowRadius: 10,
-            },
-            android: {
-                elevation: 20,
-            },
-        }),
+    wrapper: {
+        flex: 1,
+        paddingHorizontal: 10, // 슬라이더 좌우 패딩
+        backgroundColor: '#fff', // 배경색
+    },
+    slide1: {
+        flex: 1,
+        justifyContent: 'center', // 세로 방향으로 중앙 정렬
+        alignItems: 'center', // 가로 방향으로 중앙 정렬
+        backgroundColor: '#9DD6EB', // 배경색
+    },
+    text: {
+        color: '#fff', // 글자색
+        fontSize: 30, // 글자 크기
+        fontWeight: 'bold', // 글자 굵기
     },
 });
