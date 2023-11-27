@@ -2,13 +2,14 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useState, useRef, useEffect } from 'react';
 import * as Font from 'expo-font';
+import { View } from 'react-native';
 
 import LoginScreen from './LoginScreen';
 import SignUpScreen from './SignUpScreen';
 import MainScreen from './MainScreen';
 import MyInfoScreen from './MyInfoScreen';
 import IpContext from './IpContext';
-import AppLoading from 'expo-app-loading';
+import * as SplashScreen from 'expo-splash-screen';
 import { setCustomText } from 'react-native-global-props'; //폰트 친구
 
 const Stack = createStackNavigator();
@@ -28,28 +29,48 @@ const loadFonts = async () => {
 
     setCustomText(customTextProps);
 };
-
 export default function App() {
+    const [numplate, setNumplate] = useState('');
+    const [ipRas, setIpRas] = useState('10.20.100.158');
+    const [ipLap, setIpLap] = useState('10.20.102.148');
+    const [appIsReady, setAppIsReady] = useState(false);
 
-  const [numplate, setNumplate] = useState('');
-  const [ipRas, setIpRas] = useState('10.20.100.158');
-  const [ipLap, setIpLap] = useState('10.20.102.148');
-  const [fontLoaded, setFontLoaded] = useState(false);
+    useEffect(() => {
+        async function prepare() {
+            try {
+                await SplashScreen.preventAutoHideAsync();
+                await loadFonts();
+            } catch (e) {
+                console.warn(e);
+            } finally {
+                setAppIsReady(true);
+            }
+        }
+        prepare();
+    }, []);
 
-  if (!fontLoaded) {
-    return <AppLoading startAsync={loadFonts} onFinish={() => setFontLoaded(true)} onError={console.warn} />;
-  }
+    const onLayoutRootView = async () => {
+        if (appIsReady) {
+            await SplashScreen.hideAsync();
+        }
+    };
 
-  return (
-    <IpContext.Provider value={{ numplate, setNumplate, ipRas, setIpRas, ipLap, setIpLap}}>
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="Main" component={MainScreen} options={{ headerShown: false }}/>
-          <Stack.Screen name="Login" component={LoginScreen}/>
-          <Stack.Screen name="SignUp" component={SignUpScreen}/>
-          <Stack.Screen name="MyInfo" component={MyInfoScreen}/>
-        </Stack.Navigator>
-      </NavigationContainer>
-    </IpContext.Provider>
-  );
+    if (!appIsReady) {
+        return null;
+    }
+
+    return (
+        <IpContext.Provider value={{ numplate, setNumplate, ipRas, setIpRas, ipLap, setIpLap }}>
+            <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+                <NavigationContainer>
+                    <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
+                        <Stack.Screen name="Main" component={MainScreen} options={{ headerShown: false }} />
+                        <Stack.Screen name="Login" component={LoginScreen} />
+                        <Stack.Screen name="SignUp" component={SignUpScreen} />
+                        <Stack.Screen name="MyInfo" component={MyInfoScreen} />
+                    </Stack.Navigator>
+                </NavigationContainer>
+            </View>
+        </IpContext.Provider>
+    );
 }
