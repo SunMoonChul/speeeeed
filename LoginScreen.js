@@ -5,6 +5,7 @@ import axios from 'axios';
 import IpContext from './IpContext';
 
 export default function LoginScreen() {
+
     const context = useContext(IpContext);
 
     const [id, setId] = useState('');
@@ -14,22 +15,25 @@ export default function LoginScreen() {
 
     const handleLogin = async () => {
         navigation.navigate('Main');
-        // const data = {
-        //     id: id,
-        //     pw: pw
-        // };
+        const data = {
+            id: id,
+            pw: pw
+        };
 
-        // axios.post(`http://${context.ipLap}:3003/login`, data)
-        // .then(async response => {
-        //     if (response.data.success) {
-        //         navigation.navigate('Main');
-        //     } else {
-        //         alert(response.data.message); // 실패 메시지 표시
-        //     }
-        // })
-        // .catch(error => {
-        //     console.error(error);
-        // });
+        axios.post(`http://${context.ipLap}:3003/login`, data)
+            .then(async response => {
+                if (response.data.success) {
+                    const newNumplate = response.data.numplate;
+                    console.log(newNumplate);
+                    context.setNumplate(newNumplate);
+                    navigation.navigate('Main');
+                } else {
+                    alert(response.data.message); // 실패 메시지 표시
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
     };
 
     const handleSignUp = () => {

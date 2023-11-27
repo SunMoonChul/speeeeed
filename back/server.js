@@ -109,9 +109,9 @@ app.post('/signUp', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-    const { id, password } = req.body;
+    const { id, pw } = req.body;
     
-    const sql = `SELECT id, pw FROM userinfo WHERE id=?`;
+    const sql = `SELECT * FROM userinfo WHERE id=?`;
   
     connection.query(sql, [id], (err, results) => {
         if (err) {
@@ -125,8 +125,9 @@ app.post('/login', (req, res) => {
             res.json({ success: false, message: '일치하는 아이디가 없습니다.' });
         } else {
             const user = results[0];
-            
-            if (user.password !== password) {
+            console.log(user);
+            console.log(pw);
+            if (user.pw !== pw) {
                 // 비밀번호가 일치하지 않는 경우
                 res.json({ success: false, message: '비밀번호가 일치하지 않습니다.' });
             } else {
@@ -141,11 +142,12 @@ app.post('/login', (req, res) => {
                         return;
                     }
                 })
-                res.json({ success: true, message: '로그인 성공', id: user.id });
+                res.json({ success: true, message: '로그인 성공', numplate: user.numplate });
             }
         }
     });
 });
+
 
 app.post('/logout', (req, res) => {
     req.session.destroy((err) => {

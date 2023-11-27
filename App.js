@@ -11,11 +11,12 @@ const Stack = createStackNavigator();
 
 export default function App() {
 
+  const [numplate, setNumplate] = useState('');
   const [ipRas, setIpRas] = useState('10.20.100.158');
   const [ipLap, setIpLap] = useState('10.20.102.148');
 
   return (
-    <IpContext.Provider value={{ ipRas, setIpRas, ipLap, setIpLap}}>
+    <IpContext.Provider value={{ numplate, setNumplate, ipRas, setIpRas, ipLap, setIpLap}}>
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Main" component={MainScreen} options={{ headerShown: false }}/>

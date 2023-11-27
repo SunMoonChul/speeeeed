@@ -34,6 +34,10 @@ export default function Main() {
         Alert.alert('영상전송완료~~(((o(*ﾟ▽ﾟ*)o)))');
     };
 
+    const gotoMyInfo =() => {
+        console.log(`${context.numplate}님이 도로를 정화시켜 준 시간`);
+    };
+
     useEffect(() => {
         (async () => {
             let { status } = await Location.requestForegroundPermissionsAsync();
@@ -115,9 +119,9 @@ export default function Main() {
                 {<Text>급가속/급정거 횟수: {cnt}</Text>}
                 <TouchableOpacity
                     style={styles.topbutton}
-                    onPress={() => console.log("'qwer'님이 도로를 정화시켜 준 시간")}
+                    onPress={gotoMyInfo}
                 >
-                    <Text>'qwer'님이 도로를 정화시켜 준 시간</Text>
+                    <Text>{context.numplate}님이 도로를 정화시켜 준 시간</Text>
                 </TouchableOpacity>
                 <View style={{ flexDirection: 'row' }}>
                     <TouchableOpacity
@@ -140,10 +144,6 @@ export default function Main() {
                 <TouchableOpacity style={styles.topbutton} onPress={() => console.log('신고하기')}>
                     <Text>신고하기</Text>
                 </TouchableOpacity>
-            </View>
-            <View style={styles.container}>
-                <Button title="Run Video Script" onPress={runVideoScript} />
-                <Button title="Stop Video Script" onPress={stopVideoScript} />
             </View>
         </ImageBackground>
     );
