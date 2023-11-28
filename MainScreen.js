@@ -193,12 +193,12 @@ export default function Main() {
                         horizontal={true}
                         autoplay
                         loop
-                        spaceBetween={20}
+                        spaceBetween={100}
                         paginationStyle={{ left: '77%' }}
                         dotColor={'#3b5998'}
                     >
                         <ImageBackground
-                            source={require('./assets/kbt.jpg')}
+                            source={require('./assets/sw.jpg')}
                             imageStyle={{ borderRadius: 15 }}
                             style={{ flex: 1, height: 120, width: '100%' }}
                         >
