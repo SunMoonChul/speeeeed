@@ -5,6 +5,7 @@ import axios from 'axios';
 import IpContext from './IpContext';
 
 export default function LoginScreen() {
+
     const context = useContext(IpContext);
 
     const [id, setId] = useState('');
@@ -14,26 +15,31 @@ export default function LoginScreen() {
 
     const handleLogin = async () => {
         navigation.navigate('Main');
-        // const data = {
-        //     id: id,
-        //     pw: pw
-        // };
+        const data = {
+            id: id,
+            pw: pw
+        };
 
-        // axios.post(`http://${context.ipLap}:3003/login`, data)
-        // .then(async response => {
-        //     if (response.data.success) {
-        //         navigation.navigate('Main');
-        //     } else {
-        //         alert(response.data.message); // 실패 메시지 표시
-        //     }
-        // })
-        // .catch(error => {
-        //     console.error(error);
-        // });
+        axios.post(`http://${context.ipLap}:3003/login`, data)
+            .then(async response => {
+                if (response.data.success) {
+                    console.log(response.data.user);
+                    context.setUpcnt(response.data.user.upcnt);
+                    context.setDowncnt(response.data.user.downcnt);
+                    context.setNumplate(response.data.user.numplate);
+                    context.setRecord(response.data.user.record);
+                    navigation.navigate('Main');
+                } else {
+                    alert(response.data.message); // 실패 메시지 표시
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
     };
 
-    const handleJoin = () => {
-        navigation.navigate('Join');
+    const handleSignUp = () => {
+        navigation.navigate('SignUp');
     };
 
     const handleID = () => {
@@ -46,7 +52,7 @@ export default function LoginScreen() {
 
     return (
         <KeyboardAvoidingView style={styles.container} behavior="padding">
-            <Image source={require('./로고크롭.png')} style={styles.logo2} resizeMode="contain" />
+            <Image source={require('./assets/logocrop.png')} style={styles.logo2} resizeMode="contain" />
 
             <TextInput style={styles.input} placeholder="Id" value={id} onChangeText={(text) => setId(text)} />
             <TextInput
@@ -60,7 +66,7 @@ export default function LoginScreen() {
                 <TouchableOpacity onPress={handleLogin} style={[styles.buttonContainer, { width: '40%' }]}>
                     <Text style={[styles.buttonText]}>Login</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleJoin} style={[styles.buttonContainer, { width: '40%' }]}>
+                <TouchableOpacity onPress={handleSignUp} style={[styles.buttonContainer, { width: '40%' }]}>
                     <Text style={[styles.buttonText]}>Sign up</Text>
                 </TouchableOpacity>
             </View>
@@ -111,7 +117,7 @@ const styles = StyleSheet.create({
     buttonContainer: {
         width: '80%',
         height: 'auto',
-        backgroundColor: '#98C593',
+        backgroundColor: '#aac7fe',
         paddingVertical: 10,
         borderRadius: 10,
         margin: 10,
@@ -126,7 +132,7 @@ const styles = StyleSheet.create({
     buttonText: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#FFF',
+        color: '#2f2f2f',
         textAlign: 'center',
     },
 });
