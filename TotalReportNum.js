@@ -12,7 +12,8 @@ export default function TotalReportNum() {
         axios.get(`http://${context.ipLap}:3003/toreport`)
             .then(response => {
                 if (response.data.success) {
-                    
+                    console.log('item: ', response.data.item);
+                    setData(response.data.item); // 서버로부터 받아온 데이터를 상태 변수에 저장
                 }
                 else {
                     alert(response.data.message); // 실패 메시지 표시
@@ -21,7 +22,7 @@ export default function TotalReportNum() {
             .catch(error => {
                 console.error('There was an error!', error);
             });
-    });
+    }, []);
 
     return (
         <View style={styles.image}>
