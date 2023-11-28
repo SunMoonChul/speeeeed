@@ -78,8 +78,8 @@ app.post('/signUp', (req, res) => {
                 return;
             }
                 
-            const insertSql = `INSERT INTO userinfo(id,pw,numplate)
-            VALUES(?,?,?)`;
+            const insertSql = `INSERT INTO userinfo(id, pw, numplate)
+            VALUES(?, ?, ?);`;
             
             connection.query(insertSql,[id,password,numplate],(errInsert,resultInsert)=>{
                 if(errInsert) {
@@ -91,6 +91,17 @@ app.post('/signUp', (req, res) => {
                     return;
                 }
 
+                const insertSql2 = 'INSERT INTO accelerator(user) VALUES(?)';
+                connection.query(insertSql2, [id], (errInsert2, resultInsert2)=>{
+                    if(errInsert2) {
+                        console.error('데이터 저장 실패',errInsert2);
+                        res.json({
+                            success: false,
+                            message: 'Internal Server Error'
+                        });
+                        return;
+                    }
+                })
                 console.log('데이터 저장 성공');
 
                 req.session.uid = id;
@@ -111,8 +122,11 @@ app.post('/signUp', (req, res) => {
 app.post('/login', (req, res) => {
     const { id, pw } = req.body;
     
-    const sql = `SELECT * FROM userinfo WHERE id=?`;
-  
+    const sql = `SELECT userinfo.*, accelerator.*
+    FROM userinfo
+    INNER JOIN accelerator ON userinfo.id = accelerator.user
+    WHERE userinfo.id = ?`;
+    
     connection.query(sql, [id], (err, results) => {
         if (err) {
             console.error('쿼리 실행 실패:', err);
@@ -142,7 +156,7 @@ app.post('/login', (req, res) => {
                         return;
                     }
                 })
-                res.json({ success: true, message: '로그인 성공', numplate: user.numplate });
+                res.json({ success: true, message: '로그인 성공', user: results[0] });
             }
         }
     });

@@ -23,9 +23,11 @@ export default function LoginScreen() {
         axios.post(`http://${context.ipLap}:3003/login`, data)
             .then(async response => {
                 if (response.data.success) {
-                    const newNumplate = response.data.numplate;
-                    console.log(newNumplate);
-                    context.setNumplate(newNumplate);
+                    console.log(response.data.user);
+                    context.setUpcnt(response.data.user.upcnt);
+                    context.setDowncnt(response.data.user.downcnt);
+                    context.setNumplate(response.data.user.numplate);
+                    context.setRecord(response.data.user.record);
                     navigation.navigate('Main');
                 } else {
                     alert(response.data.message); // 실패 메시지 표시

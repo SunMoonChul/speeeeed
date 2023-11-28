@@ -31,9 +31,12 @@ const loadFonts = async () => {
 
 export default function App() {
 
+  const [upcnt, setUpcnt] = useState('');
+  const [downcnt, setDowncnt] = useState('');
   const [numplate, setNumplate] = useState('');
+  const [record, setRecord] = useState('');
   const [ipRas, setIpRas] = useState('10.20.100.158');
-  const [ipLap, setIpLap] = useState('10.20.102.148');
+  const [ipLap, setIpLap] = useState('10.20.102.157');
   const [fontLoaded, setFontLoaded] = useState(false);
 
   if (!fontLoaded) {
@@ -41,7 +44,7 @@ export default function App() {
   }
 
   return (
-    <IpContext.Provider value={{ numplate, setNumplate, ipRas, setIpRas, ipLap, setIpLap}}>
+    <IpContext.Provider value={{ upcnt, setUpcnt, downcnt, setDowncnt, numplate, setNumplate, record, setRecord, ipRas, setIpRas, ipLap, setIpLap}}>
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Main" component={MainScreen} options={{ headerShown: false }}/>
