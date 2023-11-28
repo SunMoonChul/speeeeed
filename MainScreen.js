@@ -26,7 +26,9 @@ export default function Main() {
         console.log(`${context.numplate}님이 도로를 정화시켜 준 시간`);
         navigation.navigate('MyInfo');
     };
-
+    const TotalReportNumPress = () => {
+        navigation.navigate('TotalReportNum');
+    };
 
     useEffect(() => {
         (async () => {
@@ -148,7 +150,7 @@ export default function Main() {
                 <View style={styles.viewst}>
                     <TouchableOpacity
                         style={styles.twinbutton}
-                        onPress={() => console.log('도로 위의 무법자 신고 횟수')}
+                        onPress={TotalReportNumPress}
                     >
                         <Text
                             style={{ justifyContent: 'flex-start', width: '100%', fontSize: 17, fontFamily: 'Kingt' }}
@@ -327,70 +329,5 @@ const styles = StyleSheet.create({
         color: '#fff', // 글자색
         fontSize: 30, // 글자 크기
         fontWeight: 'bold', // 글자 굵기
-    },
-
-    reportbutton: {
-        flex: 1,
-        alignItems: 'center',
-        backgroundColor: '#E3E3E3',
-        padding: 10,
-        borderColor: 'black', // 테두리 색상 설정
-        margin: '2%',
-        width: '100%',
-        height: '100%',
-        borderRadius: 15,
-        borderWidth: 1,
-        borderColor: '#BFBFBF',
-    },
-    twinbutton: {
-        flex: 1,
-        alignItems: 'center',
-        backgroundColor: '#E3E3E3',
-        padding: 10,
-        borderColor: 'black', // 테두리 색상 설정
-        margin: '2%',
-        borderRadius: 15,
-        width: '100%',
-        borderWidth: 1,
-        borderColor: '#BFBFBF',
-    },
-    viewst: {
-        margin: '2%',
-        flexDirection: 'row',
-        marginVertical: '-0.5%',
-    },
-    addview: {
-        margin: '2%',
-        flex: 1,
-        height: '100%',
-    },
-    kmfontview: {
-        marginTop: -50,
-        paddingStart: '10%',
-        paddingEnd: '5%',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'flex-end',
-        width: '100%',
-    },
-    shadow: {
-        //그림자
-        backgroundColor: '#fff',
-        width: 200,
-        height: 200,
-        ...Platform.select({
-            ios: {
-                shadowColor: '#000',
-                shadowOffset: {
-                    width: 10,
-                    height: 10,
-                },
-                shadowOpacity: 0.5,
-                shadowRadius: 10,
-            },
-            android: {
-                elevation: 20,
-            },
-        }),
     },
 });

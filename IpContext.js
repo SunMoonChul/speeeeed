@@ -1,6 +1,8 @@
 import {createContext } from 'react';
 
 const IpContext = createContext({
+    reportcnt: null,
+    setReportcnt: () => {},
     upcnt: null,
     setUpcnt: () => {},
     downcnt: null,

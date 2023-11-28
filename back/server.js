@@ -32,14 +32,6 @@ app.use(session({
      }
 }));
 
-app.use(cors({
-    origin: "*",
-    credentials: true,
-    optionsSuccessStatus: 200,
-}));
-
-app.use(express.urlencoded({ extended: true }))
-
 app.use(function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
@@ -51,6 +43,22 @@ app.listen(port, '0.0.0.0', () => {
     console.log(`Express server listening on port ${port}`);
 });
 
+app.get("/toreport", (req, res) => {
+
+    const sql = "SELECT * FROM report";
+
+    connection.query(sql, (err, result) => {
+        if(err) {
+            res.json({ 
+                success: false,
+                message: err
+            });
+            return;
+        }
+        console.log(result);
+        res.json({success: true, item: result[0]});
+    });
+});
   
 app.post('/signUp', (req, res) => {
     const {id, password, numplate} = req.body;

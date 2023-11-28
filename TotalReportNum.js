@@ -1,15 +1,22 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, Button, ImageBackground, Alert, Image, ScrollView } from 'react-native';
 import axios from 'axios';
+import IpContext from './IpContext';
 
 export default function TotalReportNum() {
 
+    const context = useContext(IpContext);
     const [data, setData] = useState([]);
 
     useEffect(() => {
-        axios.get("http://${context.ipLap}:8081/Toreport")
+        axios.get(`http://${context.ipLap}:3003/toreport`)
             .then(response => {
-                setData(response.data);
+                if (response.data.success) {
+                    
+                }
+                else {
+                    alert(response.data.message); // 실패 메시지 표시
+                }
             })
             .catch(error => {
                 console.error('There was an error!', error);
