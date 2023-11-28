@@ -32,7 +32,8 @@
         "react-native-background-geolocation": "^4.14.5",
         "react-native-global-props": "^1.1.5",
         "react-native-progress": "^5.0.1",
-        "react-native-swiper": "1.6.0"
+        "react-native-swiper": "1.6.0",
+        "react-native-swiper-flatlist": "^3.2.3"
     },
     "devDependencies": {
         "@babel/core": "^7.20.0"

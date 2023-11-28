@@ -211,7 +211,7 @@ export default function Main() {
                             // {/* zIndex 는 요소의 레이어 순서를 제어하는 것이고 값이 높을 수록 화면 위쪽에 표시 */}
                             style={{ flex: 1, height: 120, width: '100%' }}
                         >
-                            <Text style={styles.addtext}>쏘나타 신형{'\n'}존나 비싸다.</Text>
+                            <Text style={styles.addtext}>쏘나타 신형{'\n'}진짜 존나 비싸다.</Text>
                         </ImageBackground>
 
                         <ImageBackground
@@ -331,6 +331,7 @@ const styles = StyleSheet.create({
     addtext: {
         fontFamily: 'Kingt',
         padding: 5,
+        margin: 10,
         fontWeight: 'bold',
         fontSize: 17,
     },
