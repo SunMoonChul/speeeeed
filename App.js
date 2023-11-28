@@ -8,6 +8,7 @@ import SignUpScreen from './SignUpScreen';
 import MainScreen from './MainScreen';
 import MyInfoScreen from './MyInfoScreen';
 import IpContext from './IpContext';
+import TotalReportNum from './TotalReportNum';
 import AppLoading from 'expo-app-loading';
 import { setCustomText } from 'react-native-global-props'; //폰트 친구
 
@@ -31,6 +32,7 @@ const loadFonts = async () => {
 
 export default function App() {
 
+  const [reportcnt, setReportcnt] = useState('');
   const [upcnt, setUpcnt] = useState('');
   const [downcnt, setDowncnt] = useState('');
   const [numplate, setNumplate] = useState('');
@@ -44,13 +46,14 @@ export default function App() {
   }
 
   return (
-    <IpContext.Provider value={{ upcnt, setUpcnt, downcnt, setDowncnt, numplate, setNumplate, record, setRecord, ipRas, setIpRas, ipLap, setIpLap}}>
+    <IpContext.Provider value={{ reportcnt, setReportcnt, upcnt, setUpcnt, downcnt, setDowncnt, numplate, setNumplate, record, setRecord, ipRas, setIpRas, ipLap, setIpLap}}>
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Main" component={MainScreen} options={{ headerShown: false }}/>
           <Stack.Screen name="Login" component={LoginScreen}/>
           <Stack.Screen name="SignUp" component={SignUpScreen}/>
           <Stack.Screen name="MyInfo" component={MyInfoScreen}/>
+          <Stack.Screen name="TotalReportNum" component={TotalReportNum}/>
         </Stack.Navigator>
       </NavigationContainer>
     </IpContext.Provider>

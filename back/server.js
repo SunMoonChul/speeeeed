@@ -43,6 +43,22 @@ app.listen(port, '0.0.0.0', () => {
     console.log(`Express server listening on port ${port}`);
 });
 
+app.get("/toreport", (req, res) => {
+
+    const sql = "SELECT * FROM report";
+
+    connection.query(sql, (err, result) => {
+        if(err) {
+            res.json({ 
+                success: false,
+                message: err
+            });
+            return;
+        }
+        console.log(result);
+        res.json({success: true, item: result[0]});
+    });
+});
   
 app.post('/signUp', (req, res) => {
     const {id, password, numplate} = req.body;
@@ -159,6 +175,9 @@ app.post('/login', (req, res) => {
                 res.json({ success: true, message: '로그인 성공', user: results[0] });
             }
         }
+
+            // 신고횟수
+
     });
 });
 

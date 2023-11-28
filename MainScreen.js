@@ -26,7 +26,9 @@ export default function Main() {
         console.log(`${context.numplate}님이 도로를 정화시켜 준 시간`);
         navigation.navigate('MyInfo');
     };
-
+    const TotalReportNumPress = () => {
+        navigation.navigate('TotalReportNum');
+    };
 
     useEffect(() => {
         (async () => {
@@ -148,7 +150,7 @@ export default function Main() {
                 <View style={styles.viewst}>
                     <TouchableOpacity
                         style={styles.twinbutton}
-                        onPress={() => console.log('도로 위의 무법자 신고 횟수')}
+                        onPress={TotalReportNumPress}
                     >
                         <Text
                             style={{ justifyContent: 'flex-start', width: '100%', fontSize: 17, fontFamily: 'Kingt' }}
