@@ -4,6 +4,9 @@ import { useNavigation, CommonActions } from '@react-navigation/native';
 import IpContext from './IpContext';
 import * as Location from 'expo-location';
 import axios from 'axios';
+import * as Progress from 'react-native-progress';
+import Swiper from 'react-native-swiper';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 export default function Main() {
     const context = useContext(IpContext);
@@ -19,19 +22,8 @@ export default function Main() {
 
     const navigation = useNavigation();
 
-    const runVideoScript = () => {
-        axios
-            .post(`http://${context.ipRas}:5000/run-video`)
-            .then((response) => console.log(response))
-            .catch((error) => console.error(error));
-        Alert.alert('영상촬영 start(❁´◡`❁)');
-    };
-    const stopVideoScript = () => {
-        axios
-            .post(`http://${context.ipRas}:5000/run-video`)
-            .then((response) => console.log(response))
-            .catch((error) => console.error(error));
-        Alert.alert('영상전송완료~~(((o(*ﾟ▽ﾟ*)o)))');
+    const TotalReportNumPress = () => {
+        navigation.navigate('TotalReportNum');
     };
 
     useEffect(() => {
@@ -100,77 +92,228 @@ export default function Main() {
     }, []);
 
     return (
-        <ImageBackground source={require('./b1.jpg')} style={styles.image}>
+        <View style={styles.image}>
             <View style={styles.logoview}>
-                <Image source={require('./b1.jpg')} style={styles.logo}></Image>
-                <Text>일단 임시 로고</Text>
+                <Image source={require('./logocrop.png')} style={styles.logo}></Image>
             </View>
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Text>현재 속도: {speed.toFixed(1)} km/h</Text>
-                {latitude && <Text>위도: {latitude.toFixed(6)}</Text>}
-                {longitude && <Text>경도: {longitude.toFixed(6)}</Text>}
-                {/* 급가속 또는 급정거 메시지를 <Text> 컴포넌트로 감쌉니다. */}
-                {message && <Text>{message}</Text>}
-                {/* 급가속 또는 급정거 횟수를 표시합니다. */}
-                {<Text>급가속/급정거 횟수: {cnt}</Text>}
-                <TouchableOpacity
-                    style={styles.topbutton}
-                    onPress={() => console.log("'qwer'님이 도로를 정화시켜 준 시간")}
-                >
-                    <Text>'qwer'님이 도로를 정화시켜 준 시간</Text>
-                </TouchableOpacity>
-                <View style={{ flexDirection: 'row' }}>
+            <View style={styles.topview}>
+                <View style={styles.kmfontview}>
+                    <Text style={styles.speedfont}>현재 : </Text>
+                    <Text style={styles.speedfont2}>{speed.toFixed(0)} km/h</Text>
+                </View>
+
+                <View style={styles.viewst}>
                     <TouchableOpacity
                         style={styles.topbutton}
-                        onPress={() => console.log('도로 위의 무법자 신고 횟수')}
+                        onPress={() => console.log("'qwer'님이 도로를 정화시켜 준 시간")}
                     >
-                        <Text>도로 위의 무법자 신고 횟수</Text>
-                        {/* 이거 디비에서 끌고와서 바뀌게 해야함 */}
-                        <Text>05회</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.topbutton}
-                        onPress={() => console.log('내가 잠시 도로 위의 무법자가 되었던 횟수')}
-                    >
-                        <Text>내가 잠시 도로 위의 무법자가 되었던 횟수</Text>
-                        {/* 이거 디비에서 끌고와서 바뀌게 해야함 */}
-                        <Text>05회</Text>
+                        <View style={{ flexDirection: 'row', flex: 0, justifyContent: 'space-between', width: '100%' }}>
+                            <Text style={{ justifyContent: 'flex-start', fontSize: 22 }}>
+                                'qwer'님이{'\n'} 도로를 정화시켜 준 시간🏎
+                            </Text>
+                            <Image source={require('./icons/usericon.png')} style={{ width: 50, height: 50 }}></Image>
+                        </View>
+                        <View
+                            style={{
+                                flexDirection: 'row',
+                                flex: 0,
+                                justifyContent: 'space-between',
+                                width: '100%',
+                                paddingVertical: 8,
+                                paddingHorizontal: '2%',
+                            }}
+                        >
+                            <Progress.Bar progress={0.2} width={250} height={15} />
+                            <Text>100/100</Text>
+                            {/* 경험치에 따라 레벨도 같이 증가 */}
+                        </View>
+                        <Text
+                            style={{
+                                justifyContent: 'flex-start',
+                                width: '100%',
+                                paddingStart: '2%',
+                                fontSize: 20,
+                            }}
+                        >
+                            Lv.1
+                            {/* 레벨 들어갈 것 */}
+                        </Text>
                     </TouchableOpacity>
                 </View>
-                <TouchableOpacity style={styles.topbutton} onPress={() => console.log('신고하기')}>
-                    <Text>신고하기</Text>
-                </TouchableOpacity>
+                <View style={styles.viewst}>
+                    <TouchableOpacity
+                        style={styles.twinbutton}
+                        onPress={TotalReportNumPress}
+                    >
+                        <Text style={{ justifyContent: 'flex-start', width: '100%', fontSize: 18 }}>
+                            총 신고 횟수
+                        </Text>
+                        <Text style={{ color: '#BFBFBF' }}>───────────</Text>
+                        {/* 이거 디비에서 끌고와서 바뀌게 해야함 */}
+                        <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+                            <Text style={{ fontSize: 50 }}>05</Text>
+                            <Text style={{ fontSize: 30, marginStart: 20, marginBottom: 5 }}>회</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.twinbutton}
+                        onPress={() => console.log('내가 잠시 도로 위의 무법자가 되었던 횟수')}
+                    >
+                        <Text style={{ justifyContent: 'flex-start', width: '100%', fontSize: 18 }}>
+                            내가 잠시 도로 위의 무법자가 되었던 횟수
+                        </Text>
+                        <Text style={{ color: '#BFBFBF' }}>───────────</Text>
+                        {/* 이거 디비에서 끌고와서 바뀌게 해야함 */}
+                        <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+                            <Text style={{ fontSize: 50 }}>05</Text>
+                            <Text style={{ fontSize: 30, marginStart: 20, marginBottom: 5 }}>회</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.viewst}>
+                    <TouchableOpacity style={styles.reportbutton} onPress={() => console.log('신고하기')}>
+                        <Image source={require('./icons/report.png')} style={{ width: 50, height: 50 }}></Image>
+                        <Text style={{ fontSize: 40 }}>제보하기</Text>
+                    </TouchableOpacity>
+                </View>
+                {/* 광고 배너 */}
+                <View style={styles.addview}>
+                    <Swiper style={styles.wrapper} height={200} horizontal={false} autoplay loop spaceBetween={20}>
+                        <TouchableOpacity
+                            style={{ flex: 1 }}
+                            onPress={() => this.handleAttendance(this.props.navigation)}
+                        >
+                            <ImageBackground source={require('./icons/report.png')} style={styles.slide1}>
+                                <Text style={styles.text}>출석 포인트 받고{'\n'}쿠폰으로 교환하자!</Text>
+                            </ImageBackground>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={{ flex: 1 }} onPress={() => this.handleTip2(this.props.navigation)}>
+                            <ImageBackground
+                                source={require('./icons/report.png')}
+                                // {/* zIndex 는 요소의 레이어 순서를 제어하는 것이고 값이 높을 수록 화면 위쪽에 표시 */}
+                                style={[styles.slide1]}
+                            >
+                                <Text style={styles.text}>무상수거{'\n'}알고 있어?</Text>
+                            </ImageBackground>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={{ flex: 1 }} onPress={() => this.handleTip3(this.props.navigation)}>
+                            <ImageBackground source={require('./icons/report.png')} style={styles.slide1}>
+                                <Text style={styles.text}>자취생을 위한{'\n'}분리수거 꿀팁!</Text>
+                            </ImageBackground>
+                        </TouchableOpacity>
+                    </Swiper>
+                </View>
             </View>
-            <View style={styles.container}>
-                <Button title="Run Video Script" onPress={runVideoScript} />
-                <Button title="Stop Video Script" onPress={stopVideoScript} />
-            </View>
-        </ImageBackground>
+        </View>
     );
 }
 const styles = StyleSheet.create({
+    topview: {
+        flex: 1,
+        alignItems: 'center',
+    },
     container: {
         flex: 1,
         justifyContent: 'center',
+    },
+    speedfont: {
+        fontSize: 40,
+    },
+    speedfont2: {
+        fontSize: 70,
     },
     image: {
         flex: 1,
         resizeMode: 'cover',
         justifyContent: 'center',
+        backgroundColor: '#F2F2F2',
     },
     logo: {
-        width: '20%',
-        height: '20%',
+        width: '40%',
+        height: '30%',
     },
     logoview: {
-        marginTop: 80,
+        flex: 0.2,
+        marginTop: 60,
         marginStart: 20,
     },
     topbutton: {
+        flex: 1,
         alignItems: 'center',
         backgroundColor: '#E3E3E3',
         padding: 10,
-        borderWidth: 1, // 테두리 두께 설정
         borderColor: 'black', // 테두리 색상 설정
+        margin: '2%',
+        width: '100%',
+        borderRadius: 15,
+        flexDirection: 'column', // 세로방향 배치
+        justifyContent: 'space-between', // 컴포넌트들 사이의 공간 고르게 분배
+        borderWidth: 1,
+        borderColor: '#BFBFBF',
+    },
+
+    reportbutton: {
+        flex: 1,
+        alignItems: 'center',
+        backgroundColor: '#E3E3E3',
+        padding: 10,
+        borderColor: 'black', // 테두리 색상 설정
+        margin: '2%',
+        width: '100%',
+        height: '100%',
+        borderRadius: 15,
+        borderWidth: 1,
+        borderColor: '#BFBFBF',
+    },
+    twinbutton: {
+        flex: 1,
+        alignItems: 'center',
+        backgroundColor: '#E3E3E3',
+        padding: 10,
+        borderColor: 'black', // 테두리 색상 설정
+        margin: '2%',
+        borderRadius: 15,
+        width: '100%',
+        borderWidth: 1,
+        borderColor: '#BFBFBF',
+    },
+    viewst: {
+        margin: '2%',
+        flexDirection: 'row',
+        marginVertical: '-0.5%',
+    },
+    addview: {
+        margin: '2%',
+        flex: 1,
+        height: '100%',
+    },
+    kmfontview: {
+        marginTop: -50,
+        paddingStart: '10%',
+        paddingEnd: '5%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-end',
+        width: '100%',
+    },
+    shadow: {
+        //그림자
+        backgroundColor: '#fff',
+        width: 200,
+        height: 200,
+        ...Platform.select({
+            ios: {
+                shadowColor: '#000',
+                shadowOffset: {
+                    width: 10,
+                    height: 10,
+                },
+                shadowOpacity: 0.5,
+                shadowRadius: 10,
+            },
+            android: {
+                elevation: 20,
+            },
+        }),
     },
 });

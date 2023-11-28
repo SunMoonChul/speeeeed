@@ -32,6 +32,14 @@ app.use(session({
      }
 }));
 
+app.use(cors({
+    origin: "*",
+    credentials: true,
+    optionsSuccessStatus: 200,
+}));
+
+app.use(express.urlencoded({ extended: true }))
+
 app.use(function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
@@ -43,10 +51,15 @@ app.listen(port, '0.0.0.0', () => {
     console.log(`Express server listening on port ${port}`);
 });
 
-// app.get('/', (req, res) => {
-//     res.send('Welcome to my website!');
-// });
+app.get("/Toreport", (req, res) => {
+    res.header("Access-Control-Allow-Origin", "*");
 
+    const sql = "SELECT * FROM REPORT";
+
+    connection.query(sql, (err, result) => {
+        res.send(result);
+    });
+});
   
 app.post('/join', (req, res) => {
     const {email, id, password, nickname, phoneNumber} = req.body;
@@ -185,6 +198,9 @@ app.post('/login', (req, res) => {
                 res.json({ success: true, message: '로그인 성공', id: user.id });
             }
         }
+
+            // 신고횟수
+
     });
 });
 

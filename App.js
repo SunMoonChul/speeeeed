@@ -5,13 +5,14 @@ import React, { useState, useRef, useEffect } from 'react';
 import LoginScreen from './LoginScreen';
 import MainScreen from './MainScreen';
 import IpContext from './IpContext';
+import TotalReportNum from './TotalReportNum';
 
 const Stack = createStackNavigator();
 
 export default function App() {
 
   const [ipRas, setIpRas] = useState('10.20.100.158');
-  const [ipLap, setIpLap] = useState('10.20.102.148');
+  const [ipLap, setIpLap] = useState('10.20.104.115');
   const [ipLoc, setIpLoc] = useState('10.20.105.248');
 
   return (
@@ -20,6 +21,7 @@ export default function App() {
         <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Main" component={MainScreen} options={{ headerShown: false }}/>
           <Stack.Screen name="Login" component={LoginScreen}/>
+          <Stack.Screen name="TotalReportNum" component={TotalReportNum}/>
         </Stack.Navigator>
       </NavigationContainer>
     </IpContext.Provider>
