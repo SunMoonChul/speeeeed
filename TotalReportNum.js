@@ -13,7 +13,7 @@ export default function TotalReportNum() {
             .then(response => {
                 if (response.data.success) {
                     console.log('item: ', response.data.item);
-                    setData(response.data.item); // 서버로부터 받아온 데이터를 상태 변수에 저장
+                    setData([response.data.item]); // 서버로부터 받아온 데이터를 상태 변수에 저장
                 }
                 else {
                     alert(response.data.message); // 실패 메시지 표시
@@ -43,9 +43,9 @@ export default function TotalReportNum() {
                         key={index} style={styles.topbutton}
                     >
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: 290 }}>
-                        <Text style={{ justifyContent: 'flex-start', fontSize: 22 }}>
-                            {item.date}{'\n'}{'\n'}{item.other_np}
-                        </Text>
+                            <Text style={{ justifyContent: 'flex-start', fontSize: 22 }}>
+                                {item.date}{'\n'}{'\n'}{item.other_np}
+                            </Text>
                             <Image source={{ uri: item.imgpath }} style={{ width: 50, height: 50 }}></Image>
                         </View>
                     </TouchableOpacity>
