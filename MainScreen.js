@@ -186,29 +186,41 @@ export default function Main() {
                 </View>
                 {/* 광고 배너 */}
                 <View style={styles.addview}>
-                    <Swiper style={styles.wrapper} height={200} horizontal={false} autoplay loop spaceBetween={20}>
-                        <TouchableOpacity
-                            style={{ flex: 1 }}
-                            onPress={() => this.handleAttendance(this.props.navigation)}
+                    {/* <Swiper style={styles.wrapper} height={1000} horizontal={false} autoplay loop spaceBetween={20}> */}
+
+                    <Swiper
+                        height={500}
+                        horizontal={true}
+                        autoplay
+                        loop
+                        spaceBetween={20}
+                        paginationStyle={{ left: '77%' }}
+                        dotColor={'#3b5998'}
+                    >
+                        <ImageBackground
+                            source={require('./assets/kbt.jpg')}
+                            imageStyle={{ borderRadius: 15 }}
+                            style={{ flex: 1, height: 120, width: '100%' }}
                         >
-                            <ImageBackground source={require('./icons/report.png')} style={styles.slide1}>
-                                <Text style={styles.text}>출석 포인트 받고{'\n'}쿠폰으로 교환하자!</Text>
-                            </ImageBackground>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={{ flex: 1 }} onPress={() => this.handleTip2(this.props.navigation)}>
-                            <ImageBackground
-                                source={require('./icons/report.png')}
-                                // {/* zIndex 는 요소의 레이어 순서를 제어하는 것이고 값이 높을 수록 화면 위쪽에 표시 */}
-                                style={[styles.slide1]}
-                            >
-                                <Text style={styles.text}>무상수거{'\n'}알고 있어?</Text>
-                            </ImageBackground>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={{ flex: 1 }} onPress={() => this.handleTip3(this.props.navigation)}>
-                            <ImageBackground source={require('./icons/report.png')} style={styles.slide1}>
-                                <Text style={styles.text}>자취생을 위한{'\n'}분리수거 꿀팁!</Text>
-                            </ImageBackground>
-                        </TouchableOpacity>
+                            <Text style={styles.addtext}>안전운행하면{'\n'}복이 온다굿</Text>
+                        </ImageBackground>
+
+                        <ImageBackground
+                            source={require('./assets/theedge.jpg')}
+                            imageStyle={{ borderRadius: 15 }}
+                            // {/* zIndex 는 요소의 레이어 순서를 제어하는 것이고 값이 높을 수록 화면 위쪽에 표시 */}
+                            style={{ flex: 1, height: 120, width: '100%' }}
+                        >
+                            <Text style={styles.addtext}>쏘나타 신형{'\n'}존나 비싸다.</Text>
+                        </ImageBackground>
+
+                        <ImageBackground
+                            source={require('./assets/gv70.jpg')}
+                            imageStyle={{ borderRadius: 15 }}
+                            style={{ flex: 1, height: 120, width: '100%' }}
+                        >
+                            <Text style={styles.addtext}>나 이거좀 사줘라{'\n'}국민 406602 04 222066</Text>
+                        </ImageBackground>
                     </Swiper>
                 </View>
             </View>
@@ -295,8 +307,10 @@ const styles = StyleSheet.create({
     addview: {
         marginTop: 20,
         margin: '2%',
+        marginHorizontal: '5%',
         flex: 1,
-        height: '100%',
+        height: 100,
+        borderRadius: 15,
     },
     kmfontview: {
         marginTop: -60,
@@ -306,5 +320,18 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         alignItems: 'flex-end',
         width: '100%',
+    },
+    slide: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 15,
+        borderWidth: 1,
+    },
+    addtext: {
+        fontFamily: 'Kingt',
+        padding: 5,
+        fontWeight: 'bold',
+        fontSize: 17,
     },
 });
