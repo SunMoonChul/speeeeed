@@ -19,7 +19,6 @@ export default function Main() {
     const [message, setMessage] = useState(''); // 급가속 또는 급정거 메시지
     const [cnt, setCnt] = useState(0); // 급가속 또는 급정거 횟수
     const user = '222부8327';
-    const address = `http://${context.ipLap}:3003/`;
 
     const navigation = useNavigation();
 
@@ -61,7 +60,7 @@ export default function Main() {
                     distanceInterval: 0, // 위치 변할 때마다 알림
                 },
                 (position) => {
-                    const currentSpeed = position.coords.speed * 3.6;
+                    const currentSpeed = (position.coords.speed || 0) * 3.6;
 
                     // 속도가 1초 이내에 20km 이상 올라가면 '급가속'
                     if (currentSpeed - prevSpeed >= 20) {
@@ -150,9 +149,9 @@ export default function Main() {
                 <View style={styles.viewst}>
                     <TouchableOpacity style={styles.topbutton} onPress={gotoMyInfo}>
                         <View style={{ flexDirection: 'row', flex: 0, justifyContent: 'space-between', width: '100%' }}>
-                            <Text>{context.numplate}님이 도로를 정화시켜 준 시간</Text>
                             <Text style={{ justifyContent: 'flex-start', fontSize: 22, fontFamily: 'Kingt' }}>
-                                '<Text style={{ color: '#3b5998' }}>{user}</Text>'님이{'\n'} 도로를 정화시켜 준 시간🌈
+                                '<Text style={{ color: '#3b5998' }}>{context.numplate}</Text>'님이{'\n'} 도로를 정화시켜
+                                준 시간🌈
                             </Text>
                             <Image source={require('./icons/usericon.png')} style={{ width: 50, height: 50 }}></Image>
                         </View>
@@ -167,9 +166,16 @@ export default function Main() {
                             }}
                         >
                             <View style={{ height: 10 }}>
-                                <Progress.Bar progress={0.2} width={250} height={15} color={'#3b5998'} />
+                                <Progress.Bar
+                                    progress={(context.record || 0) / ((context.level || 1) * 100)}
+                                    width={250}
+                                    height={15}
+                                    color={'#3b5998'}
+                                />
                             </View>
-                            <Text style={{ fontFamily: 'Kingt' }}>100/100</Text>
+                            <Text style={{ fontFamily: 'Kingt' }}>
+                                {context.record}/{context.level * 100}
+                            </Text>
                             {/* 경험치에 따라 레벨도 같이 증가 */}
                         </View>
                         <Text
@@ -181,20 +187,17 @@ export default function Main() {
                                 fontFamily: 'Kingt',
                             }}
                         >
-                            Lv.1
+                            Lv.{context.level}
                             {/* 레벨 들어갈 것 */}
                         </Text>
                     </TouchableOpacity>
                 </View>
                 <View style={styles.viewst}>
-                    <TouchableOpacity
-                        style={styles.twinbutton}
-                        onPress={() => console.log('도로 위의 무법자 신고 횟수')}
-                    >
+                    <TouchableOpacity style={styles.twinbutton} onPress={() => navigation.navigate('TotalReportNum')}>
                         <Text
                             style={{ justifyContent: 'flex-start', width: '100%', fontSize: 17, fontFamily: 'Kingt' }}
                         >
-                            도로 위의{'\n'}무법자 신고 횟수
+                            신고 횟수{'\n'}
                         </Text>
                         <Text style={{ color: '#BFBFBF' }}>───────────</Text>
                         {/* 이거 디비에서 끌고와서 바뀌게 해야함 */}
@@ -229,8 +232,6 @@ export default function Main() {
                 </View>
                 {/* 광고 배너 */}
                 <View style={styles.addview}>
-                    {/* <Swiper style={styles.wrapper} height={1000} horizontal={false} autoplay loop spaceBetween={20}> */}
-
                     <Swiper
                         height={500}
                         horizontal={true}
@@ -270,6 +271,7 @@ export default function Main() {
         </SafeAreaView>
     );
 }
+
 const styles = StyleSheet.create({
     topview: {
         flex: 1,

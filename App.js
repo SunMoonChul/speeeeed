@@ -9,8 +9,8 @@ import SignUpScreen from './SignUpScreen';
 import MainScreen from './MainScreen';
 import MyInfoScreen from './MyInfoScreen';
 import IpContext from './IpContext';
+import TotalReportNum from './TotalReportNum';
 import Sanctions from './Sanctions';
-import pickVideoFromGallery from './Select_Video';
 import * as SplashScreen from 'expo-splash-screen';
 import { setCustomText } from 'react-native-global-props'; //폰트 친구
 
@@ -31,10 +31,19 @@ const loadFonts = async () => {
 
     setCustomText(customTextProps);
 };
+
 export default function App() {
+    const [id, setId] = useState('');
+    const [level, setLevel] = useState('');
+    const [reportcnt, setReportcnt] = useState(0);
+    const [reportedcnt, setReportedcnt] = useState(0);
+    const [upcnt, setUpcnt] = useState('');
+    const [downcnt, setDowncnt] = useState('');
     const [numplate, setNumplate] = useState('');
-    const [ipRas, setIpRas] = useState('172.16.106.23');
-    const [ipLap, setIpLap] = useState('172.16.106.23');
+    const [record, setRecord] = useState('');
+    const [totRecord, setTotRecord] = useState('');
+    const [ipRas, setIpRas] = useState('172.30.1.56');
+    const [ipLap, setIpLap] = useState('172.30.1.56');
     const [appIsReady, setAppIsReady] = useState(false);
 
     useEffect(() => {
@@ -62,7 +71,28 @@ export default function App() {
     }
 
     return (
-        <IpContext.Provider value={{ numplate, setNumplate, ipRas, setIpRas, ipLap, setIpLap }}>
+        <IpContext.Provider
+            value={{
+                id,
+                setId,
+                level,
+                setLevel,
+                reportcnt,
+                setReportcnt,
+                reportedcnt,
+                setReportedcnt,
+                numplate,
+                setNumplate,
+                record,
+                setRecord,
+                totRecord,
+                setTotRecord,
+                ipRas,
+                setIpRas,
+                ipLap,
+                setIpLap,
+            }}
+        >
             <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
                 <NavigationContainer>
                     <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
@@ -70,6 +100,7 @@ export default function App() {
                         <Stack.Screen name="Login" component={LoginScreen} />
                         <Stack.Screen name="SignUp" component={SignUpScreen} />
                         <Stack.Screen name="MyInfo" component={MyInfoScreen} />
+                        <Stack.Screen name="TotalReportNum" component={TotalReportNum} />
                         <Stack.Screen name="Sanctions" component={Sanctions} />
                     </Stack.Navigator>
                 </NavigationContainer>

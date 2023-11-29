@@ -45,6 +45,32 @@ app.listen(port, '0.0.0.0', () => {
     console.log(`Express server listening on port ${port}`);
 });
 
+app.post('/myInfo', (req, res) => {
+    const { numplate } = req.body;
+    const sql = 'SELECT * FROM accelerator WHERE user=?';
+    connection.query(sql, [numplate], (err, result) => {
+        if (err) {
+            res.json({
+                success: false,
+                message: err,
+            });
+            return;
+        }
+        console.log(result);
+        res.json({ success: true, item: result });
+    });
+});
+
+app.post('/toReport', (req, res) => {
+    let sql = 'SELECT my_np, img_path, other_np, date FROM report WHERE my_np = ?';
+    let userName = req.body.userName;
+    connection.query(sql, [userName], (err, results) => {
+        if (err) throw err;
+        console.log(results);
+        res.json({ results: results });
+    });
+});
+
 app.post('/signUp', (req, res) => {
     const { id, password, numplate } = req.body;
 
@@ -91,6 +117,18 @@ app.post('/signUp', (req, res) => {
                     });
                     return;
                 }
+
+                const insertSql2 = 'INSERT INTO accelerator(id, user) VALUES(?, ?)';
+                connection.query(insertSql2, [id, numplate], (errInsert2, resultInsert2) => {
+                    if (errInsert2) {
+                        console.error('데이터 저장 실패', errInsert2);
+                        res.json({
+                            success: false,
+                            message: 'Internal Server Error',
+                        });
+                        return;
+                    }
+                });
 
                 console.log('데이터 저장 성공');
 
