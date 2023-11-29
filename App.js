@@ -37,8 +37,6 @@ export default function App() {
     const [level, setLevel] = useState('');
     const [reportcnt, setReportcnt] = useState(0);
     const [reportedcnt, setReportedcnt] = useState(0);
-    const [upcnt, setUpcnt] = useState('');
-    const [downcnt, setDowncnt] = useState('');
     const [numplate, setNumplate] = useState('');
     const [record, setRecord] = useState('');
     const [totRecord, setTotRecord] = useState('');

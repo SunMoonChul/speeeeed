@@ -25,8 +25,6 @@ export default function LoginScreen() {
                 if (response.data.success) {
                     console.log(response.data.user);
                     context.setId(id);
-                    context.setUpcnt(response.data.user.upcnt);
-                    context.setDowncnt(response.data.user.downcnt);
                     context.setNumplate(response.data.user.numplate);
                     context.setTotRecord(response.data.user.record);
                     const totRecord = response.data.user.record;
