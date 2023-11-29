@@ -31,7 +31,9 @@ export default function Main() {
         console.log('내가 잠시 도로 위의 무법자가 되었던 횟수');
         navigation.navigate('Sanctions');
     };
-    const today = new Date();
+
+    const today = new Date(); //오늘시간
+    const currentTimems = Date.now(); // 현재 시간 (밀리초)
     const currenttime =
         today.getFullYear() +
         '/' +
@@ -44,6 +46,9 @@ export default function Main() {
         today.getMinutes() +
         ':' +
         today.getSeconds();
+
+    const [isOverSpeed, setIsOverSpeed] = useState(false); // 과속 상태를 저장하는 상태 변수
+    const [lastActionTime, setLastActionTime] = useState(0); // 마지막으로 동작한 시점 (밀리초)
 
     useEffect(() => {
         (async () => {
@@ -63,10 +68,13 @@ export default function Main() {
                     const currentSpeed = (position.coords.speed || 0) * 3.6;
 
                     // 속도가 1초 이내에 20km 이상 올라가면 '급가속'
-                    if (currentSpeed - prevSpeed >= 20) {
+                    if (currentSpeed - prevSpeed >= 20 && currentTimems - lastActionTime >= 10000) {
                         setCnt((cnt) => cnt + 1); // 카운트 증가
                         console.log('급가속');
-                        console.log('http://${context.ipLap}:3003/accel');
+                        console.log(`http://${context.ipLap}:3003/accel`);
+
+                        setLastActionTime(currentTimems); // 마지막 동작 시간 갱신
+
                         // 여기에서 서버에 데이터를 전송합니다.
                         axios
                             .post(`http://${context.ipLap}:3003/accel`, {
@@ -83,10 +91,13 @@ export default function Main() {
                             });
                     }
                     // 속도가 1초 이내에 20km 이상 내려가면 '급감속'
-                    else if (prevSpeed - currentSpeed >= 20) {
+                    else if (prevSpeed - currentSpeed >= 20 && currentTimems - lastActionTime >= 10000) {
                         setCnt((cnt) => cnt + 1); // 카운트 증가
                         console.log('급감속');
-                        console.log('http://${context.ipLap}:3003/accel');
+                        console.log(`http://${context.ipLap}:3003/accel`);
+
+                        setLastActionTime(currentTimems); // 마지막 동작 시간 갱신
+
                         // 여기에서 서버에 데이터를 전송합니다.
                         axios
                             .post(`http://${context.ipLap}:3003/accel`, {
@@ -106,23 +117,34 @@ export default function Main() {
                     }
                     // 과속 2
                     if (currentSpeed > 110) {
-                        setCnt((cnt) => cnt + 1); // 카운트 증가
-                        console.log('과속');
-                        console.log('http://${context.ipLap}:3003/accel');
-                        // 여기에서 서버에 데이터를 전송합니다.
-                        axios
-                            .post(`http://${context.ipLap}:3003/accel`, {
-                                user: user,
-                                time: currenttime,
-                                accel: 2,
-                            })
-                            .then((response) => {
-                                console.log(response.data);
-                                console.log('과속 완');
-                            })
-                            .catch((error) => {
-                                console.error(error);
-                            });
+                        if (!isOverSpeed) {
+                            // 과속 상태가 아닐 때만 실행
+                            setIsOverSpeed(true); // 과속 상태로 설정
+
+                            // 5초 후에 과속 상태를 해제
+                            setTimeout(() => {
+                                setIsOverSpeed(false);
+                            }, 5000);
+
+                            setCnt((cnt) => cnt + 1); // 카운트 증가
+                            console.log('과속');
+                            console.log(`http://${context.ipLap}:3003/accel`);
+
+                            // 과속 상태일 때만 서버에 데이터를 전송
+                            axios
+                                .post(`http://${context.ipLap}:3003/accel`, {
+                                    user: user,
+                                    time: currenttime,
+                                    accel: 2,
+                                })
+                                .then((response) => {
+                                    console.log(response.data);
+                                    console.log('과속 완');
+                                })
+                                .catch((error) => {
+                                    console.error(error);
+                                });
+                        }
                     }
 
                     setPrevSpeed(speed); // 이전 속도 업데이트
