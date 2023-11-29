@@ -150,6 +150,7 @@ export default function Main() {
                 <View style={styles.viewst}>
                     <TouchableOpacity style={styles.topbutton} onPress={gotoMyInfo}>
                         <View style={{ flexDirection: 'row', flex: 0, justifyContent: 'space-between', width: '100%' }}>
+                            <Text>{context.numplate}님이 도로를 정화시켜 준 시간</Text>
                             <Text style={{ justifyContent: 'flex-start', fontSize: 22, fontFamily: 'Kingt' }}>
                                 '<Text style={{ color: '#3b5998' }}>{user}</Text>'님이{'\n'} 도로를 정화시켜 준 시간🌈
                             </Text>
