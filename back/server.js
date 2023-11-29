@@ -21,6 +21,8 @@ app.use(cors());
 
 const port = 3003;
 
+app.use('/images', express.static('C:/uploads'));
+
 app.use(session({
     key: 'userinfo',
     secret: 'nhth453recasd',
@@ -43,20 +45,23 @@ app.listen(port, '0.0.0.0', () => {
     console.log(`Express server listening on port ${port}`);
 });
 
-app.get("/toreport", (req, res) => {
+app.post('/toreport', (req, res) => {
+    let sql = 'SELECT my_np, img_path, other_np, date FROM report WHERE my_np = ?';
+    let userName = req.body.userName;
+    connection.query(sql, [userName], (err, results) => {
+        if (err) throw err;
+        console.log(results);
+        res.json({ results: results });
+    });
+});
 
-    const sql = "SELECT * FROM report";
-
-    connection.query(sql, (err, result) => {
-        if(err) {
-            res.json({ 
-                success: false,
-                message: err
-            });
-            return;
-        }
-        console.log(result);
-        res.json({success: true, item: result[0]});
+app.post('/getSanctions', (req, res) => {
+    let sql = 'SELECT my_np, img_path, other_np, date FROM report WHERE other_np = ?';
+    let userName = req.body.userName;
+    connection.query(sql, [userName], (err, results) => {
+        if (err) throw err;
+        console.log(results);
+        res.json({ results: results });
     });
 });
   

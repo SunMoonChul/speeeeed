@@ -6,6 +6,7 @@ import * as Location from 'expo-location';
 import axios from 'axios';
 import * as Progress from 'react-native-progress';
 import Swiper from 'react-native-swiper';
+import TotalReportNum from './TotalReportNum';
 
 export default function Main() {
     const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -17,7 +18,6 @@ export default function Main() {
     const [longitude, setLongitude] = useState(null);
     const [message, setMessage] = useState(''); // 급가속 또는 급정거 메시지
     const [cnt, setCnt] = useState(0); // 급가속 또는 급정거 횟수
-    const user = '222부8327';
     const address = `http://${context.ipLap}:8000/example/`;
 
     const navigation = useNavigation();
@@ -112,7 +112,7 @@ export default function Main() {
                         onPress={gotoMyInfo}
                     >
                         <View style={{ flexDirection: 'row', flex: 0, justifyContent: 'space-between', width: '100%' }}>
-                            <Text style={{ justifyContent: 'flex-start', fontSize: 22, fontFamily: 'Kingt' }}>
+                            <Text style={{ justifyContent: 'flex-start', fontSize: 22}}>
                                 '<Text style={{ color: '#3b5998' }}>{context.numplate}</Text>'님이{'\n'} 도로를 정화시켜 준 시간🏎
                             </Text>
                             <Image source={require('./icons/usericon.png')} style={{ width: 50, height: 50 }}></Image>
@@ -130,7 +130,7 @@ export default function Main() {
                             <View style={{ height: 10 }}>
                                 <Progress.Bar progress={0.2} width={250} height={15} color={'#3b5998'} />
                             </View>
-                            <Text style={{ fontFamily: 'Kingt' }}>100/100</Text>
+                            <Text>100/100</Text>
                             {/* 경험치에 따라 레벨도 같이 증가 */}
                         </View>
                         <Text
@@ -139,7 +139,6 @@ export default function Main() {
                                 width: '100%',
                                 paddingStart: '2%',
                                 fontSize: 20,
-                                fontFamily: 'Kingt',
                             }}
                         >
                             Lv.1
@@ -153,15 +152,15 @@ export default function Main() {
                         onPress={TotalReportNumPress}
                     >
                         <Text
-                            style={{ justifyContent: 'flex-start', width: '100%', fontSize: 17, fontFamily: 'Kingt' }}
+                            style={{ justifyContent: 'flex-start', width: '100%', fontSize: 17 }}
                         >
                             도로 위의{'\n'}무법자 신고 횟수
                         </Text>
                         <Text style={{ color: '#BFBFBF' }}>───────────</Text>
                         {/* 이거 디비에서 끌고와서 바뀌게 해야함 */}
                         <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-                            <Text style={{ fontSize: 50, fontFamily: 'Kingt', color: '#3b5998' }}>05</Text>
-                            <Text style={{ fontSize: 30, marginStart: 20, marginBottom: 5, fontFamily: 'Kingt' }}>
+                            <Text style={{ fontSize: 50, color: '#3b5998' }}>05</Text>
+                            <Text style={{ fontSize: 30, marginStart: 20, marginBottom: 5 }}>
                                 회
                             </Text>
                         </View>
@@ -171,15 +170,15 @@ export default function Main() {
                         onPress={() => console.log('내가 잠시 도로 위의 무법자가 되었던 횟수')}
                     >
                         <Text
-                            style={{ justifyContent: 'flex-start', width: '100%', fontSize: 17, fontFamily: 'Kingt' }}
+                            style={{ justifyContent: 'flex-start', width: '100%', fontSize: 17 }}
                         >
                             내가 잠시 도로 위의 무법자가 되었던 횟수
                         </Text>
                         <Text style={{ color: '#BFBFBF' }}>───────────</Text>
                         {/* 이거 디비에서 끌고와서 바뀌게 해야함 */}
                         <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-                            <Text style={{ fontSize: 50, fontFamily: 'Kingt', color: '#3b5998' }}>05</Text>
-                            <Text style={{ fontSize: 30, marginStart: 20, marginBottom: 5, fontFamily: 'Kingt' }}>
+                            <Text style={{ fontSize: 50, color: '#3b5998' }}>05</Text>
+                            <Text style={{ fontSize: 30, marginStart: 20, marginBottom: 5 }}>
                                 회
                             </Text>
                         </View>
@@ -188,7 +187,7 @@ export default function Main() {
                 <View style={styles.viewst}>
                     <TouchableOpacity style={styles.reportbutton} onPress={() => console.log('신고하기')}>
                         <Image source={require('./icons/report.png')} style={{ width: 50, height: 50 }}></Image>
-                        <Text style={{ fontSize: 40, fontFamily: 'Kingt' }}>제보하기</Text>
+                        <Text style={{ fontSize: 40 }}>제보하기</Text>
                     </TouchableOpacity>
                 </View>
                 {/* 광고 배너 */}
@@ -233,11 +232,9 @@ const styles = StyleSheet.create({
     },
     speedfont: {
         fontSize: 40,
-        fontFamily: 'Kingt',
     },
     speedfont2: {
         fontSize: 60,
-        fontFamily: 'Kingt',
     },
     image: {
         flex: 1,
