@@ -39,24 +39,44 @@ app.use(function(req, res, next) {
     next();
   });
 
+app.use('/images', express.static("C:/Users/enqn/Pictures"));
+
 app.listen(port, '0.0.0.0', () => {
     console.log(`Express server listening on port ${port}`);
 });
 
-app.get("/toreport", (req, res) => {
+app.post('/getSanctions', (req, res) => {
+    let sql = 'SELECT my_np, img_path, other_np, date FROM report WHERE other_np = ?';
+    let userName = req.body.userName;
+    connection.query(sql, [userName], (err, results) => {
+        if (err) throw err;
+        console.log(results);
+        res.json({ results: results });
+    });
+});
 
-    const sql = "SELECT * FROM report";
-
-    connection.query(sql, (err, result) => {
+app.post('/myInfo', (req, res) => {
+    const {numplate} = req.body;
+    const sql = 'SELECT * FROM accelerator WHERE user=?';
+    connection.query(sql, [numplate], (err, result) => {
         if(err) {
-            res.json({ 
+            res.json({
                 success: false,
                 message: err
             });
             return;
         }
         console.log(result);
-        res.json({success: true, item: result[0]});
+        res.json({success: true, item: result});
+    });
+})
+app.post('/toReport', (req, res) => {
+    let sql = 'SELECT my_np, img_path, other_np, date FROM report WHERE my_np = ?';
+    let userName = req.body.userName;
+    connection.query(sql, [userName], (err, results) => {
+        if (err) throw err;
+        console.log(results);
+        res.json({ results: results });
     });
 });
   
@@ -69,7 +89,7 @@ app.post('/signUp', (req, res) => {
             console.error('데이터 조회 실패',errCheck);
             return;
         }
-        if(resultCheck.length > 0){
+        else if(resultCheck.length > 0){
             res.json({ 
                 success: false,
                 message: '해당 아이디는 이미 가입되어있습니다.'
@@ -107,8 +127,8 @@ app.post('/signUp', (req, res) => {
                     return;
                 }
 
-                const insertSql2 = 'INSERT INTO accelerator(user) VALUES(?)';
-                connection.query(insertSql2, [id], (errInsert2, resultInsert2)=>{
+                const insertSql2 = 'INSERT INTO accelerator(id, user) VALUES(?, ?)';
+                connection.query(insertSql2, [id, numplate], (errInsert2, resultInsert2)=>{
                     if(errInsert2) {
                         console.error('데이터 저장 실패',errInsert2);
                         res.json({
@@ -138,10 +158,7 @@ app.post('/signUp', (req, res) => {
 app.post('/login', (req, res) => {
     const { id, pw } = req.body;
     
-    const sql = `SELECT userinfo.*, accelerator.*
-    FROM userinfo
-    INNER JOIN accelerator ON userinfo.id = accelerator.user
-    WHERE userinfo.id = ?`;
+    const sql = `SELECT userinfo.* FROM userinfo WHERE userinfo.id = ?`;
     
     connection.query(sql, [id], (err, results) => {
         if (err) {
@@ -155,8 +172,6 @@ app.post('/login', (req, res) => {
             res.json({ success: false, message: '일치하는 아이디가 없습니다.' });
         } else {
             const user = results[0];
-            console.log(user);
-            console.log(pw);
             if (user.pw !== pw) {
                 // 비밀번호가 일치하지 않는 경우
                 res.json({ success: false, message: '비밀번호가 일치하지 않습니다.' });

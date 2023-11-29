@@ -10,6 +10,7 @@ import MainScreen from './MainScreen';
 import MyInfoScreen from './MyInfoScreen';
 import IpContext from './IpContext';
 import TotalReportNum from './TotalReportNum';
+import Sanctions from './Sanctions';
 import * as SplashScreen from 'expo-splash-screen';
 import { setCustomText } from 'react-native-global-props'; //폰트 친구
 
@@ -33,11 +34,15 @@ const loadFonts = async () => {
 
 export default function App() {
 
-  const [reportcnt, setReportcnt] = useState('');
-  const [upcnt, setUpcnt] = useState('');
-  const [downcnt, setDowncnt] = useState('');
+    const [id, setId] = useState('');
+    const [level, setLevel] = useState('');
+    const [reportcnt, setReportcnt] = useState(0);
+    const [reportedcnt, setReportedcnt] = useState(0);
+    const [upcnt, setUpcnt] = useState('');
+    const [downcnt, setDowncnt] = useState('');
     const [numplate, setNumplate] = useState('');
-const [record, setRecord] = useState('');
+    const [record, setRecord] = useState('');
+    const [totRecord, setTotRecord] = useState('');
     const [ipRas, setIpRas] = useState('10.20.100.158');
     const [ipLap, setIpLap] = useState('10.20.102.157');
     const [appIsReady, setAppIsReady] = useState(false);
@@ -67,7 +72,7 @@ const [record, setRecord] = useState('');
     }
 
     return (
-        <IpContext.Provider value={{ reportcnt, setReportcnt, upcnt, setUpcnt, downcnt, setDowncnt, numplate, setNumplate, record, setRecord, ipRas, setIpRas, ipLap, setIpLap }}>
+        <IpContext.Provider value={{ id, setId, level, setLevel, reportcnt, setReportcnt, reportedcnt, setReportedcnt, upcnt, setUpcnt, downcnt, setDowncnt, numplate, setNumplate, record, setRecord, totRecord, setTotRecord, ipRas, setIpRas, ipLap, setIpLap }}>
             <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
                 <NavigationContainer>
                     <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
@@ -75,7 +80,8 @@ const [record, setRecord] = useState('');
                         <Stack.Screen name="Login" component={LoginScreen} />
                         <Stack.Screen name="SignUp" component={SignUpScreen} />
                         <Stack.Screen name="MyInfo" component={MyInfoScreen} />
-                        <Stack.Screen name="TotalReportNum" component={TotalReportNum}/>
+                        <Stack.Screen name="TotalReportNum" component={TotalReportNum} />
+                        <Stack.Screen name="Sanctions" component={Sanctions} />
                     </Stack.Navigator>
                 </NavigationContainer>
             </View>

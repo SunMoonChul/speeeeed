@@ -4,6 +4,7 @@ import { useNavigation, CommonActions } from '@react-navigation/native';
 import IpContext from './IpContext';
 import * as Location from 'expo-location';
 import axios from 'axios';
+import { pickVideoFromGallery } from './Select_Video';
 import * as Progress from 'react-native-progress';
 import Swiper from 'react-native-swiper';
 
@@ -25,9 +26,6 @@ export default function Main() {
     const gotoMyInfo = () => {
         console.log(`${context.numplate}님이 도로를 정화시켜 준 시간`);
         navigation.navigate('MyInfo');
-    };
-    const TotalReportNumPress = () => {
-        navigation.navigate('TotalReportNum');
     };
 
     useEffect(() => {
@@ -128,9 +126,9 @@ export default function Main() {
                             }}
                         >
                             <View style={{ height: 10 }}>
-                                <Progress.Bar progress={0.2} width={250} height={15} color={'#3b5998'} />
+                                <Progress.Bar progress={context.record / (context.level * 100)} width={250} height={15} color={'#3b5998'} />
                             </View>
-                            <Text style={{ fontFamily: 'Kingt' }}>100/100</Text>
+                            <Text style={{ fontFamily: 'Kingt' }}>{context.record}/{context.level * 100}</Text>
                             {/* 경험치에 따라 레벨도 같이 증가 */}
                         </View>
                         <Text
@@ -142,7 +140,7 @@ export default function Main() {
                                 fontFamily: 'Kingt',
                             }}
                         >
-                            Lv.1
+                            Lv.{context.level}
                             {/* 레벨 들어갈 것 */}
                         </Text>
                     </TouchableOpacity>
@@ -150,12 +148,12 @@ export default function Main() {
                 <View style={styles.viewst}>
                     <TouchableOpacity
                         style={styles.twinbutton}
-                        onPress={TotalReportNumPress}
+                        onPress = {() => navigation.navigate('TotalReportNum')}
                     >
                         <Text
                             style={{ justifyContent: 'flex-start', width: '100%', fontSize: 17, fontFamily: 'Kingt' }}
                         >
-                            도로 위의{'\n'}무법자 신고 횟수
+                            신고 횟수
                         </Text>
                         <Text style={{ color: '#BFBFBF' }}>───────────</Text>
                         {/* 이거 디비에서 끌고와서 바뀌게 해야함 */}
@@ -168,7 +166,7 @@ export default function Main() {
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.twinbutton}
-                        onPress={() => console.log('내가 잠시 도로 위의 무법자가 되었던 횟수')}
+                        onPress={() => navigation.navigate('Sanctions')}
                     >
                         <Text
                             style={{ justifyContent: 'flex-start', width: '100%', fontSize: 17, fontFamily: 'Kingt' }}
@@ -186,7 +184,7 @@ export default function Main() {
                     </TouchableOpacity>
                 </View>
                 <View style={styles.viewst}>
-                    <TouchableOpacity style={styles.reportbutton} onPress={() => console.log('신고하기')}>
+                    <TouchableOpacity style={styles.reportbutton} onPress={pickVideoFromGallery}>
                         <Image source={require('./icons/report.png')} style={{ width: 50, height: 50 }}></Image>
                         <Text style={{ fontSize: 40, fontFamily: 'Kingt' }}>제보하기</Text>
                     </TouchableOpacity>
@@ -306,7 +304,7 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     kmfontview: {
-        marginTop: -50,
+        marginTop: -90,
         paddingStart: '10%',
         paddingEnd: '5%',
         flexDirection: 'row',
