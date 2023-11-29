@@ -9,6 +9,8 @@ import SignUpScreen from './SignUpScreen';
 import MainScreen from './MainScreen';
 import MyInfoScreen from './MyInfoScreen';
 import IpContext from './IpContext';
+import Sanctions from './Sanctions';
+import pickVideoFromGallery from './Select_Video';
 import * as SplashScreen from 'expo-splash-screen';
 import { setCustomText } from 'react-native-global-props'; //폰트 친구
 
@@ -31,8 +33,8 @@ const loadFonts = async () => {
 };
 export default function App() {
     const [numplate, setNumplate] = useState('');
-    const [ipRas, setIpRas] = useState('10.20.100.158');
-    const [ipLap, setIpLap] = useState('10.20.102.148');
+    const [ipRas, setIpRas] = useState('172.16.106.23');
+    const [ipLap, setIpLap] = useState('172.16.106.23');
     const [appIsReady, setAppIsReady] = useState(false);
 
     useEffect(() => {
@@ -68,6 +70,7 @@ export default function App() {
                         <Stack.Screen name="Login" component={LoginScreen} />
                         <Stack.Screen name="SignUp" component={SignUpScreen} />
                         <Stack.Screen name="MyInfo" component={MyInfoScreen} />
+                        <Stack.Screen name="Sanctions" component={Sanctions} />
                     </Stack.Navigator>
                 </NavigationContainer>
             </View>

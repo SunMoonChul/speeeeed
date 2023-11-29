@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, ImageBackground, Alert, Image } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, ImageBackground, Alert, Image, SafeAreaView } from 'react-native';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import IpContext from './IpContext';
 import * as Location from 'expo-location';
 import axios from 'axios';
 import * as Progress from 'react-native-progress';
 import Swiper from 'react-native-swiper';
+import { pickVideoFromGallery } from './Select_Video';
 
 export default function Main() {
     const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -18,7 +19,7 @@ export default function Main() {
     const [message, setMessage] = useState(''); // 급가속 또는 급정거 메시지
     const [cnt, setCnt] = useState(0); // 급가속 또는 급정거 횟수
     const user = '222부8327';
-    const address = `http://${context.ipLap}:8000/example/`;
+    const address = `http://${context.ipLap}:3003/`;
 
     const navigation = useNavigation();
 
@@ -26,6 +27,24 @@ export default function Main() {
         console.log(`${context.numplate}님이 도로를 정화시켜 준 시간`);
         navigation.navigate('MyInfo');
     };
+
+    const gotoMyFail = () => {
+        console.log('내가 잠시 도로 위의 무법자가 되었던 횟수');
+        navigation.navigate('Sanctions');
+    };
+    const today = new Date();
+    const currenttime =
+        today.getFullYear() +
+        '/' +
+        (today.getMonth() + 1) +
+        '/' +
+        today.getDate() +
+        '_' +
+        today.getHours() +
+        ':' +
+        today.getMinutes() +
+        ':' +
+        today.getSeconds();
 
     useEffect(() => {
         (async () => {
@@ -45,15 +64,16 @@ export default function Main() {
                     const currentSpeed = position.coords.speed * 3.6;
 
                     // 속도가 1초 이내에 20km 이상 올라가면 '급가속'
-                    if (currentSpeed - prevSpeed >= 10) {
-                        setMessage('급가속');
+                    if (currentSpeed - prevSpeed >= 20) {
                         setCnt((cnt) => cnt + 1); // 카운트 증가
                         console.log('급가속');
-                        console.log(address + 'accel/');
+                        console.log('http://${context.ipLap}:3003/accel');
                         // 여기에서 서버에 데이터를 전송합니다.
                         axios
-                            .post(address + 'accel/', {
+                            .post(`http://${context.ipLap}:3003/accel`, {
                                 user: user,
+                                time: currenttime,
+                                accel: 0,
                             })
                             .then((response) => {
                                 console.log(response.data);
@@ -63,22 +83,47 @@ export default function Main() {
                                 console.error(error);
                             });
                     }
-                    // 속도가 1초 이내에 20km 이상 내려가면 '급정거'
-                    else if (prevSpeed - currentSpeed >= 10) {
-                        setMessage('급정거');
+                    // 속도가 1초 이내에 20km 이상 내려가면 '급감속'
+                    else if (prevSpeed - currentSpeed >= 20) {
                         setCnt((cnt) => cnt + 1); // 카운트 증가
-                        console.log('급정거');
+                        console.log('급감속');
+                        console.log('http://${context.ipLap}:3003/accel');
                         // 여기에서 서버에 데이터를 전송합니다.
                         axios
-                            .post(address + 'deccel/', {
+                            .post(`http://${context.ipLap}:3003/accel`, {
                                 user: user,
+                                time: currenttime,
+                                accel: 1,
                             })
-                            .then((response) => console.log(response.data))
-                            .catch((error) => console.error(error));
-                        console.log(address + 'deccel/');
-                        console.log('급정거 완');
+                            .then((response) => {
+                                console.log(response.data);
+                                console.log('급감속 완');
+                            })
+                            .catch((error) => {
+                                console.error(error);
+                            });
                     } else {
                         setMessage('');
+                    }
+                    // 과속 2
+                    if (currentSpeed > 110) {
+                        setCnt((cnt) => cnt + 1); // 카운트 증가
+                        console.log('과속');
+                        console.log('http://${context.ipLap}:3003/accel');
+                        // 여기에서 서버에 데이터를 전송합니다.
+                        axios
+                            .post(`http://${context.ipLap}:3003/accel`, {
+                                user: user,
+                                time: currenttime,
+                                accel: 2,
+                            })
+                            .then((response) => {
+                                console.log(response.data);
+                                console.log('과속 완');
+                            })
+                            .catch((error) => {
+                                console.error(error);
+                            });
                     }
 
                     setPrevSpeed(speed); // 이전 속도 업데이트
@@ -93,7 +138,7 @@ export default function Main() {
     }, []);
 
     return (
-        <View style={styles.image}>
+        <SafeAreaView style={styles.image}>
             <View style={styles.logoview}>
                 <Image source={require('./assets/logocrop.png')} style={styles.logo}></Image>
             </View>
@@ -159,14 +204,11 @@ export default function Main() {
                             </Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.twinbutton}
-                        onPress={() => console.log('내가 잠시 도로 위의 무법자가 되었던 횟수')}
-                    >
+                    <TouchableOpacity style={styles.twinbutton} onPress={gotoMyFail}>
                         <Text
                             style={{ justifyContent: 'flex-start', width: '100%', fontSize: 17, fontFamily: 'Kingt' }}
                         >
-                            내가 잠시 도로 위의 무법자가 되었던 횟수
+                            신고당한 횟수{'\n'}
                         </Text>
                         <Text style={{ color: '#BFBFBF' }}>───────────</Text>
                         {/* 이거 디비에서 끌고와서 바뀌게 해야함 */}
@@ -179,7 +221,7 @@ export default function Main() {
                     </TouchableOpacity>
                 </View>
                 <View style={styles.viewst}>
-                    <TouchableOpacity style={styles.reportbutton} onPress={() => console.log('신고하기')}>
+                    <TouchableOpacity style={styles.reportbutton} onPress={pickVideoFromGallery}>
                         <Image source={require('./icons/report.png')} style={{ width: 50, height: 50 }}></Image>
                         <Text style={{ fontSize: 40, fontFamily: 'Kingt' }}>제보하기</Text>
                     </TouchableOpacity>
@@ -194,7 +236,7 @@ export default function Main() {
                         autoplay
                         loop
                         spaceBetween={100}
-                        paginationStyle={{ left: '77%' }}
+                        paginationStyle={{ top: '90%', left: '80%' }}
                         dotColor={'#3b5998'}
                     >
                         <ImageBackground
@@ -224,7 +266,7 @@ export default function Main() {
                     </Swiper>
                 </View>
             </View>
-        </View>
+        </SafeAreaView>
     );
 }
 const styles = StyleSheet.create({
@@ -256,8 +298,8 @@ const styles = StyleSheet.create({
     },
     logoview: {
         flex: 0.2,
-        marginTop: 60,
         marginStart: 20,
+        marginTop: 5,
     },
     topbutton: {
         flex: 1,
@@ -313,7 +355,7 @@ const styles = StyleSheet.create({
         borderRadius: 15,
     },
     kmfontview: {
-        marginTop: -60,
+        marginTop: -70,
         paddingStart: '10%',
         paddingEnd: '5%',
         flexDirection: 'row',
