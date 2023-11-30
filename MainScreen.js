@@ -7,7 +7,6 @@ import axios from 'axios';
 import { pickVideoFromGallery } from './Select_Video';
 import * as Progress from 'react-native-progress';
 import Swiper from 'react-native-swiper';
-import { pickVideoFromGallery } from './Select_Video';
 
 export default function Main() {
     const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -28,8 +27,6 @@ export default function Main() {
         navigation.navigate('MyInfo');
     };
 
-<<<<<<< HEAD
-=======
     const gotoMyFail = () => {
         console.log('내가 잠시 도로 위의 무법자가 되었던 횟수');
         navigation.navigate('Sanctions');
@@ -53,7 +50,6 @@ export default function Main() {
     const [isOverSpeed, setIsOverSpeed] = useState(false); // 과속 상태를 저장하는 상태 변수
     const [lastActionTime, setLastActionTime] = useState(0); // 마지막으로 동작한 시점 (밀리초)
 
->>>>>>> origin/gitmaster
     useEffect(() => {
         (async () => {
             let { status } = await Location.requestForegroundPermissionsAsync();
@@ -176,12 +172,8 @@ export default function Main() {
                     <TouchableOpacity style={styles.topbutton} onPress={gotoMyInfo}>
                         <View style={{ flexDirection: 'row', flex: 0, justifyContent: 'space-between', width: '100%' }}>
                             <Text style={{ justifyContent: 'flex-start', fontSize: 22, fontFamily: 'Kingt' }}>
-<<<<<<< HEAD
-                                '<Text style={{ color: '#3b5998' }}>{context.numplate}</Text>'님이{'\n'} 도로를 정화시켜 준 시간🏎
-=======
                                 '<Text style={{ color: '#3b5998' }}>{context.numplate}</Text>'님이{'\n'} 도로를 정화시켜
                                 준 시간🌈
->>>>>>> origin/gitmaster
                             </Text>
                             <Image source={require('./icons/usericon.png')} style={{ width: 50, height: 50 }}></Image>
                         </View>
@@ -196,22 +188,16 @@ export default function Main() {
                             }}
                         >
                             <View style={{ height: 10 }}>
-<<<<<<< HEAD
-                                <Progress.Bar progress={context.record / (context.level * 100)} width={250} height={15} color={'#3b5998'} />
-                            </View>
-                            <Text style={{ fontFamily: 'Kingt' }}>{context.record}/{context.level * 100}</Text>
-=======
                                 <Progress.Bar
-                                    progress={(context.record || 0) / ((context.level || 1) * 100)}
+                                    progress={(context.record || 0) / 100}
                                     width={250}
                                     height={15}
                                     color={'#3b5998'}
                                 />
                             </View>
                             <Text style={{ fontFamily: 'Kingt' }}>
-                                {context.record}/{context.level * 100}
+                                {context.record}/100
                             </Text>
->>>>>>> origin/gitmaster
                             {/* 경험치에 따라 레벨도 같이 증가 */}
                         </View>
                         <Text
@@ -229,24 +215,13 @@ export default function Main() {
                     </TouchableOpacity>
                 </View>
                 <View style={styles.viewst}>
-<<<<<<< HEAD
-                    <TouchableOpacity
-                        style={styles.twinbutton}
-                        onPress = {() => navigation.navigate('TotalReportNum')}
-                    >
-                        <Text
-                            style={{ justifyContent: 'flex-start', width: '100%', fontSize: 17, fontFamily: 'Kingt' }}
-                        >
-                            신고 횟수
-=======
                     <TouchableOpacity style={styles.twinbutton} onPress={() => navigation.navigate('TotalReportNum')}>
                         <Text
-                            style={{ justifyContent: 'flex-start', width: '100%', fontSize: 17, fontFamily: 'Kingt' }}
+                            style={{ justifyContent: 'flex-start', width: '100%', fontSize: 19, fontFamily: 'Kingt' }}
                         >
-                            신고 횟수{'\n'}
->>>>>>> origin/gitmaster
+                            신고 횟수
                         </Text>
-                        <Text style={{ color: '#BFBFBF' }}>───────────</Text>
+                        <Text style={{ color: '#BFBFBF' }}>──────────</Text>
                         {/* 이거 디비에서 끌고와서 바뀌게 해야함 */}
                         <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
                             <Text style={{ fontSize: 50, fontFamily: 'Kingt', color: '#3b5998' }}>05</Text>
@@ -255,20 +230,13 @@ export default function Main() {
                             </Text>
                         </View>
                     </TouchableOpacity>
-<<<<<<< HEAD
-                    <TouchableOpacity
-                        style={styles.twinbutton}
-                        onPress={() => navigation.navigate('Sanctions')}
-                    >
-=======
                     <TouchableOpacity style={styles.twinbutton} onPress={gotoMyFail}>
->>>>>>> origin/gitmaster
                         <Text
-                            style={{ justifyContent: 'flex-start', width: '100%', fontSize: 17, fontFamily: 'Kingt' }}
+                            style={{ justifyContent: 'flex-start', width: '100%', fontSize: 19, fontFamily: 'Kingt' }}
                         >
-                            신고당한 횟수{'\n'}
+                            신고받은 횟수
                         </Text>
-                        <Text style={{ color: '#BFBFBF' }}>───────────</Text>
+                        <Text style={{ color: '#BFBFBF' }}>──────────</Text>
                         {/* 이거 디비에서 끌고와서 바뀌게 해야함 */}
                         <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
                             <Text style={{ fontSize: 50, fontFamily: 'Kingt', color: '#3b5998' }}>05</Text>
@@ -280,7 +248,7 @@ export default function Main() {
                 </View>
                 <View style={styles.viewst}>
                     <TouchableOpacity style={styles.reportbutton} onPress={pickVideoFromGallery}>
-                        <Image source={require('./icons/report.png')} style={{ width: 50, height: 50 }}></Image>
+                        <Image source={require('./icons/report.png')} style={{ marginTop: 10, width: 50, height: 50 }}></Image>
                         <Text style={{ fontSize: 40, fontFamily: 'Kingt' }}>제보하기</Text>
                     </TouchableOpacity>
                 </View>
@@ -412,11 +380,7 @@ const styles = StyleSheet.create({
         borderRadius: 15,
     },
     kmfontview: {
-<<<<<<< HEAD
-        marginTop: -90,
-=======
         marginTop: -70,
->>>>>>> origin/gitmaster
         paddingStart: '10%',
         paddingEnd: '5%',
         flexDirection: 'row',

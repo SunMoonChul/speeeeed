@@ -68,10 +68,36 @@ app.post('/myInfo', (req, res) => {
             });
             return;
         }
-        console.log(result);
-        res.json({success: true, item: result});
+        const sql2 = 'SELECT COUNT(*) FROM accelerator WHERE user = ? AND accel = 0'; //급가속 횟수
+        connection.query(sql2, [numplate], (err, upCnt) => {
+            if(err) {
+                res.json({
+                    success: false,
+                    message: err
+                });
+                return;
+            }
+            const sql3 = 'SELECT COUNT(*) FROM accelerator WHERE user = ? AND accel = 1'; //급감속 횟수
+            connection.query(sql3, [numplate], (err, downCnt) => {
+                if(err) {
+                    res.json({
+                        success: false,
+                        message: err
+                    });
+                    return;
+                }
+                let data = downCnt[0];
+                let count = data['COUNT(*)'];
+                
+                console.log('asdfgs');
+                console.log('upCnt: ', upCnt[0]);
+                console.log('asdfgs');
+                res.json({success: true, item: result, upCnt: upCnt[0]['COUNT(*)'], downCnt: downCnt[0]['COUNT(*)']});
+            });
+        });
     });
 })
+
 app.post('/toReport', (req, res) => {
     let sql = 'SELECT my_np, img_path, other_np, date FROM report WHERE my_np = ?';
     let userName = req.body.userName;
@@ -128,17 +154,6 @@ app.post('/signUp', (req, res) => {
                     return;
                 }
 
-                const insertSql2 = 'INSERT INTO accelerator(id, user) VALUES(?, ?)';
-                connection.query(insertSql2, [id, numplate], (errInsert2, resultInsert2)=>{
-                    if(errInsert2) {
-                        console.error('데이터 저장 실패',errInsert2);
-                        res.json({
-                            success: false,
-                            message: 'Internal Server Error'
-                        });
-                        return;
-                    }
-                })
                 console.log('데이터 저장 성공');
 
                 req.session.uid = id;

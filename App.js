@@ -35,13 +35,15 @@ const loadFonts = async () => {
 export default function App() {
     const [id, setId] = useState('');
     const [level, setLevel] = useState('');
+    const [upCnt, setUpCnt] = useState('');
+    const [downCnt, setDownCnt] = useState('');
     const [reportcnt, setReportcnt] = useState(0);
     const [reportedcnt, setReportedcnt] = useState(0);
     const [numplate, setNumplate] = useState('');
     const [record, setRecord] = useState('');
     const [totRecord, setTotRecord] = useState('');
     const [ipRas, setIpRas] = useState('172.30.1.56');
-    const [ipLap, setIpLap] = useState('172.30.1.56');
+    const [ipLap, setIpLap] = useState('10.20.102.157');
     const [appIsReady, setAppIsReady] = useState(false);
 
     useEffect(() => {
@@ -75,6 +77,10 @@ export default function App() {
                 setId,
                 level,
                 setLevel,
+                upCnt,
+                setUpCnt,
+                downCnt,
+                setDownCnt,
                 reportcnt,
                 setReportcnt,
                 reportedcnt,

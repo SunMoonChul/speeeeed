@@ -25,15 +25,13 @@ export default function LoginScreen() {
                 if (response.data.success) {
                     console.log(response.data.user);
                     context.setId(id);
-                    context.setUpcnt(response.data.user.upcnt);
-                    context.setDowncnt(response.data.user.downcnt);
                     context.setNumplate(response.data.user.numplate);
                     context.setTotRecord(response.data.user.record);
                     let totRecord = response.data.user.record;
-                    let level = parseInt(totRecord/100);
+                    let level = parseInt(totRecord/100+1);
                     context.setLevel(level);
-                    context.setRecord(totRecord-(level*100));
-                    console.log('record: ', totRecord-(level*100))
+                    context.setRecord(totRecord-((level-1)*100));
+                    console.log('record: ', totRecord-((level-1)*100))
                     console.log(context.record);
                     navigation.navigate('Main');
                 } else {
