@@ -135,7 +135,7 @@ export default function MyInfo() {
                 <TouchableOpacity style={styles.button1}>
                     <View style={{ flexDirection: 'row', flex: 0, justifyContent: 'space-between', width: '100%' }}>
                         <Text style={{ justifyContent: 'flex-start', fontSize: 22, fontFamily: 'Kingt' }}>
-                            <Text style={{ color: '#3b5998', fontSize: 30 }}>{context.numplate}</Text>
+                            <Text style={{ color: '#3b5998', fontSize: 30 }}>'{context.numplate}'</Text>
                         </Text>
                         <Image source={require('./icons/usericon.png')} style={{ width: 50, height: 50 }}></Image>
                     </View>
