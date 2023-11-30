@@ -9,17 +9,15 @@ import Swiper from 'react-native-swiper';
 import { pickVideoFromGallery } from './Select_Video';
 
 export default function Main() {
-    const [fontsLoaded, setFontsLoaded] = useState(false);
-    const context = useContext(IpContext);
+    const [fontsLoaded, setFontsLoaded] = useState(false); //폰트
+    const context = useContext(IpContext); //그 ip 보관소
 
-    const [speed, setSpeed] = useState(0);
+    const [speed, setSpeed] = useState(0); //속도
     const [prevSpeed, setPrevSpeed] = useState(0); // 이전 속도
-    const [latitude, setLatitude] = useState(null);
+    const [latitude, setLatitude] = useState(null); //위도 경도
     const [longitude, setLongitude] = useState(null);
-    const [message, setMessage] = useState(''); // 급가속 또는 급정거 메시지
-    const [cnt, setCnt] = useState(0); // 급가속 또는 급정거 횟수
 
-    const navigation = useNavigation();
+    const navigation = useNavigation(); //이동기
 
     const gotoMyInfo = () => {
         console.log(`${context.numplate}님이 도로를 정화시켜 준 시간`);
@@ -32,7 +30,7 @@ export default function Main() {
     };
 
     const today = new Date(); //오늘시간
-    const currenttime =
+    const currenttime = //년월일시간분초
         today.getFullYear() +
         '/' +
         (today.getMonth() + 1) +
@@ -53,11 +51,12 @@ export default function Main() {
         if (isRapid) {
             const timer = setTimeout(() => {
                 setIsRapid(false); // 상태 초기화
-            }, 5000); // 5초 후에 색상이 원래대로 돌아갑니다.
+            }, 1000); // 1초 후에 색상이 원래대로 돌아갑니다.
 
             return () => clearTimeout(timer);
         }
         (async () => {
+            //위치 권한
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
                 console.log('Permission to access location was denied');
@@ -68,7 +67,7 @@ export default function Main() {
 
             const watchId = await Location.watchPositionAsync(
                 {
-                    accuracy: Location.Accuracy.High,
+                    accuracy: Location.Accuracy.High, //정확도 민감
                     timeInterval: 1000, // 위치정보 업데이트 간격 1초 안의
                     distanceInterval: 0, // 위치 변할 때마다 알림
                 },
@@ -80,15 +79,10 @@ export default function Main() {
                     setSpeed(currentSpeed);
                     if (currentSpeed >= 0) {
                         // 속도가 1초 이내에 20km 이상 올라가면 '급가속'
-                        if (currentSpeed - prevSpeed >= 20 && currentTimems - lastActionTime >= 10000) {
-                            console.log('cs : ' + currentSpeed + ',ps : ' + prevSpeed);
+                        if (currentSpeed - prevSpeed >= 3 && currentTimems - lastActionTime >= 10000) {
+                            // console.log('급가속 ' + 'cs : ' + currentSpeed + ',ps : ' + prevSpeed);
                             setIsRapid(true);
-                            setCnt((cnt) => cnt + 1); // 카운트 증가
-                            console.log('급가속');
-                            console.log(`http://${context.ipLap}:3003/accel`);
 
-                            // 마지막 동작 시간 갱신
-                            setLastActionTime(currentTimems);
                             // 여기에서 서버에 데이터를 전송합니다.
                             axios
                                 .post(`http://${context.ipLap}:3003/accel`, {
@@ -99,23 +93,22 @@ export default function Main() {
                                     accel: 0,
                                 })
                                 .then((response) => {
-                                    console.log(response.data);
-                                    console.log('급가속 완');
+                                    console.log('급가속 완' + response.data);
+                                    // 마지막 동작 시간 갱신
+                                    setLastActionTime(currentTimems);
+                                    console.log(currenttime);
                                 })
                                 .catch((error) => {
                                     console.error(error);
+                                    // 마지막 동작 시간 갱신
+                                    setLastActionTime(currentTimems);
                                 });
                         }
                         // 속도가 1초 이내에 20km 이상 내려가면 '급감속'
-                        else if (prevSpeed - currentSpeed >= 20 && currentTimems - lastActionTime >= 10000) {
-                            console.log('cs : ' + currentSpeed + ',ps : ' + prevSpeed);
+                        else if (prevSpeed - currentSpeed >= 3 && currentTimems - lastActionTime >= 10000) {
+                            // console.log('급감속 ' + 'cs : ' + currentSpeed + ',ps : ' + prevSpeed);
                             setIsRapid(true);
-                            setCnt((cnt) => cnt + 1); // 카운트 증가
-                            console.log('급감속');
-                            console.log(`http://${context.ipLap}:3003/accel`);
 
-                            // 마지막 동작 시간 갱신
-                            setLastActionTime(currentTimems);
                             // 여기에서 서버에 데이터를 전송합니다.
                             axios
                                 .post(`http://${context.ipLap}:3003/accel`, {
@@ -126,17 +119,19 @@ export default function Main() {
                                     accel: 1,
                                 })
                                 .then((response) => {
-                                    console.log(response.data);
-                                    console.log('급감속 완');
+                                    console.log('급감속 완 ' + response.data);
+                                    // 마지막 동작 시간 갱신
+                                    setLastActionTime(currentTimems);
+                                    console.log(currenttime);
                                 })
                                 .catch((error) => {
                                     console.error(error);
+                                    // 마지막 동작 시간 갱신
+                                    setLastActionTime(currentTimems);
                                 });
-                        } else {
-                            setMessage('');
                         }
-                        // 과속 2
-                        if (currentSpeed > 20) {
+                        // 과속 - 2로 표시
+                        if (currentSpeed > 7) {
                             setIsRapid(true);
                             if (!isOverSpeed) {
                                 // 과속 상태가 아닐 때만 실행
@@ -146,10 +141,6 @@ export default function Main() {
                                 setTimeout(() => {
                                     setIsOverSpeed(false);
                                 }, 5000);
-
-                                setCnt((cnt) => cnt + 1); // 카운트 증가
-                                console.log('과속');
-                                console.log(`http://${context.ipLap}:3003/accel`);
 
                                 // 과속 상태일 때만 서버에 데이터를 전송
                                 axios
@@ -161,11 +152,15 @@ export default function Main() {
                                         accel: 2,
                                     })
                                     .then((response) => {
-                                        console.log(response.data);
-                                        console.log('과속 완');
+                                        console.log('과속 완' + response.data);
+                                        // 마지막 동작 시간 갱신
+                                        setLastActionTime(currentTimems);
+                                        console.log(currenttime);
                                     })
                                     .catch((error) => {
                                         console.error(error);
+                                        // 마지막 동작 시간 갱신
+                                        setLastActionTime(currentTimems);
                                     });
                             }
                         }
@@ -187,10 +182,10 @@ export default function Main() {
             </View>
             <View style={styles.topview}>
                 <View style={styles.kmfontview}>
-                    <View>
+                    {/* <View>
                         {latitude && <Text style={{ fontSize: 10 }}>위도: {latitude.toFixed(6)}</Text>}
                         {longitude && <Text style={{ fontSize: 10 }}>경도: {longitude.toFixed(6)}</Text>}
-                    </View>
+                    </View> */}
                     <Text style={[styles.speedfont2, isRapid ? { color: 'red' } : {}]}>
                         {Math.max(0, speed).toFixed(0)} km/h
                     </Text>
