@@ -1,10 +1,21 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View, ScrollView, Image, SafeAreaView } from 'react-native';
+import {
+    FlatList,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+    ScrollView,
+    Image,
+    SafeAreaView,
+    Alert,
+} from 'react-native';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import IpContext from './IpContext';
 import axios from 'axios';
 import * as Progress from 'react-native-progress';
-import { Alert } from 'react-native';
+
+import * as Location from 'expo-location';
 
 export default function MyInfo() {
     const context = useContext(IpContext);
@@ -12,19 +23,39 @@ export default function MyInfo() {
     const navigation = useNavigation();
 
     useEffect(() => {
-        axios
-            .post(`http://${context.ipLap}:3003/myInfo`, { numplate: context.numplate })
-            .then((response) => {
+        const fetchMyInfo = async () => {
+            try {
+                const response = await axios.post(`http://${context.ipLap}:3003/myInfo`, {
+                    numplate: context.numplate,
+                });
+
                 if (response.data.success) {
                     console.log('item: ', response.data.item);
-                    setPost(response.data.item); // 서버로부터 받아온 데이터를 상태 변수에 저장
+
+                    const itemsWithAddress = await Promise.all(
+                        response.data.item
+                            .filter((item) => item.latitude != null && item.longitude != null) // latitude와 longitude가 null이 아닌 아이템만 필터링
+                            .map(async (item) => {
+                                const latitude = Number(item.latitude); // 문자열을 숫자로 변환
+                                const longitude = Number(item.longitude); // 문자열을 숫자로 변환
+                                const addresses = await Location.reverseGeocodeAsync({
+                                    latitude: latitude,
+                                    longitude: longitude,
+                                });
+                                return { ...item, address: addresses[0] };
+                            })
+                    );
+
+                    setPost(itemsWithAddress);
                 } else {
-                    alert(response.data.message); // 실패 메시지 표시
+                    alert(response.data.message);
                 }
-            })
-            .catch((error) => {
+            } catch (error) {
                 console.error('There was an error!', error);
-            });
+            }
+        };
+
+        fetchMyInfo();
     }, []);
 
     const logoutbutton = () => {
@@ -96,7 +127,14 @@ export default function MyInfo() {
                     borderColor: '#BFBFBF',
                 }}
             >
-                <Text>{item.time}</Text>
+                <View style={{ flexDirection: 'column' }}>
+                    <Text style={{ fontSize: 19, marginBottom: 5 }}>{item.time}</Text>
+                    <Text>위도 : {item.latitude}</Text>
+                    <Text>경도 : {item.longitude}</Text>
+                    <Text>
+                        주소 : {item.address.region},{item.address.city}, {item.address.street}
+                    </Text>
+                </View>
                 <Text
                     style={{
                         color: '#b11a1a',
