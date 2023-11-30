@@ -79,7 +79,7 @@ export default function Main() {
                     setSpeed(currentSpeed);
                     if (currentSpeed >= 0) {
                         // 속도가 1초 이내에 20km 이상 올라가면 '급가속'
-                        if (currentSpeed - prevSpeed >= 3 && currentTimems - lastActionTime >= 10000) {
+                        if (currentSpeed - prevSpeed >= 20 && currentTimems - lastActionTime >= 10000) {
                             // console.log('급가속 ' + 'cs : ' + currentSpeed + ',ps : ' + prevSpeed);
                             setIsRapid(true);
 
@@ -105,7 +105,7 @@ export default function Main() {
                                 });
                         }
                         // 속도가 1초 이내에 20km 이상 내려가면 '급감속'
-                        else if (prevSpeed - currentSpeed >= 3 && currentTimems - lastActionTime >= 10000) {
+                        else if (prevSpeed - currentSpeed >= 20 && currentTimems - lastActionTime >= 10000) {
                             // console.log('급감속 ' + 'cs : ' + currentSpeed + ',ps : ' + prevSpeed);
                             setIsRapid(true);
 
@@ -131,7 +131,7 @@ export default function Main() {
                                 });
                         }
                         // 과속 - 2로 표시
-                        if (currentSpeed > 7) {
+                        if (currentSpeed > 110) {
                             setIsRapid(true);
                             if (!isOverSpeed) {
                                 // 과속 상태가 아닐 때만 실행
