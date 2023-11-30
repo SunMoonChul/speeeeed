@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, item, FlatList, ScrollView, Image, Dimensions, SafeAreaView, date } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Image, Dimensions, SafeAreaView } from 'react-native';
 import axios from 'axios';
 import IpContext from './IpContext';
 
@@ -9,7 +9,7 @@ export default function TotalReportNum() {
     const [posts, setPosts] = useState([]);
 
     useEffect(() => {
-        axios.get(`http://${context.ipLap}:3003/toreport`, {
+        axios.post(`http://${context.ipLap}:3003/toreport`, {
             userName: '11오1111'
           })
             .then(response => setPosts(response.data.results))
@@ -22,12 +22,12 @@ export default function TotalReportNum() {
         return (
           <View style={styles.post}>
             <Text style={styles.date}>{item.date}</Text>
-            <Image
-              style={styles.image}
-              source={{ uri: `http://${context.ipLap}:3003/images/${filename}` }}
-              onError={(error) => console.log(error.nativeEvent.error)}
-            />
-            <Text>{item.img_path}</Text>
+            <View style={styles.imageContainer}>
+                <Image
+                    style={styles.image}
+                    source={{ uri: `http://${context.ipLap}:3003/images/${filename}` }}
+                    onError={(error) => console.log(error.nativeEvent.error)}/>
+            </View>
             <Text style={styles.content}>{item.other_np}</Text>
           </View>
         );
@@ -35,11 +35,14 @@ export default function TotalReportNum() {
     
       return (
         <SafeAreaView style={styles.container}>
+            <View style={styles.kmfontview}>
+                <Text style={styles.speedfont3}>신고내역 </Text>
           <FlatList
             data={posts}
             renderItem={PostItem}
             keyExtractor={item => item.img_path}
           />
+          </View>
         </SafeAreaView>
       );
 }
@@ -62,12 +65,23 @@ const styles = StyleSheet.create({
       fontSize: 14,
       color: '#888',
     },
-    image: {
-      width: '100%',
-      height: windowHeight * 0.2,
-    },
+    imageContainer: {
+        alignItems: 'flex-end',
+      },
+      image: {
+        width: windowWidth * 0.5, // adjust the width as needed
+        height: windowHeight * 0.2,
+      },
     content: {
       marginTop: windowHeight * 0.02,
       fontSize: 16,
+    },
+    kmfontview: {
+        padding: '5%',
+        justifyContent: 'space-between',
+        width: '100%',
+    },
+    speedfont3: {
+        fontSize: 40,
     },
   });

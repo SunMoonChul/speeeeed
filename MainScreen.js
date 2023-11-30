@@ -18,6 +18,7 @@ export default function Main() {
     const [longitude, setLongitude] = useState(null);
     const [message, setMessage] = useState(''); // 급가속 또는 급정거 메시지
     const [cnt, setCnt] = useState(0); // 급가속 또는 급정거 횟수
+    const [reportCount, setReportCount] = useState(0);
     const address = `http://${context.ipLap}:8000/example/`;
 
     const navigation = useNavigation();
@@ -93,6 +94,15 @@ export default function Main() {
 
             return () => watchId.remove();
         })();
+
+        axios.get(`http://${context.ipLap}:3003/ReportCnt`)
+        .then(response => {
+          setReportCount(response.data);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+        
     }, []);
 
     return (
@@ -154,12 +164,12 @@ export default function Main() {
                         <Text
                             style={{ justifyContent: 'flex-start', width: '100%', fontSize: 17 }}
                         >
-                            도로 위의{'\n'}무법자 신고 횟수
+                            총 신고 횟수
                         </Text>
                         <Text style={{ color: '#BFBFBF' }}>───────────</Text>
                         {/* 이거 디비에서 끌고와서 바뀌게 해야함 */}
                         <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-                            <Text style={{ fontSize: 50, color: '#3b5998' }}>05</Text>
+                            <Text style={{ fontSize: 50, color: '#3b5998' }}>{reportCount}</Text>
                             <Text style={{ fontSize: 30, marginStart: 20, marginBottom: 5 }}>
                                 회
                             </Text>

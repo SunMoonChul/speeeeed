@@ -10,6 +10,7 @@ import MainScreen from './MainScreen';
 import MyInfoScreen from './MyInfoScreen';
 import IpContext from './IpContext';
 import TotalReportNum from './TotalReportNum';
+import * as SplashScreen from 'expo-splash-screen'
 import { setCustomText } from 'react-native-global-props'; //폰트 친구
 
 const Stack = createStackNavigator();

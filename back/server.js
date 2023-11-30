@@ -64,6 +64,17 @@ app.post('/getSanctions', (req, res) => {
         res.json({ results: results });
     });
 });
+
+app.get('/ReportCnt', (req, res) => {
+    let sql = 'SELECT COUNT(*) as count FROM report';
+
+    connection.query(sql, (error, results) => {
+        if(error){
+            return res.status(500).json({ error });
+        }
+        res.json(results[0].count);
+    });
+});
   
 app.post('/signUp', (req, res) => {
     const {id, password, numplate} = req.body;
