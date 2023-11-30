@@ -8,23 +8,21 @@ export default function Sanctions() {
     const context = useContext(IpContext);
 
     useEffect(() => {
-        axios
-            .post(`http://${context.ipLap}:3003/getSanctions`, {
-                userName: '222부8327',
+        axios.post(`https://${context.ipLap}/getSanctions`, {
+                userName: '22나2222',
             })
             .then((response) => setPosts(response.data.results))
             .catch((error) => console.error(error));
     }, []);
 
     const PostItem = ({ item }) => {
-        const filename = item.img_path.split('\\').pop(); //요기
-
+        const filename = item.img_path.split('\\').pop();
         return (
             <View style={styles.post}>
                 <Text style={styles.date}>{item.date}</Text>
                 <Image
                     style={styles.image}
-                    source={{ uri: `http://${context.ipLap}:3003/images/${filename}` }} //요기
+                    source={{ uri: `https://${context.ipLap}/images/${filename}` }} 
                     onError={(error) => console.log(error.nativeEvent.error)}
                 />
                 <Text>{item.img_path}</Text>

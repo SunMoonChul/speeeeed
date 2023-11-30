@@ -41,7 +41,7 @@ export default function SignUpScreen() {
             "numplate": numplate,
         }
 
-        axios.post(`http://${context.ipLap}:3003/signUp`, data)
+        axios.post(`https://${context.ipLap}/signUp`, data)
         .then(response => {
             // 서버 응답 처리
 

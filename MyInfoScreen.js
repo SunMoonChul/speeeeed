@@ -11,7 +11,7 @@ export default function MyInfo() {
 
     useEffect(() => {
         axios
-            .post(`http://${context.ipLap}:3003/myInfo`, { numplate: context.numplate })
+            .post(`https://${context.ipLap}/myInfo`, { numplate: context.numplate })
             .then((response) => {
                 if (response.data.success) {
                     console.log('item: ', response.data.item);

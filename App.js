@@ -11,6 +11,7 @@ import MyInfoScreen from './MyInfoScreen';
 import IpContext from './IpContext';
 import TotalReportNum from './TotalReportNum';
 import Sanctions from './Sanctions';
+import PickVideoFromGallery from './Select_Video';
 import * as SplashScreen from 'expo-splash-screen';
 import { setCustomText } from 'react-native-global-props'; //폰트 친구
 
@@ -41,7 +42,7 @@ export default function App() {
     const [record, setRecord] = useState('');
     const [totRecord, setTotRecord] = useState('');
     const [ipRas, setIpRas] = useState('172.30.1.56');
-    const [ipLap, setIpLap] = useState('172.30.1.56');
+    const [ipLap, setIpLap] = useState('014a-222-118-68-94.ngrok-free.app');
     const [appIsReady, setAppIsReady] = useState(false);
 
     useEffect(() => {
@@ -100,6 +101,7 @@ export default function App() {
                         <Stack.Screen name="MyInfo" component={MyInfoScreen} />
                         <Stack.Screen name="TotalReportNum" component={TotalReportNum} />
                         <Stack.Screen name="Sanctions" component={Sanctions} />
+                        <Stack.Screen name="PickVideo" component={PickVideoFromGallery} />
                     </Stack.Navigator>
                 </NavigationContainer>
             </View>

@@ -9,8 +9,8 @@ export default function TotalReportNum() {
 
     useEffect(() => {
         axios
-            .post(`http://${context.ipLap}:3003/toReport`, {
-                userName: '11부1111',
+            .post(`https://${context.ipLap}/toReport`, {
+                userName: '11가1111',
             })
             .then((response) => setPosts(response.data.results))
             .catch((error) => console.error(error));
@@ -18,13 +18,13 @@ export default function TotalReportNum() {
 
     const PostItem = ({ item }) => {
         const filename = item.img_path.split('\\').pop();
-
+        console.log('이미지 이름 : ' + filename)
         return (
             <View style={styles.post}>
                 <Text style={styles.date}>{item.date}</Text>
                 <Image
                     style={styles.image}
-                    source={{ uri: `http://${context.ipLap}:3003/images/${filename}` }}
+                    source={{ uri: `https://${context.ipLap}/images/${filename}` }}
                     onError={(error) => console.log(error.nativeEvent.error)}
                 />
                 <Text style={styles.content}> 신고한 차 번호 : {item.other_np}</Text>

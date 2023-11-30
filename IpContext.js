@@ -2,21 +2,23 @@ import { createContext } from 'react';
 
 const IpContext = createContext({
     level: null,
-    setLevel: () => {},
+    setLevel: () => { },
     reportcnt: null,
-    setReportcnt: () => {},
+    setReportcnt: () => { },
     reportedcnt: null,
-    setReportedcnt: () => {},
+    setReportedcnt: () => { },
     numplate: null,
-    setNumplate: () => {},
+    setNumplate: () => { },
     record: null,
-    setRecord: () => {},
+    setRecord: () => { },
     totRecord: null,
-    setTotRecord: () => {},
+    setTotRecord: () => { },
     ipRas: null,
-    setIpRas: () => {},
+    setIpRas: () => { },
     ipLap: null,
-    setIpLap: () => {},
+    setIpLap: () => { },
 });
 
+
 export default IpContext;
+

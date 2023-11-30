@@ -6,7 +6,6 @@ import * as Location from 'expo-location';
 import axios from 'axios';
 import * as Progress from 'react-native-progress';
 import Swiper from 'react-native-swiper';
-import { pickVideoFromGallery } from './Select_Video';
 
 export default function Main() {
     const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -71,14 +70,14 @@ export default function Main() {
                     if (currentSpeed - prevSpeed >= 20 && currentTimems - lastActionTime >= 10000) {
                         setCnt((cnt) => cnt + 1); // 카운트 증가
                         console.log('급가속');
-                        console.log(`http://${context.ipLap}:3003/accel`);
+                        console.log(`https://${context.ipLap}/accel`);
 
                         setLastActionTime(currentTimems); // 마지막 동작 시간 갱신
 
                         // 여기에서 서버에 데이터를 전송합니다.
                         axios
-                            .post(`http://${context.ipLap}:3003/accel`, {
-                                user: user,
+                            .post(`https://${context.ipLap}/accel`, {
+                                user: context.numplate,
                                 time: currenttime,
                                 accel: 0,
                             })
@@ -94,14 +93,14 @@ export default function Main() {
                     else if (prevSpeed - currentSpeed >= 20 && currentTimems - lastActionTime >= 10000) {
                         setCnt((cnt) => cnt + 1); // 카운트 증가
                         console.log('급감속');
-                        console.log(`http://${context.ipLap}:3003/accel`);
+                        console.log(`https://${context.ipLap}/accel`);
 
                         setLastActionTime(currentTimems); // 마지막 동작 시간 갱신
 
                         // 여기에서 서버에 데이터를 전송합니다.
                         axios
-                            .post(`http://${context.ipLap}:3003/accel`, {
-                                user: user,
+                            .post(`https://${context.ipLap}/accel`, {
+                                user: context.numplate,
                                 time: currenttime,
                                 accel: 1,
                             })
@@ -128,12 +127,12 @@ export default function Main() {
 
                             setCnt((cnt) => cnt + 1); // 카운트 증가
                             console.log('과속');
-                            console.log(`http://${context.ipLap}:3003/accel`);
+                            console.log(`https://${context.ipLap}/accel`);
 
                             // 과속 상태일 때만 서버에 데이터를 전송
                             axios
-                                .post(`http://${context.ipLap}:3003/accel`, {
-                                    user: user,
+                                .post(`https://${context.ipLap}/accel`, {
+                                    user: context.numplate,
                                     time: currenttime,
                                     accel: 2,
                                 })
@@ -247,7 +246,7 @@ export default function Main() {
                     </TouchableOpacity>
                 </View>
                 <View style={styles.viewst}>
-                    <TouchableOpacity style={styles.reportbutton} onPress={pickVideoFromGallery}>
+                    <TouchableOpacity style={styles.reportbutton} onPress={() => navigation.navigate('PickVideo')}>
                         <Image source={require('./icons/report.png')} style={{ width: 50, height: 50 }}></Image>
                         <Text style={{ fontSize: 40, fontFamily: 'Kingt' }}>제보하기</Text>
                     </TouchableOpacity>
