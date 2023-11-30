@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View, ScrollView, Image } from 'react-native';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View, ScrollView, Image, SafeAreaView } from 'react-native';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import IpContext from './IpContext';
 import axios from 'axios';
@@ -8,6 +8,7 @@ import * as Progress from 'react-native-progress';
 export default function MyInfo() {
     const context = useContext(IpContext);
     const [post, setPost] = useState([]);
+    const navigation = useNavigation();
 
     useEffect(() => {
         axios
@@ -26,11 +27,26 @@ export default function MyInfo() {
     }, []);
 
     const PostItem = ({ item }) => {
+        let accelText;
+        switch (item.accel) {
+            case 0:
+                accelText = '급가속';
+                break;
+            case 1:
+                accelText = '급감속';
+                break;
+            case 2:
+                accelText = '과속';
+                break;
+            default:
+                accelText = '알 수 없음';
+        }
+
         return (
             <View
                 style={{
                     flex: 1,
-                    marginTop: '7%',
+                    marginTop: '5%',
                     backgroundColor: '#E3E3E3',
                     padding: 10,
                     borderColor: 'black', // 테두리 색상 설정
@@ -51,10 +67,7 @@ export default function MyInfo() {
                         fontSize: 23,
                         fontFamily: 'Kingt',
                     }}
-                >
-                    {' '}
-                    -3{' '}
-                </Text>
+                ></Text>
                 <Text
                     style={{
                         color: '#3b5998',
@@ -63,15 +76,21 @@ export default function MyInfo() {
                         fontFamily: 'Kingt',
                     }}
                 >
-                    {item.accel === 0 ? '급가속' : '급감속'}
+                    {accelText}
                 </Text>
             </View>
         );
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>내정보</Text>
+        <SafeAreaView style={styles.container}>
+            <View style={styles.banner}>
+                <TouchableOpacity onPress={() => navigation.goBack()} onp>
+                    <Image source={require('./icons/left_button.png')} style={{ width: 50, height: 50 }}></Image>
+                </TouchableOpacity>
+                <Text style={styles.title}>내정보</Text>
+                <View style={{ width: 50 }} />
+            </View>
 
             <View style={styles.viewst}>
                 <TouchableOpacity style={styles.button1}>
@@ -140,17 +159,20 @@ export default function MyInfo() {
             <View style={styles.viewst}>
                 <FlatList data={post} renderItem={PostItem} keyExtractor={(item) => item.id} />
             </View>
-        </View>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    banner: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
     },
     title: {
-        marginTop: '15%',
         fontWeight: 'bold',
         fontSize: 30,
         fontFamily: 'Kingt',
@@ -185,6 +207,7 @@ const styles = StyleSheet.create({
     },
     viewst: {
         margin: '2%',
+        marginTop: '-2%',
         flexDirection: 'row',
         marginVertical: '-0.5%',
     },

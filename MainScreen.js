@@ -49,8 +49,16 @@ export default function Main() {
 
     const [isOverSpeed, setIsOverSpeed] = useState(false); // 과속 상태를 저장하는 상태 변수
     const [lastActionTime, setLastActionTime] = useState(0); // 마지막으로 동작한 시점 (밀리초)
+    const [isRapid, setIsRapid] = useState(false); // 급가속, 급감속, 과속 상태
 
     useEffect(() => {
+        if (isRapid) {
+            const timer = setTimeout(() => {
+                setIsRapid(false); // 상태 초기화
+            }, 5000); // 5초 후에 색상이 원래대로 돌아갑니다.
+
+            return () => clearTimeout(timer);
+        }
         (async () => {
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
@@ -69,6 +77,7 @@ export default function Main() {
 
                     // 속도가 1초 이내에 20km 이상 올라가면 '급가속'
                     if (currentSpeed - prevSpeed >= 20 && currentTimems - lastActionTime >= 10000) {
+                        setIsRapid(true);
                         setCnt((cnt) => cnt + 1); // 카운트 증가
                         console.log('급가속');
                         console.log(`http://${context.ipLap}:3003/accel`);
@@ -92,6 +101,7 @@ export default function Main() {
                     }
                     // 속도가 1초 이내에 20km 이상 내려가면 '급감속'
                     else if (prevSpeed - currentSpeed >= 20 && currentTimems - lastActionTime >= 10000) {
+                        setIsRapid(true);
                         setCnt((cnt) => cnt + 1); // 카운트 증가
                         console.log('급감속');
                         console.log(`http://${context.ipLap}:3003/accel`);
@@ -117,6 +127,7 @@ export default function Main() {
                     }
                     // 과속 2
                     if (currentSpeed > 110) {
+                        setIsRapid(true);
                         if (!isOverSpeed) {
                             // 과속 상태가 아닐 때만 실행
                             setIsOverSpeed(true); // 과속 상태로 설정
@@ -156,7 +167,7 @@ export default function Main() {
 
             return () => watchId.remove();
         })();
-    }, []);
+    }, [isRapid]);
 
     return (
         <SafeAreaView style={styles.image}>
@@ -165,7 +176,9 @@ export default function Main() {
             </View>
             <View style={styles.topview}>
                 <View style={styles.kmfontview}>
-                    <Text style={styles.speedfont2}>{Math.max(0, speed).toFixed(0)} km/h</Text>
+                    <Text style={[styles.speedfont2, isRapid ? { color: 'red' } : {}]}>
+                        {Math.max(0, speed).toFixed(0)} km/h
+                    </Text>
                 </View>
 
                 <View style={styles.viewst}>
@@ -260,7 +273,7 @@ export default function Main() {
                         autoplay
                         loop
                         spaceBetween={100}
-                        paginationStyle={{ top: '90%', left: '80%' }}
+                        paginationStyle={{ top: '85%', left: '80%' }}
                         dotColor={'#3b5998'}
                     >
                         <ImageBackground
@@ -346,6 +359,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#E3E3E3',
         padding: 10,
+        paddingBottom: -10,
         borderColor: 'black', // 테두리 색상 설정
         margin: '2%',
         width: '100%',

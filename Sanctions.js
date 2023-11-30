@@ -1,16 +1,18 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { FlatList, View, Text, Image, StyleSheet, Dimensions, SafeAreaView } from 'react-native';
+import { FlatList, View, Text, Image, StyleSheet, Dimensions, SafeAreaView, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import IpContext from './IpContext';
+import { useNavigation, CommonActions } from '@react-navigation/native';
 
 export default function Sanctions() {
     const [posts, setPosts] = useState([]);
     const context = useContext(IpContext);
+    const navigation = useNavigation();
 
     useEffect(() => {
         axios
             .post(`http://${context.ipLap}:3003/getSanctions`, {
-                userName: '222부8327',
+                userName: context.numplate,
             })
             .then((response) => setPosts(response.data.results))
             .catch((error) => console.error(error));
@@ -35,6 +37,14 @@ export default function Sanctions() {
 
     return (
         <SafeAreaView style={styles.container}>
+            <View style={styles.banner}>
+                <TouchableOpacity onPress={() => navigation.goBack()} onp>
+                    <Image source={require('./icons/left_button.png')} style={{ width: 50, height: 50 }}></Image>
+                </TouchableOpacity>
+                <Text style={styles.title}>신고당한 내역</Text>
+                <View style={{ width: 50 }} />
+            </View>
+
             <FlatList data={posts} renderItem={PostItem} keyExtractor={(item) => item.id} />
         </SafeAreaView>
     );
@@ -66,5 +76,15 @@ const styles = StyleSheet.create({
     content: {
         marginTop: windowHeight * 0.02,
         fontSize: 16,
+    },
+    banner: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    title: {
+        fontWeight: 'bold',
+        fontSize: 30,
+        fontFamily: 'Kingt',
     },
 });

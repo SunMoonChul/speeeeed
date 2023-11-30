@@ -1,16 +1,18 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, Text, View, FlatList, Image, Dimensions, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Image, Dimensions, SafeAreaView, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import IpContext from './IpContext';
+import { useNavigation, CommonActions } from '@react-navigation/native';
 
 export default function TotalReportNum() {
     const context = useContext(IpContext);
     const [posts, setPosts] = useState([]);
+    const navigation = useNavigation();
 
     useEffect(() => {
         axios
             .post(`http://${context.ipLap}:3003/toReport`, {
-                userName: '11부1111',
+                userName: context.numplate,
             })
             .then((response) => setPosts(response.data.results))
             .catch((error) => console.error(error));
@@ -34,6 +36,13 @@ export default function TotalReportNum() {
 
     return (
         <SafeAreaView style={styles.container}>
+            <View style={styles.banner}>
+                <TouchableOpacity onPress={() => navigation.goBack()} onp>
+                    <Image source={require('./icons/left_button.png')} style={{ width: 50, height: 50 }}></Image>
+                </TouchableOpacity>
+                <Text style={styles.title}>신고 내역</Text>
+                <View style={{ width: 50 }} />
+            </View>
             <FlatList data={posts} renderItem={PostItem} keyExtractor={(item) => item.id} />
         </SafeAreaView>
     );
@@ -64,5 +73,15 @@ const styles = StyleSheet.create({
     content: {
         marginTop: windowHeight * 0.02,
         fontSize: 16,
+    },
+    banner: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    title: {
+        fontWeight: 'bold',
+        fontSize: 30,
+        fontFamily: 'Kingt',
     },
 });
