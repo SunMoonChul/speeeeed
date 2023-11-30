@@ -4,69 +4,65 @@ import axios from 'axios';
 import IpContext from './IpContext';
 
 export default function TotalReportNum() {
-
     const context = useContext(IpContext);
     const [posts, setPosts] = useState([]);
 
     useEffect(() => {
-        axios.post(`http://${context.ipLap}:3003/toReport`, {
-          userName: '11부1111'
-        })
-          .then(response => setPosts(response.data.results))
-          .catch(error => console.error(error));
-      }, []);
+        axios
+            .post(`http://${context.ipLap}:3003/toReport`, {
+                userName: '11부1111',
+            })
+            .then((response) => setPosts(response.data.results))
+            .catch((error) => console.error(error));
+    }, []);
 
     const PostItem = ({ item }) => {
         const filename = item.img_path.split('\\').pop();
-    
+
         return (
-          <View style={styles.post}>
-            <Text style={styles.date}>{item.date}</Text>
-            <Image
-              style={styles.image}
-              source={{ uri: `http://${context.ipLap}:3003/images/${filename}` }}
-              onError={(error) => console.log(error.nativeEvent.error)}
-            />
-            <Text style={styles.content}> 신고한 차 번호 : {item.other_np}</Text>
-          </View>
+            <View style={styles.post}>
+                <Text style={styles.date}>{item.date}</Text>
+                <Image
+                    style={styles.image}
+                    source={{ uri: `http://${context.ipLap}:3003/images/${filename}` }}
+                    onError={(error) => console.log(error.nativeEvent.error)}
+                />
+                <Text style={styles.content}> 신고한 차 번호 : {item.other_np}</Text>
+            </View>
         );
-      };
-    
-      return (
+    };
+
+    return (
         <SafeAreaView style={styles.container}>
-          <FlatList
-            data={posts}
-            renderItem={PostItem}
-            keyExtractor={item => item.id}
-          />
+            <FlatList data={posts} renderItem={PostItem} keyExtractor={(item) => item.id} />
         </SafeAreaView>
-      );
+    );
 }
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
+        flex: 1,
     },
     post: {
-      marginBottom: windowHeight * 0.05,
-      padding: windowWidth * 0.05,
-      backgroundColor: '#fff',
-      borderWidth: 1,
-      borderColor: '#888',
-      borderRadius: 10,
+        marginBottom: windowHeight * 0.05,
+        padding: windowWidth * 0.05,
+        backgroundColor: '#fff',
+        borderWidth: 1,
+        borderColor: '#888',
+        borderRadius: 10,
     },
     date: {
-      fontSize: 14,
-      color: '#888',
+        fontSize: 14,
+        color: '#888',
     },
     image: {
-      width: '100%',
-      height: windowHeight * 0.2,
+        width: '100%',
+        height: windowHeight * 0.2,
     },
     content: {
-      marginTop: windowHeight * 0.02,
-      fontSize: 16,
+        marginTop: windowHeight * 0.02,
+        fontSize: 16,
     },
-  });
+});

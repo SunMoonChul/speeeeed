@@ -26,34 +26,43 @@ export default function MyInfo() {
     }, []);
 
     const PostItem = ({ item }) => {
-
         return (
-            <View style={{
-                flex: 1,
-                marginTop: '7%',
-                backgroundColor: '#E3E3E3',
-                padding: 10,
-                borderColor: 'black', // 테두리 색상 설정
-                margin: '2%',
-                width: '95%',
-                borderRadius: 15,
-                flexDirection: 'row', // 세로방향 배치
-                justifyContent: 'space-between', // 컴포넌트들 사이의 공간 고르게 분배
-                borderWidth: 1,
-                borderColor: '#BFBFBF',}}>
+            <View
+                style={{
+                    flex: 1,
+                    marginTop: '7%',
+                    backgroundColor: '#E3E3E3',
+                    padding: 10,
+                    borderColor: 'black', // 테두리 색상 설정
+                    margin: '2%',
+                    width: '95%',
+                    borderRadius: 15,
+                    flexDirection: 'row', // 세로방향 배치
+                    justifyContent: 'space-between', // 컴포넌트들 사이의 공간 고르게 분배
+                    borderWidth: 1,
+                    borderColor: '#BFBFBF',
+                }}
+            >
                 <Text>{item.time}</Text>
-                <Text style={{
-                    color: '#b11a1a',
-                    justifyContent: 'flex-start',
-                    fontSize: 23,
-                    fontFamily: 'Kingt'
-                }}>    -3    </Text>
-                <Text style={{
-                    color: '#3b5998',
-                    justifyContent: 'flex-start',
-                    fontSize: 23,
-                    fontFamily: 'Kingt'
-                }}>
+                <Text
+                    style={{
+                        color: '#b11a1a',
+                        justifyContent: 'flex-start',
+                        fontSize: 23,
+                        fontFamily: 'Kingt',
+                    }}
+                >
+                    {' '}
+                    -3{' '}
+                </Text>
+                <Text
+                    style={{
+                        color: '#3b5998',
+                        justifyContent: 'flex-start',
+                        fontSize: 23,
+                        fontFamily: 'Kingt',
+                    }}
+                >
                     {item.accel === 0 ? '급가속' : '급감속'}
                 </Text>
             </View>
@@ -65,9 +74,7 @@ export default function MyInfo() {
             <Text style={styles.title}>내정보</Text>
 
             <View style={styles.viewst}>
-                <TouchableOpacity
-                    style={styles.button1}
-                >
+                <TouchableOpacity style={styles.button1}>
                     <View style={{ flexDirection: 'row', flex: 0, justifyContent: 'space-between', width: '100%' }}>
                         <Text style={{ justifyContent: 'flex-start', fontSize: 22, fontFamily: 'Kingt' }}>
                             <Text style={{ color: '#3b5998', fontSize: 30 }}>{context.numplate}</Text>
@@ -97,17 +104,22 @@ export default function MyInfo() {
                         }}
                     >
                         <View style={{ height: 10 }}>
-                            <Progress.Bar progress={context.record / (context.level * 100)} width={250} height={15} color={'#3b5998'} />
+                            <Progress.Bar
+                                progress={(context.record || 0) / ((context.level || 1) * 100)}
+                                width={250}
+                                height={15}
+                                color={'#3b5998'}
+                            />
                         </View>
-                        <Text style={{ fontFamily: 'Kingt' }}>{context.record}/{context.level * 100}</Text>
+                        <Text style={{ fontFamily: 'Kingt' }}>
+                            {context.record}/{context.level * 100}
+                        </Text>
                         {/* 경험치에 따라 레벨도 같이 증가 */}
                     </View>
                 </TouchableOpacity>
             </View>
             <View style={styles.viewst}>
-                <TouchableOpacity
-                    style={styles.button1}
-                >
+                <TouchableOpacity style={styles.button1}>
                     <View style={{ flexDirection: 'row', flex: 0, justifyContent: 'space-between', width: '100%' }}>
                         <Text style={styles.button2_text}>신고 횟수</Text>
                         <Text style={styles.button2_text2}>{context.reportcnt} 회</Text>
@@ -118,11 +130,12 @@ export default function MyInfo() {
                     </View>
                     <View style={{ flexDirection: 'row', flex: 0, justifyContent: 'space-between', width: '100%' }}>
                         <Text style={styles.button2_text}>급가속/감속 횟수</Text>
-                        <Text style={styles.button2_text2}>{context.upcnt} 회 / {context.downcnt} 회</Text>
+                        <Text style={styles.button2_text2}>
+                            {context.upcnt} 회 / {context.downcnt} 회
+                        </Text>
                     </View>
                 </TouchableOpacity>
             </View>
-
 
             <View style={styles.viewst}>
                 <FlatList data={post} renderItem={PostItem} keyExtractor={(item) => item.id} />
@@ -134,7 +147,39 @@ export default function MyInfo() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: "center"
+        alignItems: 'center',
+        backgroundColor: '#E3E3E3',
+        padding: 10,
+        borderColor: 'black', // 테두리 색상 설정
+        margin: '2%',
+        width: '95%',
+        borderRadius: 15,
+        flexDirection: 'column', // 세로방향 배치
+        justifyContent: 'space-between', // 컴포넌트들 사이의 공간 고르게 분배
+        borderWidth: 1,
+        borderColor: '#BFBFBF',
+    },
+    viewst: {
+        margin: '2%',
+        flexDirection: 'row',
+        marginVertical: '-0.5%',
+    },
+    button2_date: {
+        justifyContent: 'flex-start',
+        padding: 5,
+        fontSize: 20,
+        fontFamily: 'Kingt'
+    },
+    button2_text: {
+        justifyContent: 'flex-start',
+        fontSize: 23,
+        fontFamily: 'Kingt'
+    },
+    button2_text2: {
+        justifyContent: 'flex-start',
+        fontSize: 23,
+        fontFamily: 'Kingt',
+        marginRight: '3%'
     },
     title: {
         marginTop: '15%',
@@ -179,17 +224,17 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         padding: 5,
         fontSize: 20,
-        fontFamily: 'Kingt'
+        fontFamily: 'Kingt',
     },
     button2_text: {
         justifyContent: 'flex-start',
         fontSize: 23,
-        fontFamily: 'Kingt'
+        fontFamily: 'Kingt',
     },
     button2_text2: {
         justifyContent: 'flex-start',
         fontSize: 23,
         fontFamily: 'Kingt',
-        marginRight: '3%'
+        marginRight: '3%',
     },
 });

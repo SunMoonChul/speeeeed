@@ -33,18 +33,15 @@ const loadFonts = async () => {
 };
 
 export default function App() {
-
     const [id, setId] = useState('');
     const [level, setLevel] = useState('');
     const [reportcnt, setReportcnt] = useState(0);
     const [reportedcnt, setReportedcnt] = useState(0);
-    const [upcnt, setUpcnt] = useState('');
-    const [downcnt, setDowncnt] = useState('');
     const [numplate, setNumplate] = useState('');
     const [record, setRecord] = useState('');
     const [totRecord, setTotRecord] = useState('');
-    const [ipRas, setIpRas] = useState('10.20.100.158');
-    const [ipLap, setIpLap] = useState('10.20.102.157');
+    const [ipRas, setIpRas] = useState('172.30.1.56');
+    const [ipLap, setIpLap] = useState('172.30.1.56');
     const [appIsReady, setAppIsReady] = useState(false);
 
     useEffect(() => {
@@ -72,7 +69,28 @@ export default function App() {
     }
 
     return (
-        <IpContext.Provider value={{ id, setId, level, setLevel, reportcnt, setReportcnt, reportedcnt, setReportedcnt, upcnt, setUpcnt, downcnt, setDowncnt, numplate, setNumplate, record, setRecord, totRecord, setTotRecord, ipRas, setIpRas, ipLap, setIpLap }}>
+        <IpContext.Provider
+            value={{
+                id,
+                setId,
+                level,
+                setLevel,
+                reportcnt,
+                setReportcnt,
+                reportedcnt,
+                setReportedcnt,
+                numplate,
+                setNumplate,
+                record,
+                setRecord,
+                totRecord,
+                setTotRecord,
+                ipRas,
+                setIpRas,
+                ipLap,
+                setIpLap,
+            }}
+        >
             <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
                 <NavigationContainer>
                     <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
