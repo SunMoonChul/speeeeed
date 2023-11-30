@@ -51,7 +51,7 @@ export default function Main() {
         if (isRapid) {
             const timer = setTimeout(() => {
                 setIsRapid(false); // 상태 초기화
-            }, 1000); // 1초 후에 색상이 원래대로 돌아갑니다.
+            }, 2000); // 1초 후에 색상이 원래대로 돌아갑니다.
 
             return () => clearTimeout(timer);
         }
