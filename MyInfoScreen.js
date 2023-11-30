@@ -4,6 +4,7 @@ import { useNavigation, CommonActions } from '@react-navigation/native';
 import IpContext from './IpContext';
 import axios from 'axios';
 import * as Progress from 'react-native-progress';
+import { Alert } from 'react-native';
 
 export default function MyInfo() {
     const context = useContext(IpContext);
@@ -25,6 +26,43 @@ export default function MyInfo() {
                 console.error('There was an error!', error);
             });
     }, []);
+
+    const logoutbutton = () => {
+        Alert.alert(
+            '로그아웃',
+            '정말 로그아웃하시겠습니까?',
+            [
+                { text: '취소', onPress: () => {}, style: 'cancel' },
+                {
+                    text: '로그아웃',
+                    onPress: () => {
+                        logoutaxios();
+                    },
+                    style: 'destructive',
+                },
+            ],
+            {
+                cancelable: true,
+                onDismiss: () => {},
+            }
+        );
+    };
+
+    const logoutaxios = () => {
+        axios
+            .post(`http://${context.ipLap}:3003/logout`)
+            .then((response) => {
+                if (response.data.success) {
+                    console.log(response.data.message);
+                    navigation.navigate('Login');
+                } else {
+                    console.error('로그아웃 실패: ', response.data.message);
+                }
+            })
+            .catch((error) => {
+                console.error('There was an error!', error);
+            });
+    };
 
     const PostItem = ({ item }) => {
         let accelText;
@@ -85,11 +123,13 @@ export default function MyInfo() {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.banner}>
-                <TouchableOpacity onPress={() => navigation.goBack()} onp>
-                    <Image source={require('./icons/left_button.png')} style={{ width: 50, height: 50 }}></Image>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <Image source={require('./icons/left_button.png')} style={styles.iconbutton}></Image>
                 </TouchableOpacity>
                 <Text style={styles.title}>내정보</Text>
-                <View style={{ width: 50 }} />
+                <TouchableOpacity onPress={logoutbutton}>
+                    <Image source={require('./icons/logout.png')} style={styles.iconbutton}></Image>
+                </TouchableOpacity>
             </View>
 
             <View style={styles.viewst}>
@@ -228,4 +268,5 @@ const styles = StyleSheet.create({
         fontFamily: 'Kingt',
         marginRight: '3%',
     },
+    iconbutton: { width: 50, height: 50, marginHorizontal: 5 },
 });

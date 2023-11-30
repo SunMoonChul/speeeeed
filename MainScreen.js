@@ -237,7 +237,7 @@ export default function Main() {
                         <Text style={{ color: '#BFBFBF' }}>───────────</Text>
                         {/* 이거 디비에서 끌고와서 바뀌게 해야함 */}
                         <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-                            <Text style={{ fontSize: 50, fontFamily: 'Kingt', color: '#3b5998' }}>05</Text>
+                            <Text style={{ fontSize: 50, fontFamily: 'Kingt', color: '#3b5998' }}>005</Text>
                             <Text style={{ fontSize: 30, marginStart: 20, marginBottom: 5, fontFamily: 'Kingt' }}>
                                 회
                             </Text>
@@ -252,7 +252,7 @@ export default function Main() {
                         <Text style={{ color: '#BFBFBF' }}>───────────</Text>
                         {/* 이거 디비에서 끌고와서 바뀌게 해야함 */}
                         <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-                            <Text style={{ fontSize: 50, fontFamily: 'Kingt', color: '#3b5998' }}>05</Text>
+                            <Text style={{ fontSize: 50, fontFamily: 'Kingt', color: '#3b5998' }}>005</Text>
                             <Text style={{ fontSize: 30, marginStart: 20, marginBottom: 5, fontFamily: 'Kingt' }}>
                                 회
                             </Text>

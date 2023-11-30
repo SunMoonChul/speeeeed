@@ -13,7 +13,6 @@ export default function LoginScreen() {
     const navigation = useNavigation();
 
     const handleLogin = async () => {
-        navigation.navigate('Main');
         const data = {
             id: id,
             pw: pw,
@@ -34,6 +33,8 @@ export default function LoginScreen() {
                     console.log('record: ', totRecord - level * 100);
                     console.log(context.record);
                     navigation.navigate('Main');
+                    setId('');
+                    setPw('');
                 } else {
                     alert(response.data.message); // 실패 메시지 표시
                 }
