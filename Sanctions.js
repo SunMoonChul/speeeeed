@@ -29,8 +29,8 @@ export default function Sanctions() {
                     source={{ uri: `http://${context.ipLap}:3003/images/${filename}` }} //요기
                     onError={(error) => console.log(error.nativeEvent.error)}
                 />
-                <Text>{item.img_path}</Text>
-                <Text style={styles.content}>{item.other_np}</Text>
+
+                <Text style={styles.content}>번호판 : {item.other_np}</Text>
             </View>
         );
     };
@@ -39,13 +39,14 @@ export default function Sanctions() {
         <SafeAreaView style={styles.container}>
             <View style={styles.banner}>
                 <TouchableOpacity onPress={() => navigation.goBack()} onp>
-                    <Image source={require('./icons/left_button.png')} style={{ width: 50, height: 50 }}></Image>
+                    <Image source={require('./icons/left_button.png')} style={styles.iconbutton}></Image>
                 </TouchableOpacity>
                 <Text style={styles.title}>신고당한 내역</Text>
                 <View style={{ width: 50 }} />
             </View>
-
-            <FlatList data={posts} renderItem={PostItem} keyExtractor={(item) => item.id} />
+            <View style={styles.viewst}>
+                <FlatList data={posts} renderItem={PostItem} keyExtractor={(item) => item.id} />
+            </View>
         </SafeAreaView>
     );
 }
@@ -62,29 +63,39 @@ const styles = StyleSheet.create({
         padding: windowWidth * 0.05,
         backgroundColor: '#fff',
         borderWidth: 1,
-        borderColor: '#888',
+        borderColor: '#BFBFBF',
         borderRadius: 10,
+        marginTop: '5%',
     },
     date: {
         fontSize: 14,
         color: '#888',
+        marginBottom: 5,
     },
     image: {
         width: '100%',
         height: windowHeight * 0.2,
     },
     content: {
-        marginTop: windowHeight * 0.02,
+        marginTop: windowHeight * 0.01,
         fontSize: 16,
+    },
+    viewst: {
+        margin: '2%',
+        marginTop: '-2%',
+        flexDirection: 'row',
+        marginVertical: '-0.5%',
     },
     banner: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        marginTop: '3%',
     },
     title: {
         fontWeight: 'bold',
         fontSize: 30,
         fontFamily: 'Kingt',
     },
+    iconbutton: { width: 40, height: 40, marginHorizontal: 7 },
 });

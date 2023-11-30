@@ -87,7 +87,6 @@ export default function MyInfo() {
                     marginTop: '5%',
                     backgroundColor: '#E3E3E3',
                     padding: 10,
-                    borderColor: 'black', // 테두리 색상 설정
                     margin: '2%',
                     width: '95%',
                     borderRadius: 15,
@@ -211,6 +210,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        marginTop: '3%',
     },
     title: {
         fontWeight: 'bold',
@@ -268,5 +268,5 @@ const styles = StyleSheet.create({
         fontFamily: 'Kingt',
         marginRight: '3%',
     },
-    iconbutton: { width: 50, height: 50, marginHorizontal: 5 },
+    iconbutton: { width: 40, height: 40, marginHorizontal: 7 },
 });
