@@ -31,7 +31,6 @@ const loadFonts = async () => {
 
     setCustomText(customTextProps);
 };
-
 export default function App() {
     const [id, setId] = useState('');
     const [level, setLevel] = useState('');

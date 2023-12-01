@@ -1,27 +1,33 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, ImageBackground, Alert, Image, SafeAreaView } from 'react-native';
-import { useNavigation, CommonActions } from '@react-navigation/native';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import IpContext from './IpContext';
 import * as Location from 'expo-location';
 import axios from 'axios';
 import { pickVideoFromGallery } from './Select_Video';
 import * as Progress from 'react-native-progress';
 import Swiper from 'react-native-swiper';
+import TotalReportNum from './TotalReportNum';
 
 export default function Main() {
     const [fontsLoaded, setFontsLoaded] = useState(false);
     const context = useContext(IpContext);
+    const navigation = useNavigation();
+    const isFocused = useIsFocused();
 
     const [speed, setSpeed] = useState(0);
     const [prevSpeed, setPrevSpeed] = useState(0); // 이전 속도
     const [latitude, setLatitude] = useState(null);
     const [longitude, setLongitude] = useState(null);
     const [message, setMessage] = useState(''); // 급가속 또는 급정거 메시지
-    const [cnt, setCnt] = useState(0); // 급가속 또는 급정거 횟수
-    const user = '222부8327';
+    const [upCnt, setUpCnt] = useState(0); // 급가속 또는 급정거 횟수
+    const [downCnt, setDownCnt] = useState(0); // 급가속 또는 급정거 횟수
+    const [overCnt, setOverCnt] = useState(0); // 급가속 또는 급정거 횟수
 
-    const navigation = useNavigation();
+    const [isOverSpeed, setIsOverSpeed] = useState(false); // 과속 상태를 저장하는 상태 변수
+    const [lastActionTime, setLastActionTime] = useState(0); // 마지막으로 동작한 시점 (밀리초)
 
+    
     const gotoMyInfo = () => {
         console.log(`${context.numplate}님이 도로를 정화시켜 준 시간`);
         navigation.navigate('MyInfo');
@@ -47,15 +53,40 @@ export default function Main() {
         ':' +
         today.getSeconds();
 
-    const [isOverSpeed, setIsOverSpeed] = useState(false); // 과속 상태를 저장하는 상태 변수
-    const [lastActionTime, setLastActionTime] = useState(0); // 마지막으로 동작한 시점 (밀리초)
-
     useEffect(() => {
+        if (!isFocused) {
+            return;
+        }
         (async () => {
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
                 console.log('Permission to access location was denied');
                 return;
+            }
+
+            const sendDataToServer = async (accelValue) => {
+                try {
+                    const response = await axios.post(`http://${context.ipLap}:3003/accel`, {
+                        user: context.numplate,
+                        time: currenttime,
+                        accel: accelValue,
+                        record: context.totRecord,
+                    });
+
+                    console.log(response.data);
+                    if (accelValue === 2) {
+                        context.setTotRecord = response.data.newTotRecord;
+                        let totRecord = response.data.newTotRecord;
+                        let level = parseInt(totRecord / 100 + 1);
+                        context.setLevel(level);
+                        context.setRecord(totRecord - ((level - 1) * 100));
+                        console.log('과속 완');
+                    } else {
+                        console.log(accelValue === 0 ? '급가속 완' : '급감속 완');
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
             }
 
             const watchId = await Location.watchPositionAsync(
@@ -64,54 +95,31 @@ export default function Main() {
                     timeInterval: 1000, // 위치정보 업데이트 간격 1초 안의
                     distanceInterval: 0, // 위치 변할 때마다 알림
                 },
-                (position) => {
+                async (position) => {
+                    if (!isFocused) {
+                        return;
+                    }
                     const currentSpeed = (position.coords.speed || 0) * 3.6;
 
                     // 속도가 1초 이내에 20km 이상 올라가면 '급가속'
-                    if (currentSpeed - prevSpeed >= 20 && currentTimems - lastActionTime >= 10000) {
-                        setCnt((cnt) => cnt + 1); // 카운트 증가
+                    if (currentSpeed - prevSpeed >= 2 && currentTimems - lastActionTime >= 10000) {
+                        setUpCnt((upCnt) => upCnt + 1); // 카운트 증가
                         console.log('급가속');
                         console.log(`http://${context.ipLap}:3003/accel`);
-
                         setLastActionTime(currentTimems); // 마지막 동작 시간 갱신
 
                         // 여기에서 서버에 데이터를 전송합니다.
-                        axios
-                            .post(`http://${context.ipLap}:3003/accel`, {
-                                user: user,
-                                time: currenttime,
-                                accel: 0,
-                            })
-                            .then((response) => {
-                                console.log(response.data);
-                                console.log('급가속 완');
-                            })
-                            .catch((error) => {
-                                console.error(error);
-                            });
+                        await sendDataToServer(0);
                     }
                     // 속도가 1초 이내에 20km 이상 내려가면 '급감속'
                     else if (prevSpeed - currentSpeed >= 20 && currentTimems - lastActionTime >= 10000) {
-                        setCnt((cnt) => cnt + 1); // 카운트 증가
+                        setDownCnt((downCnt) => downCnt + 1); // 카운트 증가
                         console.log('급감속');
                         console.log(`http://${context.ipLap}:3003/accel`);
 
                         setLastActionTime(currentTimems); // 마지막 동작 시간 갱신
 
-                        // 여기에서 서버에 데이터를 전송합니다.
-                        axios
-                            .post(`http://${context.ipLap}:3003/accel`, {
-                                user: user,
-                                time: currenttime,
-                                accel: 1,
-                            })
-                            .then((response) => {
-                                console.log(response.data);
-                                console.log('급감속 완');
-                            })
-                            .catch((error) => {
-                                console.error(error);
-                            });
+                        await sendDataToServer(1);
                     } else {
                         setMessage('');
                     }
@@ -126,24 +134,11 @@ export default function Main() {
                                 setIsOverSpeed(false);
                             }, 5000);
 
-                            setCnt((cnt) => cnt + 1); // 카운트 증가
+                            setOverCnt((overCnt) => overCnt + 1); // 카운트 증가
                             console.log('과속');
                             console.log(`http://${context.ipLap}:3003/accel`);
 
-                            // 과속 상태일 때만 서버에 데이터를 전송
-                            axios
-                                .post(`http://${context.ipLap}:3003/accel`, {
-                                    user: user,
-                                    time: currenttime,
-                                    accel: 2,
-                                })
-                                .then((response) => {
-                                    console.log(response.data);
-                                    console.log('과속 완');
-                                })
-                                .catch((error) => {
-                                    console.error(error);
-                                });
+                            await sendDataToServer(2);
                         }
                     }
 
@@ -156,7 +151,7 @@ export default function Main() {
 
             return () => watchId.remove();
         })();
-    }, []);
+    }, [isFocused]);
 
     return (
         <SafeAreaView style={styles.image}>
@@ -206,7 +201,6 @@ export default function Main() {
                                 width: '100%',
                                 paddingStart: '2%',
                                 fontSize: 20,
-                                fontFamily: 'Kingt',
                             }}
                         >
                             Lv.{context.level}
@@ -224,8 +218,8 @@ export default function Main() {
                         <Text style={{ color: '#BFBFBF' }}>──────────</Text>
                         {/* 이거 디비에서 끌고와서 바뀌게 해야함 */}
                         <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-                            <Text style={{ fontSize: 50, fontFamily: 'Kingt', color: '#3b5998' }}>05</Text>
-                            <Text style={{ fontSize: 30, marginStart: 20, marginBottom: 5, fontFamily: 'Kingt' }}>
+                            <Text style={{ fontSize: 50, color: '#3b5998' }}>{context.reportCnt}</Text>
+                            <Text style={{ fontSize: 30, marginStart: 20, marginBottom: 5 }}>
                                 회
                             </Text>
                         </View>
@@ -239,8 +233,8 @@ export default function Main() {
                         <Text style={{ color: '#BFBFBF' }}>──────────</Text>
                         {/* 이거 디비에서 끌고와서 바뀌게 해야함 */}
                         <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-                            <Text style={{ fontSize: 50, fontFamily: 'Kingt', color: '#3b5998' }}>05</Text>
-                            <Text style={{ fontSize: 30, marginStart: 20, marginBottom: 5, fontFamily: 'Kingt' }}>
+                            <Text style={{ fontSize: 50, color: '#3b5998' }}>{context.reportedCnt}</Text>
+                            <Text style={{ fontSize: 30, marginStart: 20, marginBottom: 5 }}>
                                 회
                             </Text>
                         </View>
@@ -308,7 +302,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Kingt',
     },
     speedfont2: {
-        fontSize: 60,
+        fontSize: 55,
         fontFamily: 'Kingt',
     },
     image: {
