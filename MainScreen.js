@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, ImageBackground, Alert, Image, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, ImageBackground, Alert, Image, SafeAreaView, LogBox } from 'react-native';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import IpContext from './IpContext';
 import * as Location from 'expo-location';
@@ -8,6 +8,7 @@ import * as Progress from 'react-native-progress';
 import Swiper from 'react-native-swiper';
 
 export default function Main() {
+    LogBox.ignoreLogs(['Sending `onAnimatedValueUpdate` with no listeners registered.']);
     const [fontsLoaded, setFontsLoaded] = useState(false);
     const context = useContext(IpContext);
 

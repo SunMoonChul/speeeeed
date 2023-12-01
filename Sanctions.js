@@ -9,7 +9,7 @@ export default function Sanctions() {
 
     useEffect(() => {
         axios.post(`https://${context.ipLap}/getSanctions`, {
-                userName: '22나2222',
+                userName: context.numplate,
             })
             .then((response) => setPosts(response.data.results))
             .catch((error) => console.error(error));

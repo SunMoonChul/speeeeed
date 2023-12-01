@@ -4,7 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import IpContext from './IpContext';
 
-export default function pickVideoFromGallery() {
+export default function PickVideoFromGallery() {
 
     const navigation = useNavigation();
     const context = useContext(IpContext);
@@ -39,7 +39,7 @@ export default function pickVideoFromGallery() {
 
             axios({
                 method: 'post',
-                url: 'https://b63f-222-118-68-94.ngrok-free.app/imgtoss',
+                url: 'https://bdc8-222-118-68-94.ngrok-free.app/imgtoss',
                 data: formData,
                 headers: { 'Content-Type': 'multipart/form-data' },
             })

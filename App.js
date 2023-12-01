@@ -42,7 +42,7 @@ export default function App() {
     const [record, setRecord] = useState('');
     const [totRecord, setTotRecord] = useState('');
     const [ipRas, setIpRas] = useState('172.30.1.56');
-    const [ipLap, setIpLap] = useState('014a-222-118-68-94.ngrok-free.app');
+    const [ipLap, setIpLap] = useState('2122-222-118-68-94.ngrok-free.app');
     const [appIsReady, setAppIsReady] = useState(false);
 
     useEffect(() => {

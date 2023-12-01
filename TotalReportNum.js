@@ -10,7 +10,7 @@ export default function TotalReportNum() {
     useEffect(() => {
         axios
             .post(`https://${context.ipLap}/toReport`, {
-                userName: '11가1111',
+                userName: context.numplate,
             })
             .then((response) => setPosts(response.data.results))
             .catch((error) => console.error(error));
