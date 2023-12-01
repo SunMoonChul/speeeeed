@@ -20,12 +20,10 @@ export default function Main() {
     const navigation = useNavigation(); //이동기
 
     const gotoMyInfo = () => {
-        console.log(`${context.numplate}님이 도로를 정화시켜 준 시간`);
         navigation.navigate('MyInfo');
     };
 
     const gotoMyFail = () => {
-        console.log('내가 잠시 도로 위의 무법자가 되었던 횟수');
         navigation.navigate('Sanctions');
     };
 
@@ -178,7 +176,9 @@ export default function Main() {
     return (
         <SafeAreaView style={styles.image}>
             <View style={styles.logoview}>
-                <Image source={require('./assets/logocrop.png')} style={styles.logo}></Image>
+                <TouchableOpacity onPress={() => navigation.navigate('Tyrano')}>
+                    <Image source={require('./assets/logocrop.png')} style={styles.logo}></Image>
+                </TouchableOpacity>
             </View>
             <View style={styles.topview}>
                 <View style={styles.kmfontview}>

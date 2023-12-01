@@ -115,7 +115,7 @@ export default function MyInfo() {
             <View
                 style={{
                     flex: 1,
-                    marginTop: '5%',
+                    marginTop: '2%',
                     backgroundColor: '#E3E3E3',
                     padding: 10,
                     margin: '2%',
@@ -233,7 +233,7 @@ export default function MyInfo() {
                 </TouchableOpacity>
             </View>
 
-            <View style={styles.viewst}>
+            <View style={styles.flist}>
                 <FlatList data={post} renderItem={PostItem} keyExtractor={(item) => item.id} />
             </View>
         </SafeAreaView>
@@ -286,6 +286,13 @@ const styles = StyleSheet.create({
     viewst: {
         margin: '2%',
         marginTop: '-2%',
+        flexDirection: 'row',
+        marginVertical: '-0.5%',
+    },
+    flist: {
+        margin: '2%',
+        height: '55%',
+        marginTop: '1%',
         flexDirection: 'row',
         marginVertical: '-0.5%',
     },

@@ -57,18 +57,18 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     post: {
-        marginBottom: windowHeight * 0.05,
+        marginBottom: windowHeight * 0.02,
         padding: windowWidth * 0.05,
         backgroundColor: '#fff',
         borderWidth: 1,
         borderColor: '#BFBFBF',
         borderRadius: 10,
-        marginTop: '5%',
     },
     date: {
         fontSize: 14,
         color: '#888',
         marginBottom: 5,
+        fontFamily: 'Kingt',
     },
     image: {
         width: '100%',
@@ -77,17 +77,20 @@ const styles = StyleSheet.create({
     content: {
         marginTop: windowHeight * 0.01,
         fontSize: 16,
+        fontFamily: 'Kingt',
     },
     banner: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        marginTop: '3%',
     },
     viewst: {
         margin: '2%',
-        marginTop: '-2%',
+        marginTop: '2%',
         flexDirection: 'row',
         marginVertical: '-0.5%',
+        height: windowHeight * 0.82,
     },
     title: {
         fontWeight: 'bold',
