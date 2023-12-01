@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, ImageBackground, Alert, Image, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, ImageBackground, Alert, Image, SafeAreaView, LogBox } from 'react-native';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import IpContext from './IpContext';
 import * as Location from 'expo-location';
 import axios from 'axios';
-import { pickVideoFromGallery } from './Select_Video';
 import * as Progress from 'react-native-progress';
 import Swiper from 'react-native-swiper';
 import TotalReportNum from './TotalReportNum';
@@ -103,7 +102,7 @@ export default function Main() {
                     const currentSpeed = (position.coords.speed || 0) * 3.6;
 
                     // 속도가 1초 이내에 20km 이상 올라가면 '급가속'
-                    if (currentSpeed - prevSpeed >= 2 && currentTimems - lastActionTime >= 10000) {
+                    if (currentSpeed - prevSpeed >= 20 && currentTimems - lastActionTime >= 10000) {
                         setUpCnt((upCnt) => upCnt + 1); // 카운트 증가
                         console.log('급가속');
                         console.log(`http://${context.ipLap}:3003/accel`);
@@ -242,7 +241,7 @@ export default function Main() {
                     </TouchableOpacity>
                 </View>
                 <View style={styles.viewst}>
-                    <TouchableOpacity style={styles.reportbutton} onPress={pickVideoFromGallery}>
+                    <TouchableOpacity style={styles.reportbutton} onPress={() => navigation.navigate('PickVideo')}>
                         <Image source={require('./icons/report.png')} style={{ marginTop: 10, width: 50, height: 50 }}></Image>
                         <Text style={{ fontSize: 40, fontFamily: 'Kingt' }}>제보하기</Text>
                     </TouchableOpacity>

@@ -25,7 +25,7 @@ export default function TotalReportNum() {
             <Text style={styles.date}>{item.date}</Text>
             <Image
                 style={styles.image}
-                source={{ uri: `https://${context.ipLap}/images/${filename}` }}
+                source={{ uri: `http://${context.ipLap}:3003/images/${filename}` }}
                 onError={(error) => console.log(error.nativeEvent.error)}
             />
             <Text style={styles.content}> 신고한 차 번호 : {item.other_np}</Text>
