@@ -10,6 +10,7 @@ import Swiper from 'react-native-swiper';
 import TotalReportNum from './TotalReportNum';
 
 export default function Main() {
+    LogBox.ignoreLogs(['Sending `onAnimatedValueUpdate` with no listeners registered.']);
     const [fontsLoaded, setFontsLoaded] = useState(false);
     const context = useContext(IpContext);
     const navigation = useNavigation();
@@ -115,7 +116,7 @@ export default function Main() {
                     else if (prevSpeed - currentSpeed >= 20 && currentTimems - lastActionTime >= 10000) {
                         setDownCnt((downCnt) => downCnt + 1); // 카운트 증가
                         console.log('급감속');
-                        console.log(`http://${context.ipLap}:3003/accel`);
+                        console.log(`https://${context.ipLap}/accel`);
 
                         setLastActionTime(currentTimems); // 마지막 동작 시간 갱신
 
@@ -136,7 +137,7 @@ export default function Main() {
 
                             setOverCnt((overCnt) => overCnt + 1); // 카운트 증가
                             console.log('과속');
-                            console.log(`http://${context.ipLap}:3003/accel`);
+                            console.log(`https://${context.ipLap}/accel`);
 
                             await sendDataToServer(2);
                         }

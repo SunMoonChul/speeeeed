@@ -14,15 +14,17 @@ const IpContext = createContext({
     overCnt: null,
     setOverCnt: () => {},
     numplate: null,
-    setNumplate: () => {},
+    setNumplate: () => { },
     record: null,
-    setRecord: () => {},
+    setRecord: () => { },
     totRecord: null,
-    setTotRecord: () => {},
+    setTotRecord: () => { },
     ipRas: null,
-    setIpRas: () => {},
+    setIpRas: () => { },
     ipLap: null,
-    setIpLap: () => {},
+    setIpLap: () => { },
 });
 
+
 export default IpContext;
+

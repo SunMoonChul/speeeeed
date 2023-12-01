@@ -19,6 +19,18 @@ export default function TotalReportNum() {
 
   const PostItem = ({ item }) => {
     const filename = item.img_path.split('\\').pop();
+    console.log('이미지 이름 : ' + filename)
+    return (
+        <View style={styles.post}>
+            <Text style={styles.date}>{item.date}</Text>
+            <Image
+                style={styles.image}
+                source={{ uri: `https://${context.ipLap}/images/${filename}` }}
+                onError={(error) => console.log(error.nativeEvent.error)}
+            />
+            <Text style={styles.content}> 신고한 차 번호 : {item.other_np}</Text>
+        </View>
+    );
 
     return (
       <View style={styles.post}>
