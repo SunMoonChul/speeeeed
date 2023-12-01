@@ -1,5 +1,6 @@
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
+import IpContext from './IpContext';
 
 export const pickVideoFromGallery = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({

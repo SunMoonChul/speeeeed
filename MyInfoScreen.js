@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View, ScrollView, Image } from 'react-native';
-import { useNavigation, CommonActions } from '@react-navigation/native';
+import { useNavigation, CommonActions, useIsFocused } from '@react-navigation/native';
 import IpContext from './IpContext';
 import axios from 'axios';
 import * as Progress from 'react-native-progress';
 
 export default function MyInfo() {
     const context = useContext(IpContext);
+    const isFocused = useIsFocused();
     const [post, setPost] = useState([]);
 
     useEffect(() => {
@@ -17,6 +18,12 @@ export default function MyInfo() {
                     setPost(response.data.item); // 서버로부터 받아온 데이터를 상태 변수에 저장
                     context.setUpCnt(response.data.upCnt);
                     context.setDownCnt(response.data.downCnt);
+                    context.setOverCnt(response.data.overCnt);
+                    context.setTotRecord(response.data.newTotRecord);
+                    let totRecord = response.data.newTotRecord;
+                    let level = parseInt(totRecord / 100 + 1);
+                    context.setLevel(level);
+                    context.setRecord(totRecord - ((level - 1) * 100));
                 }
                 else {
                     alert(response.data.message); // 실패 메시지 표시
@@ -71,7 +78,7 @@ export default function MyInfo() {
                         fontFamily: 'Kingt',
                     }}
                 >
-                    {item.accel === 0 ? '급가속' : '급감속'}
+                    {item.accel === 0 ? '급가속' : 1 ? '급감속' : '과속'}
                 </Text>
             </View>
         );

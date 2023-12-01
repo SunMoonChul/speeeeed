@@ -10,7 +10,7 @@ export default function Sanctions() {
     useEffect(() => {
         axios
             .post(`http://${context.ipLap}:3003/getSanctions`, {
-                userName: '22부2222',
+                userName: context.numplate,
             })
             .then((response) => setPosts(response.data.results))
             .catch((error) => console.error(error));
@@ -18,7 +18,6 @@ export default function Sanctions() {
 
     const PostItem = ({ item }) => {
         const filename = item.img_path.split('\\').pop();
-
         return (
             <View style={styles.post}>
                 <Text style={styles.date}>{item.date}</Text>
@@ -27,15 +26,17 @@ export default function Sanctions() {
                     source={{ uri: `http://${context.ipLap}:3003/images/${filename}` }}
                     onError={(error) => console.log(error.nativeEvent.error)}
                 />
-                <Text>{item.img_path}</Text>
-                <Text style={styles.content}>{item.other_np}</Text>
+                <Text style={styles.content}>{item.img_path}</Text>
             </View>
         );
     };
 
     return (
         <SafeAreaView style={styles.container}>
-            <FlatList data={posts} renderItem={PostItem} keyExtractor={(item) => item.id} />
+            <View style={styles.kmfontview}>
+                <Text style={styles.speedfont3}>신고내역 </Text>
+                <FlatList data={posts} renderItem={PostItem} keyExtractor={(item) => item.id} />
+            </View>
         </SafeAreaView>
     );
 }
@@ -66,5 +67,14 @@ const styles = StyleSheet.create({
     content: {
         marginTop: windowHeight * 0.02,
         fontSize: 16,
+    },
+    kmfontview: {
+      padding: '5%',
+      justifyContent: 'space-between',
+      width: '100%',
+    },
+    speedfont3: {
+      fontSize: 40,
+      fontFamily: 'Kingt',
     },
 });

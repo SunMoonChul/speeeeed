@@ -33,16 +33,17 @@ const loadFonts = async () => {
 };
 export default function App() {
     const [id, setId] = useState('');
-    const [level, setLevel] = useState('');
-    const [upCnt, setUpCnt] = useState('');
+    const [level, setLevel] = useState(0);
+    const [upCnt, setUpCnt] = useState(0);
     const [downCnt, setDownCnt] = useState('');
-    const [reportcnt, setReportcnt] = useState(0);
-    const [reportedcnt, setReportedcnt] = useState(0);
+    const [overCnt, setOverCnt] = useState('');
+    const [reportCnt, setReportCnt] = useState(0);
+    const [reportedCnt, setReportedCnt] = useState(0);
     const [numplate, setNumplate] = useState('');
-    const [record, setRecord] = useState('');
-    const [totRecord, setTotRecord] = useState('');
+    const [record, setRecord] = useState(0);
+    const [totRecord, setTotRecord] = useState(0);
     const [ipRas, setIpRas] = useState('172.30.1.56');
-    const [ipLap, setIpLap] = useState('10.20.102.157');
+    const [ipLap, setIpLap] = useState('10.20.102.56');
     const [appIsReady, setAppIsReady] = useState(false);
 
     useEffect(() => {
@@ -80,10 +81,12 @@ export default function App() {
                 setUpCnt,
                 downCnt,
                 setDownCnt,
-                reportcnt,
-                setReportcnt,
-                reportedcnt,
-                setReportedcnt,
+                overCnt,
+                setOverCnt,
+                reportCnt,
+                setReportCnt,
+                reportedCnt,
+                setReportedCnt,
                 numplate,
                 setNumplate,
                 record,
