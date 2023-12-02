@@ -41,8 +41,8 @@ export default function App() {
     const [numplate, setNumplate] = useState('');
     const [record, setRecord] = useState('');
     const [totRecord, setTotRecord] = useState('');
-    const [ipRas, setIpRas] = useState('172.16.106.37');
-    const [ipLap, setIpLap] = useState('172.16.106.37');
+    const [ipRas, setIpRas] = useState('172.16.105.229');
+    const [ipLap, setIpLap] = useState('172.16.105.229');
     const [appIsReady, setAppIsReady] = useState(false);
 
     useEffect(() => {

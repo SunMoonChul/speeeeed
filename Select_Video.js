@@ -25,7 +25,7 @@ export const pickVideoFromGallery = async () => {
 
         axios({
             method: 'post',
-            url: 'https://972d-222-118-68-94.ngrok-free.app/imgtoss',
+            url: 'https://5763-222-118-68-94.ngrok-free.app/imgtoss',
             data: formData,
             headers: { 'Content-Type': 'multipart/form-data' },
         })

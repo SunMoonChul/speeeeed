@@ -1,5 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, ImageBackground, Alert, Image, SafeAreaView } from 'react-native';
+import {
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+    ImageBackground,
+    Alert,
+    Image,
+    SafeAreaView,
+    ActivityIndicator,
+} from 'react-native';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import IpContext from './IpContext';
 import * as Location from 'expo-location';
@@ -11,6 +21,7 @@ import { pickVideoFromGallery } from './Select_Video';
 export default function Main() {
     const [fontsLoaded, setFontsLoaded] = useState(false); //폰트
     const context = useContext(IpContext); //그 ip 보관소
+    const [isLoading, setIsLoading] = useState(false); //영상 전송 로딩
 
     const [speed, setSpeed] = useState(0); //속도
     const [prevSpeed, setPrevSpeed] = useState(0); // 이전 속도
@@ -25,6 +36,13 @@ export default function Main() {
 
     const gotoMyFail = () => {
         navigation.navigate('Sanctions');
+    };
+
+    //영상 전송 로딩
+    const handlePress = async () => {
+        setIsLoading(true);
+        await pickVideoFromGallery();
+        setIsLoading(false);
     };
 
     const today = new Date(); //오늘시간
@@ -176,9 +194,7 @@ export default function Main() {
     return (
         <SafeAreaView style={styles.image}>
             <View style={styles.logoview}>
-                <TouchableOpacity onPress={() => navigation.navigate('Tyrano')}>
-                    <Image source={require('./assets/logocrop.png')} style={styles.logo}></Image>
-                </TouchableOpacity>
+                <Image source={require('./assets/logocrop.png')} style={styles.logo}></Image>
             </View>
             <View style={styles.topview}>
                 <View style={styles.kmfontview}>
@@ -269,10 +285,14 @@ export default function Main() {
                     </TouchableOpacity>
                 </View>
                 <View style={styles.viewst}>
-                    <TouchableOpacity style={styles.reportbutton} onPress={pickVideoFromGallery}>
-                        <Image source={require('./icons/report.png')} style={{ width: 50, height: 50 }}></Image>
-                        <Text style={{ fontSize: 40, fontFamily: 'Kingt' }}>제보하기</Text>
-                    </TouchableOpacity>
+                    {isLoading ? (
+                        <ActivityIndicator size="large" color="#0000ff" />
+                    ) : (
+                        <TouchableOpacity style={styles.reportbutton} onPress={handlePress}>
+                            <Image source={require('./icons/report.png')} style={{ width: 50, height: 50 }}></Image>
+                            <Text style={{ fontSize: 40, fontFamily: 'Kingt' }}>제보하기</Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
                 {/* 광고 배너 */}
                 <View style={styles.addview}>
