@@ -83,7 +83,8 @@ export default function Main() {
 
             const watchId = await Location.watchPositionAsync(
                 {
-                    accuracy: Location.Accuracy.High, //정확도 민감
+                    // High, Highest, BestForNavigation 10m, 가장 높은, 네비 전용 정확도 ios 전용
+                    accuracy: Location.Accuracy.BestForNavigation,
                     timeInterval: 1000, // 위치정보 업데이트 간격 1초 안의
                     distanceInterval: 0, // 위치 변할 때마다 알림
                 },
@@ -95,7 +96,7 @@ export default function Main() {
                     setSpeed(currentSpeed);
                     if (currentSpeed >= 0) {
                         // 속도가 1초 이내에 20km 이상 올라가면 '급가속'
-                        if (currentSpeed - prevSpeed >= 20 && currentTimems - lastActionTime >= 10000) {
+                        if (currentSpeed - prevSpeed >= 2 && currentTimems - lastActionTime >= 10000) {
                             // console.log('급가속 ' + 'cs : ' + currentSpeed + ',ps : ' + prevSpeed);
                             setIsRapid(true);
 
@@ -121,7 +122,7 @@ export default function Main() {
                                 });
                         }
                         // 속도가 1초 이내에 20km 이상 내려가면 '급감속'
-                        else if (prevSpeed - currentSpeed >= 20 && currentTimems - lastActionTime >= 10000) {
+                        else if (prevSpeed - currentSpeed >= 2 && currentTimems - lastActionTime >= 10000) {
                             // console.log('급감속 ' + 'cs : ' + currentSpeed + ',ps : ' + prevSpeed);
                             setIsRapid(true);
 
@@ -198,10 +199,10 @@ export default function Main() {
             </View>
             <View style={styles.topview}>
                 <View style={styles.kmfontview}>
-                    {/* <View>
-                        {latitude && <Text style={{ fontSize: 10 }}>위도: {latitude.toFixed(6)}</Text>}
-                        {longitude && <Text style={{ fontSize: 10 }}>경도: {longitude.toFixed(6)}</Text>}
-                    </View> */}
+                    <View>
+                        {latitude && <Text style={{ fontSize: 14 }}>위도: {latitude.toFixed(6)}</Text>}
+                        {longitude && <Text style={{ fontSize: 14 }}>경도: {longitude.toFixed(6)}</Text>}
+                    </View>
                     <Text style={[styles.speedfont2, isRapid ? { color: 'red' } : {}]}>
                         {Math.max(0, speed).toFixed(0)} km/h
                     </Text>

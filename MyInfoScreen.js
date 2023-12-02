@@ -132,7 +132,7 @@ export default function MyInfo() {
                     <Text>위도 : {item.latitude}</Text>
                     <Text>경도 : {item.longitude}</Text>
                     <Text>
-                        주소 : {item.address.region},{item.address.city}, {item.address.street}
+                        주소 : {item.address.region} {item.address.city} {item.address.street}
                     </Text>
                 </View>
                 <Text
