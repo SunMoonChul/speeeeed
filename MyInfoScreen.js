@@ -137,11 +137,11 @@ export default function MyInfo() {
                 <TouchableOpacity style={styles.button1}>
                     <View style={{ flexDirection: 'row', flex: 0, justifyContent: 'space-between', width: '100%' }}>
                         <Text style={styles.button2_text}>신고 횟수</Text>
-                        <Text style={styles.button2_text2}>{context.reportcnt} 회</Text>
+                        <Text style={styles.button2_text2}>{context.reportCnt} 회</Text>
                     </View>
                     <View style={{ flexDirection: 'row', flex: 0, justifyContent: 'space-between', width: '100%' }}>
                         <Text style={styles.button2_text}>신고받은 횟수</Text>
-                        <Text style={styles.button2_text2}>{context.reportedcnt} 회</Text>
+                        <Text style={styles.button2_text2}>{context.reportedCnt} 회</Text>
                     </View>
                     <View style={{ flexDirection: 'row', flex: 0, justifyContent: 'space-between', width: '100%' }}>
                         <Text style={styles.button2_text}>급가속/감속 횟수</Text>

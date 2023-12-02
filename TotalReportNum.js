@@ -13,13 +13,13 @@ export default function TotalReportNum() {
       .post(`http://${context.ipLap}:3003/toReport`, {
         userName: context.numplate,
       })
-      .then((response) => setPosts(response.data.results))
+      .then((response) => setPosts([response.data.results][0]))
       .catch((error) => console.error(error));
   }, []);
 
   const PostItem = ({ item }) => {
     const filename = item.img_path.split('\\').pop();
-    console.log('이미지 이름 : ' + filename)
+
     return (
         <View style={styles.post}>
             <Text style={styles.date}>{item.date}</Text>
@@ -32,20 +32,7 @@ export default function TotalReportNum() {
         </View>
     );
 
-    return (
-      <View style={styles.post}>
-        <Text style={styles.date}>{item.date}</Text>
-        <View style={styles.imageContainer}>
-          <Image
-            style={styles.image}
-            source={{ uri: `http://${context.ipLap}:3003/images/${filename}` }}
-            onError={(error) => console.log(error.nativeEvent.error)}
-          />
-        </View>
-        <Text style={styles.content}> 신고한 차 번호 : {item.other_np}</Text>
-      </View>
-    );
-  };
+  }
 
   return (
     <SafeAreaView style={styles.container}>

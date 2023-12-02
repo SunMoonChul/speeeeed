@@ -27,6 +27,45 @@ export default function PickVideoFromGallery() {
         if (!result.cancelled) {
             let localUri = result.assets[0].uri;
             let filename = localUri.split('/').pop();
+            
+            //신고횟수+1
+            let report = context.reportCnt + 1;
+
+            //임의 신고 정보
+            const data = { 
+                my_np: context.numplate, 
+                other_np: '11부1111', 
+                date: '234r3', 
+                img_path: 'C:\\Users\\enqn\\Pictures\\aa.jpg',
+                record: context.record, 
+            }
+
+            //신고횟수요청
+            axios.post(`http://${context.ipLap}:3003/updateCnt`, data)
+                .then(response => {
+                    if (response.data.success) {
+                        context.setTotRecord(response.data.newTotRecord);
+                        navigation.navigate('Main');
+                    }
+                    else {
+                        alert(response.data.message); // 실패 메시지 표시
+                    }
+                })
+                // axios.post(`http://${context.ipLap}:3003/ReportCnt`, { numplate: context.numplate })
+                // .then(response => {
+                //     if (response.data.success) {
+                //         console.log(response.data.newCnt);
+                //         context.setReportCnt(response.data.newCnt);
+                //         navigation.navigate('Main');
+                //     }
+                //     else {
+                //         alert(response.data.message); // 실패 메시지 표시
+                //     }
+                // })
+                .catch(error => {
+                    console.error('There was an error!', error);
+                });
+            context.setReportCnt(report);
 
             console.log('np: ', context.numplate);
             let formData = new FormData();
@@ -51,5 +90,9 @@ export default function PickVideoFromGallery() {
                     console.log(error);
                 });
         }
+        else {
+            navigation.navigate('Main');
+        }
+        navigation.navigate('Main');
     };
 }
