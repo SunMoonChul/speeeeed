@@ -1,46 +1,52 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, ImageBackground, Alert, Image, SafeAreaView } from 'react-native';
-import { useNavigation, useIsFocused } from '@react-navigation/native';
+import {
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+    ImageBackground,
+    Alert,
+    Image,
+    SafeAreaView,
+    ActivityIndicator,
+} from 'react-native';
+import { useNavigation, CommonActions } from '@react-navigation/native';
 import IpContext from './IpContext';
 import * as Location from 'expo-location';
 import axios from 'axios';
-import { pickVideoFromGallery } from './Select_Video';
 import * as Progress from 'react-native-progress';
 import Swiper from 'react-native-swiper';
-import TotalReportNum from './TotalReportNum';
+import { pickVideoFromGallery } from './Select_Video';
 
 export default function Main() {
-    const [fontsLoaded, setFontsLoaded] = useState(false);
-    const context = useContext(IpContext);
-    const navigation = useNavigation();
-    const isFocused = useIsFocused();
+    const [fontsLoaded, setFontsLoaded] = useState(false); //폰트
+    const context = useContext(IpContext); //그 ip 보관소
+    const [isLoading, setIsLoading] = useState(false); //영상 전송 로딩
 
-    const [speed, setSpeed] = useState(0);
+    const [speed, setSpeed] = useState(0); //속도
     const [prevSpeed, setPrevSpeed] = useState(0); // 이전 속도
-    const [latitude, setLatitude] = useState(null);
+    const [latitude, setLatitude] = useState(null); //위도 경도
     const [longitude, setLongitude] = useState(null);
-    const [message, setMessage] = useState(''); // 급가속 또는 급정거 메시지
-    const [upCnt, setUpCnt] = useState(0); // 급가속 또는 급정거 횟수
-    const [downCnt, setDownCnt] = useState(0); // 급가속 또는 급정거 횟수
-    const [overCnt, setOverCnt] = useState(0); // 급가속 또는 급정거 횟수
 
-    const [isOverSpeed, setIsOverSpeed] = useState(false); // 과속 상태를 저장하는 상태 변수
-    const [lastActionTime, setLastActionTime] = useState(0); // 마지막으로 동작한 시점 (밀리초)
+    const navigation = useNavigation(); //이동기
 
-    
     const gotoMyInfo = () => {
-        console.log(`${context.numplate}님이 도로를 정화시켜 준 시간`);
         navigation.navigate('MyInfo');
     };
 
     const gotoMyFail = () => {
-        console.log('내가 잠시 도로 위의 무법자가 되었던 횟수');
         navigation.navigate('Sanctions');
     };
 
+    //영상 전송 로딩
+    const handlePress = async () => {
+        setIsLoading(true);
+        await pickVideoFromGallery();
+        setIsLoading(false);
+    };
+
     const today = new Date(); //오늘시간
-    const currentTimems = Date.now(); // 현재 시간 (밀리초)
-    const currenttime =
+    const currenttime = //년월일시간분초
         today.getFullYear() +
         '/' +
         (today.getMonth() + 1) +
@@ -53,97 +59,137 @@ export default function Main() {
         ':' +
         today.getSeconds();
 
+    const [isOverSpeed, setIsOverSpeed] = useState(false); // 과속 상태를 저장하는 상태 변수
+    const [lastActionTime, setLastActionTime] = useState(0); // 마지막으로 동작한 시점 (밀리초)
+    const [isRapid, setIsRapid] = useState(false); // 급가속, 급감속, 과속 상태
+
     useEffect(() => {
-        if (!isFocused) {
-            return;
+        if (isRapid) {
+            const timer = setTimeout(() => {
+                setIsRapid(false); // 상태 초기화
+            }, 2000); // 1초 후에 색상이 원래대로 돌아갑니다.
+
+            return () => clearTimeout(timer);
         }
         (async () => {
+            //위치 권한
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
                 console.log('Permission to access location was denied');
                 return;
             }
 
-            const sendDataToServer = async (accelValue) => {
-                try {
-                    const response = await axios.post(`http://${context.ipLap}:3003/accel`, {
-                        user: context.numplate,
-                        time: currenttime,
-                        accel: accelValue,
-                        record: context.totRecord,
-                    });
-
-                    console.log(response.data);
-                    if (accelValue === 2) {
-                        context.setTotRecord = response.data.newTotRecord;
-                        let totRecord = response.data.newTotRecord;
-                        let level = parseInt(totRecord / 100 + 1);
-                        context.setLevel(level);
-                        context.setRecord(totRecord - ((level - 1) * 100));
-                        console.log('과속 완');
-                    } else {
-                        console.log(accelValue === 0 ? '급가속 완' : '급감속 완');
-                    }
-                } catch (error) {
-                    console.error(error);
-                }
-            }
+            let prevSpeed = 0; // 초기 이전 속도
 
             const watchId = await Location.watchPositionAsync(
                 {
-                    accuracy: Location.Accuracy.High,
+                    accuracy: Location.Accuracy.High, //정확도 민감
                     timeInterval: 1000, // 위치정보 업데이트 간격 1초 안의
                     distanceInterval: 0, // 위치 변할 때마다 알림
                 },
-                async (position) => {
-                    if (!isFocused) {
-                        return;
-                    }
+                (position) => {
                     const currentSpeed = (position.coords.speed || 0) * 3.6;
+                    const currentTimems = Date.now(); // 현재 시간 (밀리초)
 
-                    // 속도가 1초 이내에 20km 이상 올라가면 '급가속'
-                    if (currentSpeed - prevSpeed >= 2 && currentTimems - lastActionTime >= 10000) {
-                        setUpCnt((upCnt) => upCnt + 1); // 카운트 증가
-                        console.log('급가속');
-                        console.log(`http://${context.ipLap}:3003/accel`);
-                        setLastActionTime(currentTimems); // 마지막 동작 시간 갱신
+                    // 현재 속도와 시간을 업데이트
+                    setSpeed(currentSpeed);
+                    if (currentSpeed >= 0) {
+                        // 속도가 1초 이내에 20km 이상 올라가면 '급가속'
+                        if (currentSpeed - prevSpeed >= 20 && currentTimems - lastActionTime >= 10000) {
+                            // console.log('급가속 ' + 'cs : ' + currentSpeed + ',ps : ' + prevSpeed);
+                            setIsRapid(true);
 
-                        // 여기에서 서버에 데이터를 전송합니다.
-                        await sendDataToServer(0);
-                    }
-                    // 속도가 1초 이내에 20km 이상 내려가면 '급감속'
-                    else if (prevSpeed - currentSpeed >= 20 && currentTimems - lastActionTime >= 10000) {
-                        setDownCnt((downCnt) => downCnt + 1); // 카운트 증가
-                        console.log('급감속');
-                        console.log(`http://${context.ipLap}:3003/accel`);
+                            // 여기에서 서버에 데이터를 전송합니다.
+                            axios
+                                .post(`http://${context.ipLap}:3003/accel`, {
+                                    user: context.numplate,
+                                    time: currenttime,
+                                    latitude: latitude ? latitude.toFixed(6) : null,
+                                    longitude: longitude ? longitude.toFixed(6) : null,
+                                    accel: 0,
+                                    record: context.totRecord,
+                                })
+                                .then((response) => {
+                                    console.log('급가속 완' + response.data);
+                                    // 마지막 동작 시간 갱신
+                                    setLastActionTime(currentTimems);
+                                    console.log(currenttime);
+                                })
+                                .catch((error) => {
+                                    console.error(error);
+                                    // 마지막 동작 시간 갱신
+                                    setLastActionTime(currentTimems);
+                                });
+                        }
+                        // 속도가 1초 이내에 20km 이상 내려가면 '급감속'
+                        else if (prevSpeed - currentSpeed >= 20 && currentTimems - lastActionTime >= 10000) {
+                            // console.log('급감속 ' + 'cs : ' + currentSpeed + ',ps : ' + prevSpeed);
+                            setIsRapid(true);
 
-                        setLastActionTime(currentTimems); // 마지막 동작 시간 갱신
+                            // 여기에서 서버에 데이터를 전송합니다.
+                            axios
+                                .post(`http://${context.ipLap}:3003/accel`, {
+                                    user: context.numplate,
+                                    time: currenttime,
+                                    latitude: latitude ? latitude.toFixed(6) : null,
+                                    longitude: longitude ? longitude.toFixed(6) : null,
+                                    accel: 1,
+                                    record: context.totRecord,
+                                })
+                                .then((response) => {
+                                    console.log('급감속 완 ' + response.data);
+                                    // 마지막 동작 시간 갱신
+                                    setLastActionTime(currentTimems);
+                                    console.log(currenttime);
+                                })
+                                .catch((error) => {
+                                    console.error(error);
+                                    // 마지막 동작 시간 갱신
+                                    setLastActionTime(currentTimems);
+                                });
+                        }
+                        // 과속 - 2로 표시
+                        if (currentSpeed > 110) {
+                            setIsRapid(true);
+                            if (!isOverSpeed) {
+                                // 과속 상태가 아닐 때만 실행
+                                setIsOverSpeed(true); // 과속 상태로 설정
 
-                        await sendDataToServer(1);
-                    } else {
-                        setMessage('');
-                    }
-                    // 과속 2
-                    if (currentSpeed > 110) {
-                        if (!isOverSpeed) {
-                            // 과속 상태가 아닐 때만 실행
-                            setIsOverSpeed(true); // 과속 상태로 설정
+                                // 5초 후에 과속 상태를 해제
+                                setTimeout(() => {
+                                    setIsOverSpeed(false);
+                                }, 5000);
 
-                            // 5초 후에 과속 상태를 해제
-                            setTimeout(() => {
-                                setIsOverSpeed(false);
-                            }, 5000);
-
-                            setOverCnt((overCnt) => overCnt + 1); // 카운트 증가
-                            console.log('과속');
-                            console.log(`http://${context.ipLap}:3003/accel`);
-
-                            await sendDataToServer(2);
+                                // 과속 상태일 때만 서버에 데이터를 전송
+                                axios
+                                    .post(`http://${context.ipLap}:3003/accel`, {
+                                        user: context.numplate,
+                                        time: currenttime,
+                                        latitude: latitude ? latitude.toFixed(6) : null,
+                                        longitude: longitude ? longitude.toFixed(6) : null,
+                                        accel: 2,
+                                        record: context.totRecord,
+                                    })
+                                    .then((response) => {
+                                        context.setTotRecord = response.data.newTotRecord;
+                                        let totRecord = response.data.newTotRecord;
+                                        let level = parseInt(totRecord / 100 + 1);
+                                        context.setLevel(level);
+                                        context.setRecord(totRecord - ((level - 1) * 100));
+                                        console.log('과속 완' + response.data);
+                                        // 마지막 동작 시간 갱신
+                                        setLastActionTime(currentTimems);
+                                        console.log(currenttime);
+                                    })
+                                    .catch((error) => {
+                                        console.error(error);
+                                        // 마지막 동작 시간 갱신
+                                        setLastActionTime(currentTimems);
+                                    });
+                            }
                         }
                     }
-
                     setPrevSpeed(speed); // 이전 속도 업데이트
-                    setSpeed(currentSpeed);
                     setLatitude(position.coords.latitude);
                     setLongitude(position.coords.longitude);
                 }
@@ -151,7 +197,7 @@ export default function Main() {
 
             return () => watchId.remove();
         })();
-    }, [isFocused]);
+    }, [isRapid]);
 
     return (
         <SafeAreaView style={styles.image}>
@@ -160,9 +206,14 @@ export default function Main() {
             </View>
             <View style={styles.topview}>
                 <View style={styles.kmfontview}>
-                    <Text style={styles.speedfont2}>{Math.max(0, speed).toFixed(0)} km/h</Text>
+                    {/* <View>
+                        {latitude && <Text style={{ fontSize: 10 }}>위도: {latitude.toFixed(6)}</Text>}
+                        {longitude && <Text style={{ fontSize: 10 }}>경도: {longitude.toFixed(6)}</Text>}
+                    </View> */}
+                    <Text style={[styles.speedfont2, isRapid ? { color: 'red' } : {}]}>
+                        {Math.max(0, speed).toFixed(0)} km/h
+                    </Text>
                 </View>
-
                 <View style={styles.viewst}>
                     <TouchableOpacity style={styles.topbutton} onPress={gotoMyInfo}>
                         <View style={{ flexDirection: 'row', flex: 0, justifyContent: 'space-between', width: '100%' }}>
@@ -201,6 +252,7 @@ export default function Main() {
                                 width: '100%',
                                 paddingStart: '2%',
                                 fontSize: 20,
+                                fontFamily: 'Kingt',
                             }}
                         >
                             Lv.{context.level}
@@ -211,40 +263,44 @@ export default function Main() {
                 <View style={styles.viewst}>
                     <TouchableOpacity style={styles.twinbutton} onPress={() => navigation.navigate('TotalReportNum')}>
                         <Text
-                            style={{ justifyContent: 'flex-start', width: '100%', fontSize: 19, fontFamily: 'Kingt' }}
+                            style={{ justifyContent: 'flex-start', width: '100%', fontSize: 17, fontFamily: 'Kingt' }}
                         >
-                            신고 횟수
+                            신고 횟수{'\n'}
                         </Text>
-                        <Text style={{ color: '#BFBFBF' }}>──────────</Text>
+                        <Text style={{ color: '#BFBFBF' }}>───────────</Text>
                         {/* 이거 디비에서 끌고와서 바뀌게 해야함 */}
                         <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-                            <Text style={{ fontSize: 50, color: '#3b5998' }}>{context.reportCnt}</Text>
-                            <Text style={{ fontSize: 30, marginStart: 20, marginBottom: 5 }}>
+                            <Text style={{ fontSize: 50, fontFamily: 'Kingt', color: '#3b5998' }}>{context.reportCnt}</Text>
+                            <Text style={{ fontSize: 30, marginStart: 20, marginBottom: 5, fontFamily: 'Kingt' }}>
                                 회
                             </Text>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.twinbutton} onPress={gotoMyFail}>
                         <Text
-                            style={{ justifyContent: 'flex-start', width: '100%', fontSize: 19, fontFamily: 'Kingt' }}
+                            style={{ justifyContent: 'flex-start', width: '100%', fontSize: 17, fontFamily: 'Kingt' }}
                         >
-                            신고받은 횟수
+                            신고당한 횟수{'\n'}
                         </Text>
-                        <Text style={{ color: '#BFBFBF' }}>──────────</Text>
+                        <Text style={{ color: '#BFBFBF' }}>───────────</Text>
                         {/* 이거 디비에서 끌고와서 바뀌게 해야함 */}
                         <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-                            <Text style={{ fontSize: 50, color: '#3b5998' }}>{context.reportedCnt}</Text>
-                            <Text style={{ fontSize: 30, marginStart: 20, marginBottom: 5 }}>
+                            <Text style={{ fontSize: 50, fontFamily: 'Kingt', color: '#3b5998' }}>{context.reportedCnt}</Text>
+                            <Text style={{ fontSize: 30, marginStart: 20, marginBottom: 5, fontFamily: 'Kingt' }}>
                                 회
                             </Text>
                         </View>
                     </TouchableOpacity>
                 </View>
                 <View style={styles.viewst}>
-                    <TouchableOpacity style={styles.reportbutton} onPress={pickVideoFromGallery}>
-                        <Image source={require('./icons/report.png')} style={{ marginTop: 10, width: 50, height: 50 }}></Image>
-                        <Text style={{ fontSize: 40, fontFamily: 'Kingt' }}>제보하기</Text>
-                    </TouchableOpacity>
+                    {isLoading ? (
+                        <ActivityIndicator size="large" color="#0000ff" />
+                    ) : (
+                        <TouchableOpacity style={styles.reportbutton} onPress={handlePress}>
+                            <Image source={require('./icons/report.png')} style={{ width: 50, height: 50 }}></Image>
+                            <Text style={{ fontSize: 40, fontFamily: 'Kingt' }}>제보하기</Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
                 {/* 광고 배너 */}
                 <View style={styles.addview}>
@@ -254,7 +310,7 @@ export default function Main() {
                         autoplay
                         loop
                         spaceBetween={100}
-                        paginationStyle={{ top: '90%', left: '80%' }}
+                        paginationStyle={{ top: '85%', left: '80%' }}
                         dotColor={'#3b5998'}
                     >
                         <ImageBackground
@@ -302,7 +358,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Kingt',
     },
     speedfont2: {
-        fontSize: 55,
+        fontSize: 70,
         fontFamily: 'Kingt',
     },
     image: {
@@ -340,6 +396,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#E3E3E3',
         padding: 10,
+        paddingBottom: -10,
         borderColor: 'black', // 테두리 색상 설정
         margin: '2%',
         width: '100%',

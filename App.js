@@ -11,6 +11,7 @@ import MyInfoScreen from './MyInfoScreen';
 import IpContext from './IpContext';
 import TotalReportNum from './TotalReportNum';
 import Sanctions from './Sanctions';
+import Tyrano from './Tyrano';
 import * as SplashScreen from 'expo-splash-screen';
 import { setCustomText } from 'react-native-global-props'; //폰트 친구
 
@@ -108,6 +109,7 @@ export default function App() {
                         <Stack.Screen name="MyInfo" component={MyInfoScreen} />
                         <Stack.Screen name="TotalReportNum" component={TotalReportNum} />
                         <Stack.Screen name="Sanctions" component={Sanctions} />
+                        <Stack.Screen name="Tyrano" component={Tyrano} />
                     </Stack.Navigator>
                 </NavigationContainer>
             </View>

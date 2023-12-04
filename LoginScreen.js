@@ -20,32 +20,30 @@ export default function LoginScreen() {
             pw: pw,
         };
 
-        try {
-            const response = await axios.post(`http://${context.ipLap}:3003/login`, data);
-
-            if (response.data.success) {
-                console.log(response.data);
-                context.setId(id);
-                context.setNumplate(response.data.numplate);
-                setNumplate(response.data.numplate);
-                context.setTotRecord(response.data.record);
-                let totRecord = response.data.record;
-                let level = parseInt(totRecord / 100 + 1);
-                context.setLevel(level);
-                context.setRecord(totRecord - ((level - 1) * 100));
-                context.setReportCnt(response.data.reportCnt);
-                context.setReportedCnt(response.data.reportedCnt);
-
-                // 모든 데이터 처리가 완료된 후에만 Main 페이지로 이동
-                navigation.navigate('Main');
-            } else {
-                alert(response.data.message); // 실패 메시지 표시
-                return
-            }
-
-        } catch (error) {
-            console.error(error);
-        }
+        axios
+            .post(`http://${context.ipLap}:3003/login`, data)
+            .then(async (response) => {
+                if (response.data.success) {
+                    console.log(response.data.user);
+                    context.setId(id);
+                    context.setNumplate(response.data.user.numplate);
+                    context.setTotRecord(response.data.user.record);
+                    const totRecord = response.data.user.record;
+                    let level = parseInt(totRecord / 100);
+                    context.setLevel(level);
+                    context.setRecord(totRecord - level * 100);
+                    console.log('record: ', totRecord - level * 100);
+                    console.log(context.record);
+                    navigation.navigate('Main');
+                    setId('');
+                    setPw('');
+                } else {
+                    alert(response.data.message); // 실패 메시지 표시
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     };
 
 

@@ -318,11 +318,11 @@ app.post('/getSanctions', (req, res) => {
 
 app.post('/accel', (req, res) => {
     //급가속 0
-    const insertSql = `INSERT INTO accelerator(user, time, accel) VALUES(?, ?, ?)`;
-    const { user, time, accel, record} = req.body; // userName, time, accel 값을 req.body에서 가져옵니다.
+    const insertSql = `INSERT INTO accelerator(user, time, latitude, longitude, accel) VALUES(?, ?, ?, ?, ?)`;
+    const { user, time, latitude, longitude, accel, record } = req.body; // userName, time, accel 값을 req.body에서 가져옵니다.
     const newTotRecord = record-3;
 
-    connection.query(insertSql, [user, time, accel], (errInsert, resultInsert) => {
+    connection.query(insertSql, [user, time, latitude, longitude, accel], (errInsert, resultInsert) => {
         if (errInsert) {
             console.error('데이터 저장 실패', errInsert);
             res.json({
