@@ -55,7 +55,7 @@ export default function Main() {
             const fetchData = async () => {
                 try {
                     axios
-                        .post(`http://${context.ipLap}:3003/main`, {
+                        .post(`https://${context.ipLap}/main`, {
                             numplate: context.numplate,
                         })
                         .then((response) => {
@@ -119,7 +119,7 @@ export default function Main() {
 
                             // 여기에서 서버에 데이터를 전송합니다.
                             axios
-                                .post(`http://${context.ipLap}:3003/accel`, {
+                                .post(`https://${context.ipLap}/accel`, {
                                     user: context.numplate,
                                     time: currenttime,
                                     latitude: latitude ? latitude.toFixed(6) : null,
@@ -146,7 +146,7 @@ export default function Main() {
 
                             // 여기에서 서버에 데이터를 전송합니다.
                             axios
-                                .post(`http://${context.ipLap}:3003/accel`, {
+                                .post(`https://${context.ipLap}/accel`, {
                                     user: context.numplate,
                                     time: currenttime,
                                     latitude: latitude ? latitude.toFixed(6) : null,
@@ -180,7 +180,7 @@ export default function Main() {
 
                                 // 과속 상태일 때만 서버에 데이터를 전송
                                 axios
-                                    .post(`http://${context.ipLap}:3003/accel`, {
+                                    .post(`https://${context.ipLap}/accel`, {
                                         user: context.numplate,
                                         time: currenttime,
                                         latitude: latitude ? latitude.toFixed(6) : null,

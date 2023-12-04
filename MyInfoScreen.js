@@ -25,7 +25,7 @@ export default function MyInfo() {
     useEffect(() => {
         const fetchMyInfo = async () => {
             try {
-                const response = await axios.post(`http://${context.ipLap}:3003/myInfo`, {
+                const response = await axios.post(`https://${context.ipLap}/myInfo`, {
                     numplate: context.numplate,
                 });
 
@@ -89,7 +89,7 @@ export default function MyInfo() {
 
     const logoutaxios = () => {
         axios
-            .post(`http://${context.ipLap}:3003/logout`)
+            .post(`https://${context.ipLap}/logout`)
             .then((response) => {
                 if (response.data.success) {
                     console.log(response.data.message);

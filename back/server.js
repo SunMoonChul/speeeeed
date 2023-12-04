@@ -272,48 +272,6 @@ app.post('/signUp', (req, res) => {
     });
 });
 
-app.post('/login', (req, res) => {
-    const { id, pw } = req.body;
-
-    const sql = `SELECT id, AES_DECRYPT(unhex(pw), 'a'), AES_DECRYPT(unhex(numplate), 'b'), record FROM userinfo WHERE userinfo.id = ?`;
-
-    connection.query(sql, [id], (err, results) => {
-        if (err) {
-            console.error('쿼리 실행 실패:', err);
-            res.status(500).send('Internal Server Error');
-            return;
-        }
-
-        else if (results.length === 0) {
-            // 일치하는 아이디가 없는 경우
-            res.json({ success: false, message: '일치하는 아이디가 없습니다.' });
-            return;
-        }
-
-        const user = results[0];
-        console.log('user: ', results[0]["AES_DECRYPT(unhex(pw), 'a')"]);
-        const pw2 = results[0]["AES_DECRYPT(unhex(pw), 'a')"].toString();
-        const numplate2 = results[0]["AES_DECRYPT(unhex(numplate), 'b')"].toString();
-        if (pw2 !== pw) {
-            // 비밀번호가 일치하지 않는 경우
-            res.json({ success: false, message: '비밀번호가 일치하지 않습니다.' });
-        } else {
-            // 로그인 성공
-            req.session.uid = user.id;
-            req.session.isLogined = true;
-
-            req.session.save((err) => {
-                if (err) {
-                    console.error('세션 저장 실패: ', err);
-                    res.status(500).send('Internal Server Error');
-                    return;
-                }
-            });
-            res.json({ success: true, message: '회원가입 성공' });
-        }
-    });
-});
-
 
 app.post('/login', (req, res) => {
     const { id, pw } = req.body;
