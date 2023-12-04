@@ -1,16 +1,6 @@
-import React, { useState, useEffect, useContext } from 'react';
-import {
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-    ImageBackground,
-    Alert,
-    Image,
-    SafeAreaView,
-    ActivityIndicator,
-} from 'react-native';
-import { useNavigation, CommonActions } from '@react-navigation/native';
+import React, { useState, useEffect, useContext} from 'react';
+import { StyleSheet, Text, TouchableOpacity, View, ImageBackground, Image, SafeAreaView, ActivityIndicator,} from 'react-native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import IpContext from './IpContext';
 import * as Location from 'expo-location';
 import axios from 'axios';
@@ -39,10 +29,8 @@ export default function Main() {
     };
 
     //영상 전송 로딩
-    const handlePress = async () => {
-        setIsLoading(true);
-        await pickVideoFromGallery();
-        setIsLoading(false);
+    const handlePress = () => {
+        navigation.navigate('PickVideo');
     };
 
     const today = new Date(); //오늘시간
@@ -52,7 +40,7 @@ export default function Main() {
         (today.getMonth() + 1) +
         '/' +
         today.getDate() +
-        '_' +
+        ' ' +
         today.getHours() +
         ':' +
         today.getMinutes() +
@@ -62,6 +50,37 @@ export default function Main() {
     const [isOverSpeed, setIsOverSpeed] = useState(false); // 과속 상태를 저장하는 상태 변수
     const [lastActionTime, setLastActionTime] = useState(0); // 마지막으로 동작한 시점 (밀리초)
     const [isRapid, setIsRapid] = useState(false); // 급가속, 급감속, 과속 상태
+
+    useFocusEffect(
+        React.useCallback(() => {
+            const fetchData = async () => {
+                try {
+                    axios
+                        .post(`http://${context.ipLap}:3003/main`, {
+                            numplate: context.numplate,
+                        })
+                        .then((response) => {
+                            console.log(response.data);
+                            context.setReportCnt(response.data.reportCnt);
+                            context.setReportedCnt(response.data.reportedCnt);
+                            context.setTotRecord(response.data.totRecord);
+                            let newTotRecord = response.data.totRecord;
+                            let level = parseInt(newTotRecord / 100 + 1);
+                            context.setLevel(level);
+                            context.setRecord(newTotRecord - ((level - 1) * 100));
+                        })
+                        .catch((error) => {
+                            console.error(error);
+                        });
+                } catch (error) {
+                    console.error('There was an error!', error);
+                }
+            };
+            fetchData();
+
+            // ... 기존 코드 ...
+        }, []) // 의존성 배열에 필요한 변수를 추가하세요.
+    );
 
     useEffect(() => {
         if (isRapid) {
@@ -263,11 +282,11 @@ export default function Main() {
                 <View style={styles.viewst}>
                     <TouchableOpacity style={styles.twinbutton} onPress={() => navigation.navigate('TotalReportNum')}>
                         <Text
-                            style={{ justifyContent: 'flex-start', width: '100%', fontSize: 17, fontFamily: 'Kingt' }}
+                            style={{ justifyContent: 'flex-start', width: '100%', fontSize: 18, fontFamily: 'Kingt' }}
                         >
-                            신고 횟수{'\n'}
+                            신고 횟수
                         </Text>
-                        <Text style={{ color: '#BFBFBF' }}>───────────</Text>
+                        <Text style={{ color: '#BFBFBF' }}>─────────</Text>
                         {/* 이거 디비에서 끌고와서 바뀌게 해야함 */}
                         <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
                             <Text style={{ fontSize: 50, fontFamily: 'Kingt', color: '#3b5998' }}>{context.reportCnt}</Text>
@@ -278,11 +297,11 @@ export default function Main() {
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.twinbutton} onPress={gotoMyFail}>
                         <Text
-                            style={{ justifyContent: 'flex-start', width: '100%', fontSize: 17, fontFamily: 'Kingt' }}
+                            style={{ justifyContent: 'flex-start', width: '100%', fontSize: 18, fontFamily: 'Kingt' }}
                         >
-                            신고당한 횟수{'\n'}
+                            신고당한 횟수
                         </Text>
-                        <Text style={{ color: '#BFBFBF' }}>───────────</Text>
+                        <Text style={{ color: '#BFBFBF' }}>──────────</Text>
                         {/* 이거 디비에서 끌고와서 바뀌게 해야함 */}
                         <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
                             <Text style={{ fontSize: 50, fontFamily: 'Kingt', color: '#3b5998' }}>{context.reportedCnt}</Text>
@@ -293,14 +312,10 @@ export default function Main() {
                     </TouchableOpacity>
                 </View>
                 <View style={styles.viewst}>
-                    {isLoading ? (
-                        <ActivityIndicator size="large" color="#0000ff" />
-                    ) : (
-                        <TouchableOpacity style={styles.reportbutton} onPress={handlePress}>
-                            <Image source={require('./icons/report.png')} style={{ width: 50, height: 50 }}></Image>
-                            <Text style={{ fontSize: 40, fontFamily: 'Kingt' }}>제보하기</Text>
-                        </TouchableOpacity>
-                    )}
+                    <TouchableOpacity style={styles.reportbutton} onPress={handlePress}>
+                        <Image source={require('./icons/report.png')} style={{ width: 50, height: 50 }}></Image>
+                        <Text style={{ fontSize: 40, fontFamily: 'Kingt' }}>제보하기</Text>
+                    </TouchableOpacity>
                 </View>
                 {/* 광고 배너 */}
                 <View style={styles.addview}>

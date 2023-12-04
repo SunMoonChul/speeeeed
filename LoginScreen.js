@@ -24,16 +24,9 @@ export default function LoginScreen() {
             .post(`http://${context.ipLap}:3003/login`, data)
             .then(async (response) => {
                 if (response.data.success) {
-                    console.log(response.data.user);
+                    console.log(response.data);
                     context.setId(id);
-                    context.setNumplate(response.data.user.numplate);
-                    context.setTotRecord(response.data.user.record);
-                    const totRecord = response.data.user.record;
-                    let level = parseInt(totRecord / 100);
-                    context.setLevel(level);
-                    context.setRecord(totRecord - level * 100);
-                    console.log('record: ', totRecord - level * 100);
-                    console.log(context.record);
+                    context.setNumplate(response.data.numplate);
                     navigation.navigate('Main');
                     setId('');
                     setPw('');

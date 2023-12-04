@@ -47,21 +47,33 @@ app.listen(port, '0.0.0.0', () => {
 });
 
 app.post('/getSanctions', (req, res) => {
-    let sql = 'SELECT my_np, img_path, other_np, date FROM report WHERE other_np = ?';
+    let sql = `SELECT id, AES_DECRYPT(unhex(my_np), 'm'), img_path, AES_DECRYPT(unhex(other_np), 'o'), date FROM report WHERE AES_DECRYPT(unhex(other_np), 'o') = ?`;
     let userName = req.body.userName;
     connection.query(sql, [userName], (err, results) => {
-        if (err) throw err;
-        console.log(results);
-        res.json({ results: results });
+        if (err) {
+            return res.status(500).json({ err });
+        }
+
+        let data = results.map(result => {
+            console.log(result);
+            return {
+                id: result.id,
+                my_np: result["AES_DECRYPT(unhex(my_np), 'm')"].toString('utf8'),
+                img_path: result.img_path,
+                other_np: result["AES_DECRYPT(unhex(other_np), 'o')"].toString('utf8'),
+                date: result.date
+            };
+        });
+
+        res.json({ results: data });
     });
 });
 
 app.post('/myInfo', (req, res) => {
     const { numplate } = req.body;
-    // const sql = `SELECT userinfo.record, accelerator.* FROM accelerator INNER JOIN userinfo ON userinfo.numplate = accelerator.hex(aes_encrypt(?,'b')) WHERE accelerator.user = ?`;
-    const sql = 'SELECT * FROM accelerator WHERE user = ?'
-    // const sql = `SELECT id, AES_DECRYPT(unhex(pw), 'a'), AES_DECRYPT(unhex(numplate), 'b'), record FROM userinfo WHERE userinfo.id = ?`;
 
+    //accelerator (id, user, time, accel, lat, long)
+    const sql = `SELECT * FROM accelerator WHERE AES_DECRYPT(unhex(user), 'u') = ?`
     connection.query(sql, [numplate], (err, result) => {
         if (err) {
             res.json({
@@ -70,42 +82,50 @@ app.post('/myInfo', (req, res) => {
             });
             return;
         }
-        const sql5 = `SELECT record FROM userinfo WHERE AES_DECRYPT(unhex(numplate), 'b') = ?`;
-        connection.query(sql5, [numplate], (err5, records) => {
-            if (err5) {
+
+        //급가속 횟수
+        const sql2 = `SELECT COUNT(*) FROM accelerator WHERE AES_DECRYPT(unhex(user), 'u') = ? AND accel = 0`; //급가속 횟수
+        connection.query(sql2, [numplate], (err2, upCnt) => {
+            if (err2) {
                 res.json({
                     success: false,
-                    message: err5
+                    message: err2
                 });
+                return;
             }
 
-            const sql2 = 'SELECT COUNT(*) FROM accelerator WHERE user = ? AND accel = 0'; //급가속 횟수
-            connection.query(sql2, [numplate], (err2, upCnt) => {
-                if (err2) {
+            //급감속 횟수
+            const sql3 = `SELECT COUNT(*) FROM accelerator WHERE AES_DECRYPT(unhex(user), 'u') = ? AND accel = 1`; //급감속 횟수
+            connection.query(sql3, [numplate], (err3, downCnt) => {
+                if (err3) {
                     res.json({
                         success: false,
-                        message: err2
+                        message: err3
                     });
                     return;
                 }
-                const sql3 = 'SELECT COUNT(*) FROM accelerator WHERE user = ? AND accel = 1'; //급감속 횟수
-                connection.query(sql3, [numplate], (err3, downCnt) => {
-                    if (err3) {
+
+                //과속 횟수
+                const sql4 = `SELECT COUNT(*) FROM accelerator WHERE AES_DECRYPT(unhex(user), 'u') = ? AND accel = 2`; //급가속 횟수
+                connection.query(sql4, [numplate], (err4, overCnt) => {
+                    if (err4) {
                         res.json({
                             success: false,
-                            message: err3
+                            message: err4
                         });
                         return;
                     }
-                    const sql4 = 'SELECT COUNT(*) FROM accelerator WHERE user = ? AND accel = 2'; //급가속 횟수
-                    connection.query(sql4, [numplate], (err4, overCnt) => {
-                        if (err4) {
+
+                    //총점
+                    const sql5 = `SELECT record FROM userinfo WHERE AES_DECRYPT(unhex(numplate), 'b') = ?`;
+                    connection.query(sql5, [numplate], (err5, records) => {
+                        if (err5) {
                             res.json({
                                 success: false,
-                                message: err4
+                                message: err5
                             });
-                            return;
                         }
+
                         res.json({ success: true, item: result, newTotRecord: records[0].record, upCnt: upCnt[0]['COUNT(*)'], downCnt: downCnt[0]['COUNT(*)'], overCnt: overCnt[0]['COUNT(*)'] });
                     });
                 });
@@ -116,36 +136,64 @@ app.post('/myInfo', (req, res) => {
 
 
 app.post('/toReport', (req, res) => {
-    let sql = 'SELECT my_np, img_path, other_np, date FROM report WHERE my_np = ?';
+    let sql = `SELECT id, AES_DECRYPT(unhex(my_np), 'm'), img_path, AES_DECRYPT(unhex(other_np), 'o'), date FROM report WHERE AES_DECRYPT(unhex(my_np), 'm') = ?`;
     let userName = req.body.userName;
     connection.query(sql, [userName], (err, results) => {
-        if (err) throw err;
-        console.log(results);
-        res.json({ results: results });
+        if (err) {
+            return res.status(500).json({ err });
+        }
+
+        let data = results.map(result => {
+            console.log(result);
+            return {
+                id: result.id,
+                my_np: result["AES_DECRYPT(unhex(my_np), 'm')"].toString('utf8'),
+                img_path: result.img_path,
+                other_np: result["AES_DECRYPT(unhex(other_np), 'o')"].toString('utf8'),
+                date: result.date
+            };
+        });
+
+        res.json({ results: data });
     });
 });
 
-app.post('/ReportCnt', (req, res) => {
-    const { userName } = req.body;
-    let sql = 'SELECT COUNT(*) as count FROM report WHERE my_np = ?';
+app.post('/updateCnt', (req, res) => {
+    const { my_np, other_np, date, img_path, record } = req.body;
+    let newTotRecord = record + 20;
 
-    connection.query(sql, [userName], (error, results) => {
+    console.log(newTotRecord);
+    let sql = `INSERT INTO report (my_np, date, other_np, img_path) VALUES(hex(aes_encrypt(?,'m')), ?, hex(aes_encrypt(?,'o')), ?)`;
+
+    connection.query(sql, [my_np, date, other_np, img_path], (error, results) => {
         if (error) {
             return res.status(500).json({ error });
         }
-        res.json({ success: true, reportCnt: results[0].count });
-    });
-});
 
-app.post('/ReportedCnt', (req, res) => {
-    const { userName } = req.body;
-    let sql = 'SELECT COUNT(*) as count FROM report WHERE other_np = ?';
+        let sql2 = `UPDATE userinfo SET record = ? WHERE AES_DECRYPT(unhex(numplate), 'b') = ? `;
+        connection.query(sql2, [newTotRecord, my_np], (err2) => {
+            if (err2) {
+                return res.status(500).json({ err2 });
+            }
+            console.log('**: ', newTotRecord);
 
-    connection.query(sql, [userName], (error, results) => {
-        if (error) {
-            return res.status(500).json({ error });
-        }
-        res.json({ success: true, reportedCnt: results[0].count });
+            let sql3 = `SELECT record FROM userinfo WHERE AES_DECRYPT(unhex(numplate), 'b') = ?`;
+            connection.query(sql3, [other_np], (err3, other_record) => {
+                if (err3) {
+                    return res.status(500).json({ err3 });
+                }
+                
+                let other = other_record[0].record - 10;
+
+                let sql4 = `UPDATE userinfo SET record = ? WHERE AES_DECRYPT(unhex(numplate), 'b') = ? `;
+                connection.query(sql4, [other, other_np], (err4) => {
+                    if (err4) {
+                        return res.status(500).json({ err4 });
+                    }
+                    res.json({ success: true, newTotRecord: newTotRecord });
+                });
+            });
+        });
     });
 });
 
@@ -212,6 +260,7 @@ app.post('/signUp', (req, res) => {
     });
 });
 
+
 app.post('/login', (req, res) => {
     const { id, pw } = req.body;
 
@@ -232,7 +281,8 @@ app.post('/login', (req, res) => {
 
         const user = results[0];
         const pw2 = results[0]["AES_DECRYPT(unhex(pw), 'a')"].toString();
-        const numplate2 = results[0]["AES_DECRYPT(unhex(numplate), 'b')"].toString();
+        const numplate = results[0]["AES_DECRYPT(unhex(numplate), 'b')"].toString();
+
         if (pw2 !== pw) {
             // 비밀번호가 일치하지 않는 경우
             res.json({ success: false, message: '비밀번호가 일치하지 않습니다.' });
@@ -248,24 +298,44 @@ app.post('/login', (req, res) => {
                     return;
                 }
             });
+            res.json({ success: true, message: '로그인 성공', numplate: numplate });
+
         }
+    });
+});
 
-        let sql2 = 'SELECT COUNT(*) as count FROM report WHERE my_np = ?';
 
-        connection.query(sql2, [numplate2], (error, results2) => {
-            if (error) {
-                return res.status(500).json({ error });
+app.post('/main', (req, res) => {
+    const { numplate } = req.body;
+
+    //신고 횟수
+    let sql = `SELECT COUNT(*) as count FROM report WHERE AES_DECRYPT(unhex(my_np), 'm') = ?`;
+
+    connection.query(sql, [numplate], (error, results) => {
+        if (error) {
+            return res.status(500).json({ error });
+        }
+        console.log('results:', results[0].count);
+
+        //신고받은 횟수
+        let sql2 = `SELECT COUNT(*) as count FROM report WHERE AES_DECRYPT(unhex(other_np), 'o') = ?`;
+        connection.query(sql2, [numplate], (error2, results2) => {
+            if (error2) {
+                return res.status(500).json({ error2 });
             }
-            console.log('results2:', results2[0].count);
+            console.log('results2: ', results2[0]);
+            console.log(results2[0].count);
 
-            let sql3 = 'SELECT COUNT(*) as count FROM report WHERE other_np = ?';
-            connection.query(sql3, [numplate2], (error3, results3) => {
-                if (error3) {
-                    return res.status(500).json({ error3 });
+            //총점
+            const sql3 = `SELECT record FROM userinfo WHERE AES_DECRYPT(unhex(numplate), 'b') = ?`;
+            connection.query(sql3, [numplate], (err3, records) => {
+                if (err3) {
+                    res.json({
+                        success: false,
+                        message: err3
+                    });
                 }
-                console.log('results3: ', results3[0]);
-                console.log(results3[0].count);
-                res.json({ success: true, message: '로그인 성공', record: results[0].record, numplate: numplate2, reportCnt: results2[0].count, reportedCnt: results3[0].count });
+                res.json({ success: true, message: '로그인 성공', totRecord: records[0].record, reportCnt: results[0].count, reportedCnt: results2[0].count });
             });
         });
     });
@@ -304,23 +374,12 @@ app.post('/delAccount', (req, res) => {
 
 app.use('/images', express.static('C:/uploads')); //공유 테스트
 
-app.post('/getSanctions', (req, res) => {
-    let sql = 'SELECT my_np, img_path, other_np, date FROM report WHERE other_np = ?';
-    let userName = req.body.userName;
-
-    connection.query(sql, [userName], (err, results) => {
-        if (err) throw err;
-        console.log(results);
-        res.json({ results: results });
-    });
-});
-
 
 app.post('/accel', (req, res) => {
     //급가속 0
-    const insertSql = `INSERT INTO accelerator(user, time, latitude, longitude, accel) VALUES(?, ?, ?, ?, ?)`;
+    const insertSql = `INSERT INTO accelerator(user, time, latitude, longitude, accel) VALUES(hex(aes_encrypt(?,'u')), ?, ?, ?, ?)`;
     const { user, time, latitude, longitude, accel, record } = req.body; // userName, time, accel 값을 req.body에서 가져옵니다.
-    const newTotRecord = record-3;
+    const newTotRecord = record - 3;
 
     connection.query(insertSql, [user, time, latitude, longitude, accel], (errInsert, resultInsert) => {
         if (errInsert) {
@@ -342,7 +401,7 @@ app.post('/accel', (req, res) => {
         const updateInfo = `UPDATE userinfo SET record = ? WHERE AES_DECRYPT(unhex(numplate), 'b') = ? `;
         //const np = resultInsert[0]["AES_DECRYPT(unhex(numplate), 'b')"].toString();
         connection.query(updateInfo, [newTotRecord, user], (errUpdate, result) => {
-            if(errUpdate) {
+            if (errUpdate) {
                 console.error('데이터 업데이트 실패', errUpdate);
                 res.json({
                     success: false,

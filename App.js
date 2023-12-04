@@ -11,7 +11,7 @@ import MyInfoScreen from './MyInfoScreen';
 import IpContext from './IpContext';
 import TotalReportNum from './TotalReportNum';
 import Sanctions from './Sanctions';
-import Tyrano from './Tyrano';
+import PickVideoFromGallery from './Select_Video';
 import * as SplashScreen from 'expo-splash-screen';
 import { setCustomText } from 'react-native-global-props'; //폰트 친구
 
@@ -44,7 +44,7 @@ export default function App() {
     const [record, setRecord] = useState(0);
     const [totRecord, setTotRecord] = useState(0);
     const [ipRas, setIpRas] = useState('172.30.1.56');
-    const [ipLap, setIpLap] = useState('10.20.102.56');
+    const [ipLap, setIpLap] = useState('10.20.102.121');
     const [appIsReady, setAppIsReady] = useState(false);
 
     useEffect(() => {
@@ -109,7 +109,7 @@ export default function App() {
                         <Stack.Screen name="MyInfo" component={MyInfoScreen} />
                         <Stack.Screen name="TotalReportNum" component={TotalReportNum} />
                         <Stack.Screen name="Sanctions" component={Sanctions} />
-                        <Stack.Screen name="Tyrano" component={Tyrano} />
+                        <Stack.Screen name="PickVideo" component={PickVideoFromGallery} />
                     </Stack.Navigator>
                 </NavigationContainer>
             </View>
