@@ -39,7 +39,7 @@ export default function PickVideoFromGallery() {
 
             axios({
                 method: 'post',
-                url: 'https://bdc8-222-118-68-94.ngrok-free.app/imgtoss',
+                url: 'https://9a03-222-118-68-94.ngrok-free.app/imgtoss',
                 data: formData,
                 headers: { 'Content-Type': 'multipart/form-data' },
             })
