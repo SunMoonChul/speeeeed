@@ -11,29 +11,28 @@ export default function TotalReportNum() {
 
     useEffect(() => {
         axios
-            .post(`http://${context.ipLap}:3003/toReport`, {
+            .post(`https://${context.ipLap}/toReport`, {
                 userName: context.numplate,
             })
             .then((response) => setPosts(response.data.results))
             .catch((error) => console.error(error));
     }, []);
 
-  const PostItem = ({ item }) => {
-    const filename = item.img_path.split('\\').pop();
-
-    return (
-        <View style={styles.post}>
-            <Text style={styles.date}>{item.date}</Text>
-            <Image
-                style={styles.image}
-                source={{ uri: `http://${context.ipLap}:3003/images/${filename}` }}
-                onError={(error) => console.log(error.nativeEvent.error)}
-            />
-            <Text style={styles.content}> 신고한 차 번호 : {item.other_np}</Text>
-        </View>
-    );
-
-  }
+    const PostItem = ({ item }) => {
+        const filename = item.img_path.split('\\').pop();
+        console.log('이미지 이름 : ' + filename)
+        return (
+            <View style={styles.post}>
+                <Text style={styles.date}>{item.date}</Text>
+                <Image
+                    style={styles.image}
+                    source={{ uri: `https://${context.ipLap}/images/${filename}` }}
+                    onError={(error) => console.log(error.nativeEvent.error)}
+                />
+                <Text style={styles.content}> 신고한 차 번호 : {item.other_np}</Text>
+            </View>
+        );
+    };
 
     return (
         <SafeAreaView style={styles.container}>

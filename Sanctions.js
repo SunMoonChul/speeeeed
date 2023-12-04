@@ -10,8 +10,7 @@ export default function Sanctions() {
     const navigation = useNavigation();
 
     useEffect(() => {
-        axios
-            .post(`http://${context.ipLap}:3003/getSanctions`, {
+        axios.post(`https://${context.ipLap}/getSanctions`, {
                 userName: context.numplate,
             })
             .then((response) => setPosts([response.data.results][0]))
@@ -19,16 +18,13 @@ export default function Sanctions() {
     }, []);
 
     const PostItem = ({ item }) => {
-        console.log('***');
-        console.log(item);
-        console.log('***');
         const filename = item.img_path.split('\\').pop();
         return (
             <View style={styles.post}>
                 <Text style={styles.date}>{item.date}</Text>
                 <Image
                     style={styles.image}
-                    source={{ uri: `http://${context.ipLap}:3003/images/${filename}` }}
+                    source={{ uri: `https://${context.ipLap}/images/${filename}` }} 
                     onError={(error) => console.log(error.nativeEvent.error)}
                 />
 

@@ -21,7 +21,7 @@ export default function LoginScreen() {
         };
 
         axios
-            .post(`http://${context.ipLap}:3003/login`, data)
+            .post(`https://${context.ipLap}/login`, data)
             .then(async (response) => {
                 if (response.data.success) {
                     console.log(response.data);

@@ -27,7 +27,12 @@ export default function PickVideoFromGallery() {
         if (!result.cancelled) {
             let localUri = result.assets[0].uri;
             let filename = localUri.split('/').pop();
+<<<<<<< HEAD
             
+=======
+
+            console.log('np: ', context.numplate);
+>>>>>>> origin/hyomin
             let formData = new FormData();
             formData.append('img', {
                 uri: localUri,
@@ -38,11 +43,16 @@ export default function PickVideoFromGallery() {
 
             axios({
                 method: 'post',
+<<<<<<< HEAD
                 url: 'https://bdc8-222-118-68-94.ngrok-free.app/imgtoss',
+=======
+                url: 'https://9a03-222-118-68-94.ngrok-free.app/imgtoss',
+>>>>>>> origin/hyomin
                 data: formData,
                 headers: { 'Content-Type': 'multipart/form-data' },
             })
                 .then(function (response) {
+<<<<<<< HEAD
 
                     console.log(response);
 
@@ -73,12 +83,19 @@ export default function PickVideoFromGallery() {
                             console.error('There was an error!', error);
                         });
                     context.setReportCnt(report);
+=======
+                    console.log(response);
+                    navigation.navigate('Main');
+>>>>>>> origin/hyomin
                 })
                 .catch(function (error) {
                     console.log(error);
                 });
         }
+<<<<<<< HEAD
         else {
         }
+=======
+>>>>>>> origin/hyomin
     };
 }

@@ -1,17 +1,16 @@
-import React, { useState, useEffect, useContext} from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, ImageBackground, Image, SafeAreaView, ActivityIndicator,} from 'react-native';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import React, { useState, useEffect, useContext } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View, ImageBackground, Alert, Image, SafeAreaView, LogBox } from 'react-native';
+import { useNavigation, CommonActions } from '@react-navigation/native';
 import IpContext from './IpContext';
 import * as Location from 'expo-location';
 import axios from 'axios';
 import * as Progress from 'react-native-progress';
 import Swiper from 'react-native-swiper';
-import { pickVideoFromGallery } from './Select_Video';
 
 export default function Main() {
-    const [fontsLoaded, setFontsLoaded] = useState(false); //폰트
-    const context = useContext(IpContext); //그 ip 보관소
-    const [isLoading, setIsLoading] = useState(false); //영상 전송 로딩
+    LogBox.ignoreLogs(['Sending `onAnimatedValueUpdate` with no listeners registered.']);
+    const [fontsLoaded, setFontsLoaded] = useState(false);
+    const context = useContext(IpContext);
 
     const [speed, setSpeed] = useState(0); //속도
     const [prevSpeed, setPrevSpeed] = useState(0); // 이전 속도
@@ -312,7 +311,7 @@ export default function Main() {
                     </TouchableOpacity>
                 </View>
                 <View style={styles.viewst}>
-                    <TouchableOpacity style={styles.reportbutton} onPress={handlePress}>
+                    <TouchableOpacity style={styles.reportbutton} onPress={() => navigation.navigate('PickVideo')}>
                         <Image source={require('./icons/report.png')} style={{ width: 50, height: 50 }}></Image>
                         <Text style={{ fontSize: 40, fontFamily: 'Kingt' }}>제보하기</Text>
                     </TouchableOpacity>
