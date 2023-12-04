@@ -40,7 +40,7 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.use('/images', express.static("C:/Users/enqn/Pictures"));
+app.use('/images', express.static('D:/toss_img'));
 
 app.listen(port, '0.0.0.0', () => {
     console.log(`Express server listening on port ${port}`);
@@ -338,8 +338,14 @@ app.use('/images', express.static('C:/uploads')); //공유 테스트
 app.post('/accel', (req, res) => {
     //급가속 0
     const insertSql = `INSERT INTO accelerator(user, time, latitude, longitude, accel) VALUES(hex(aes_encrypt(?,'u')), ?, ?, ?, ?)`;
-    const { user, time, latitude, longitude, accel, record } = req.body; // userName, time, accel 값을 req.body에서 가져옵니다.
+    const { user, time, accel, record, latitude, longitude } = req.body; // userName, time, accel 값을 req.body에서 가져옵니다.
+    console.log('latitude: ', latitude);
+    console.log('longitude: ', longitude);
+    console.log('record1: ', record);
     const newTotRecord = record - 3;
+
+    if (latitude == null || longitude == null)
+        return;
 
     connection.query(insertSql, [user, time, latitude, longitude, accel], (errInsert, resultInsert) => {
         if (errInsert) {
@@ -350,15 +356,9 @@ app.post('/accel', (req, res) => {
             });
             return;
         }
-        if (accel == 0) {
-            console.log('급가속 데이터 저장 성공');
-        } else if (accel == 1) {
-            console.log('급감속 데이터 저장 성공');
-        } else if (accel == 2) {
-            console.log('과속 데이터 저장 성공');
-        }
 
         const updateInfo = `UPDATE userinfo SET record = ? WHERE AES_DECRYPT(unhex(numplate), 'b') = ? `;
+        console.log('record2: ', newTotRecord);
         //const np = resultInsert[0]["AES_DECRYPT(unhex(numplate), 'b')"].toString();
         connection.query(updateInfo, [newTotRecord, user], (errUpdate, result) => {
             if (errUpdate) {
@@ -369,30 +369,9 @@ app.post('/accel', (req, res) => {
                 });
                 return;
             }
-            if (accel == 0) {
-                console.log('급가속 데이터 저장 성공');
-            } else if (accel == 1) {
-                console.log('급감속 데이터 저장 성공');
-            } else if (accel == 2) {
-                console.log('과속 데이터 저장 성공');
-            }
-
-            const updateInfo = `UPDATE userinfo SET record = ? WHERE AES_DECRYPT(unhex(numplate), 'b') = ? `;
-            //const np = resultInsert[0]["AES_DECRYPT(unhex(numplate), 'b')"].toString();
-            connection.query(updateInfo, [newTotRecord, user], (errUpdate, result) => {
-                if (errUpdate) {
-                    console.error('데이터 업데이트 실패', errUpdate);
-                    res.json({
-                        success: false,
-                        message: 'Internal Server Error',
-                    });
-                    return;
-                } else {
-                    res.json({
-                        success: true,
-                        newTotRecord: newTotRecord,
-                    });
-                }
+            res.json({
+                success: true,
+                newTotRecord: newTotRecord,
             });
         });
     });

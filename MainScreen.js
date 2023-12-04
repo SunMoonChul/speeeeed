@@ -8,10 +8,10 @@ import * as Progress from 'react-native-progress';
 import Swiper from 'react-native-swiper';
 
 export default function Main() {
-    LogBox.ignoreLogs(['Sending `onAnimatedValueUpdate` with no listeners registered.']);
-    const [fontsLoaded, setFontsLoaded] = useState(false);
     const context = useContext(IpContext);
 
+    LogBox.ignoreLogs(['Sending `onAnimatedValueUpdate` with no listeners registered.']);
+    const [fontsLoaded, setFontsLoaded] = useState(false);
     const [speed, setSpeed] = useState(0); //속도
     const [prevSpeed, setPrevSpeed] = useState(0); // 이전 속도
     const [latitude, setLatitude] = useState(null); //위도 경도
@@ -59,14 +59,8 @@ export default function Main() {
                             numplate: context.numplate,
                         })
                         .then((response) => {
-                            console.log(response.data);
                             context.setReportCnt(response.data.reportCnt);
                             context.setReportedCnt(response.data.reportedCnt);
-                            context.setTotRecord(response.data.totRecord);
-                            let newTotRecord = response.data.totRecord;
-                            let level = parseInt(newTotRecord / 100 + 1);
-                            context.setLevel(level);
-                            context.setRecord(newTotRecord - ((level - 1) * 100));
                         })
                         .catch((error) => {
                             console.error(error);
@@ -113,7 +107,7 @@ export default function Main() {
                     setSpeed(currentSpeed);
                     if (currentSpeed >= 0) {
                         // 속도가 1초 이내에 20km 이상 올라가면 '급가속'
-                        if (currentSpeed - prevSpeed >= 20 && currentTimems - lastActionTime >= 10000) {
+                        if (currentSpeed - prevSpeed >= 3 && currentTimems - lastActionTime >= 10000) {
                             // console.log('급가속 ' + 'cs : ' + currentSpeed + ',ps : ' + prevSpeed);
                             setIsRapid(true);
 
@@ -122,12 +116,13 @@ export default function Main() {
                                 .post(`https://${context.ipLap}/accel`, {
                                     user: context.numplate,
                                     time: currenttime,
-                                    latitude: latitude ? latitude.toFixed(6) : null,
-                                    longitude: longitude ? longitude.toFixed(6) : null,
                                     accel: 0,
                                     record: context.totRecord,
+                                    latitude: latitude ? latitude.toFixed(6) : null,
+                                    longitude: longitude ? longitude.toFixed(6) : null,
                                 })
                                 .then((response) => {
+                                    context.setTotRecord(response.data.newTotRecord);
                                     console.log('급가속 완' + response.data);
                                     // 마지막 동작 시간 갱신
                                     setLastActionTime(currentTimems);
@@ -155,6 +150,7 @@ export default function Main() {
                                     record: context.totRecord,
                                 })
                                 .then((response) => {
+                                    context.setTotRecord(response.data.newTotRecord);
                                     console.log('급감속 완 ' + response.data);
                                     // 마지막 동작 시간 갱신
                                     setLastActionTime(currentTimems);
@@ -189,11 +185,7 @@ export default function Main() {
                                         record: context.totRecord,
                                     })
                                     .then((response) => {
-                                        context.setTotRecord = response.data.newTotRecord;
-                                        let totRecord = response.data.newTotRecord;
-                                        let level = parseInt(totRecord / 100 + 1);
-                                        context.setLevel(level);
-                                        context.setRecord(totRecord - ((level - 1) * 100));
+                                        context.setTotRecord(response.data.newTotRecord);
                                         console.log('과속 완' + response.data);
                                         // 마지막 동작 시간 갱신
                                         setLastActionTime(currentTimems);
@@ -253,14 +245,15 @@ export default function Main() {
                         >
                             <View style={{ height: 10 }}>
                                 <Progress.Bar
-                                    progress={(context.record || 0) / 100}
+                                    progress={((context.totRecord + 20 * context.reportCnt - 10 * context.reportedCnt) - ((parseInt((context.totRecord + 20 * context.reportCnt - 10 * context.reportedCnt) / 100) + 1 - 1) * 100)) / 100}
                                     width={250}
                                     height={15}
                                     color={'#3b5998'}
+                                    
                                 />
                             </View>
                             <Text style={{ fontFamily: 'Kingt' }}>
-                                {context.record}/100
+                                {((context.totRecord + 20 * context.reportCnt - 10 * context.reportedCnt) - ((parseInt((context.totRecord + 20 * context.reportCnt - 10 * context.reportedCnt) / 100) + 1 - 1) * 100))} / 100
                             </Text>
                             {/* 경험치에 따라 레벨도 같이 증가 */}
                         </View>
@@ -273,7 +266,7 @@ export default function Main() {
                                 fontFamily: 'Kingt',
                             }}
                         >
-                            Lv.{context.level}
+                            Lv.{parseInt((context.totRecord + 20 * context.reportCnt - 10 * context.reportedCnt) / 100) + 1}
                             {/* 레벨 들어갈 것 */}
                         </Text>
                     </TouchableOpacity>

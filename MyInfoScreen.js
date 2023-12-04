@@ -24,21 +24,16 @@ export default function MyInfo() {
 
     useEffect(() => {
         const fetchMyInfo = async () => {
+
             try {
                 const response = await axios.post(`https://${context.ipLap}/myInfo`, {
                     numplate: context.numplate,
                 });
 
                 if (response.data.success) {
-                    console.log('item: ', response.data.item);
                     context.setUpCnt(response.data.upCnt);
                     context.setDownCnt(response.data.downCnt);
                     context.setOverCnt(response.data.overCnt);
-                    context.setTotRecord(response.data.newTotRecord);
-                    let totRecord = response.data.newTotRecord;
-                    let level = parseInt(totRecord / 100 + 1);
-                    context.setLevel(level);
-                    context.setRecord(totRecord - ((level - 1) * 100));
 
                     const itemsWithAddress = await Promise.all(
                         response.data.item
@@ -61,6 +56,19 @@ export default function MyInfo() {
             } catch (error) {
                 console.error('There was an error!', error);
             }
+            
+            try {
+                const response2 = await axios.post(`https://${context.ipLap}/main`, {
+                    numplate: context.numplate,
+                });
+                if (response2.data.success) {
+                    context.setReportCnt(response2.data.reportCnt);
+                    context.setReportedCnt(response2.data.reportedCnt);
+                }
+            } catch (error) {
+                console.error('There was an error!', error);
+            }
+
         };
 
         fetchMyInfo();
@@ -71,7 +79,7 @@ export default function MyInfo() {
             '로그아웃',
             '정말 로그아웃하시겠습니까?',
             [
-                { text: '취소', onPress: () => {}, style: 'cancel' },
+                { text: '취소', onPress: () => { }, style: 'cancel' },
                 {
                     text: '로그아웃',
                     onPress: () => {
@@ -82,7 +90,7 @@ export default function MyInfo() {
             ],
             {
                 cancelable: true,
-                onDismiss: () => {},
+                onDismiss: () => { },
             }
         );
     };
@@ -140,7 +148,7 @@ export default function MyInfo() {
                     <Text>위도 : {item.latitude}</Text>
                     <Text>경도 : {item.longitude}</Text>
                     <Text>
-                        주소 : {item.address.region},{item.address.city}, {item.address.street}
+                        주소 : {item.address.region} {item.address.city} {item.address.street}
                     </Text>
                 </View>
                 <Text
@@ -194,7 +202,7 @@ export default function MyInfo() {
                             fontFamily: 'Kingt',
                         }}
                     >
-                        Lv.{context.level}
+                        Lv.{parseInt((context.totRecord + 20 * context.reportCnt - 10 * context.reportedCnt) / 100) + 1}
                         {/* 레벨 들어갈 것 */}
                     </Text>
                     <View
@@ -209,14 +217,14 @@ export default function MyInfo() {
                     >
                         <View style={{ height: 10 }}>
                             <Progress.Bar
-                                progress={(context.record) / ((context.level) * 100)}
+                                progress={((context.totRecord + 20 * context.reportCnt - 10 * context.reportedCnt) - ((parseInt((context.totRecord + 20 * context.reportCnt - 10 * context.reportedCnt) / 100) + 1 - 1) * 100)) / 100}
                                 width={250}
                                 height={15}
                                 color={'#3b5998'}
                             />
                         </View>
                         <Text style={{ fontFamily: 'Kingt' }}>
-                            {context.record}/{context.level * 100}
+                        {((context.totRecord + 20 * context.reportCnt - 10 * context.reportedCnt) - ((parseInt((context.totRecord + 20 * context.reportCnt - 10 * context.reportedCnt) / 100) + 1 - 1) * 100))} / 100
                         </Text>
                         {/* 경험치에 따라 레벨도 같이 증가 */}
                     </View>
