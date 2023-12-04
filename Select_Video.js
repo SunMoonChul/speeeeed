@@ -22,7 +22,6 @@ export default function PickVideoFromGallery() {
             quality: 1,
         });
 
-        console.log(result);
 
         if (!result.cancelled) {
             let localUri = result.assets[0].uri;
@@ -43,36 +42,7 @@ export default function PickVideoFromGallery() {
                 headers: { 'Content-Type': 'multipart/form-data' },
             })
                 .then(function (response) {
-
-                    console.log(response);
-
-                    //신고횟수+1
-                    let report = context.reportCnt + 1;
-        
-                    //임의 신고 정보
-                    const data = { 
-                        my_np: context.numplate, 
-                        other_np: '11부1111', 
-                        date: '1', 
-                        img_path: 'C:\\Users\\enqn\\Pictures\\aa.jpg',
-                        record: context.totRecord, 
-                    }
-        
-                    //신고횟수요청
-                    axios.post(`https://${context.ipLap}/updateCnt`, data)
-                        .then(response => {
-                            if (response.data.success) {
-                                context.setTotRecord(response.data.newTotRecord);
-                                navigation.navigate('Main');
-                            }
-                            else {
-                                alert(response.data.message); // 실패 메시지 표시
-                            }
-                        })
-                        .catch(error => {
-                            console.error('There was an error!', error);
-                        });
-                    context.setReportCnt(report);
+                    navigation.navigate('Main');
                 })
                 .catch(function (error) {
                     console.log(error);

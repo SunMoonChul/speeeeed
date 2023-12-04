@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, ImageBackground, Alert, Image, SafeAreaView, LogBox } from 'react-native';
-import { useNavigation, CommonActions } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import IpContext from './IpContext';
 import * as Location from 'expo-location';
 import axios from 'axios';
@@ -35,9 +35,9 @@ export default function Main() {
     const today = new Date(); //오늘시간
     const currenttime = //년월일시간분초
         today.getFullYear() +
-        '/' +
+        '-' +
         (today.getMonth() + 1) +
-        '/' +
+        '-' +
         today.getDate() +
         ' ' +
         today.getHours() +

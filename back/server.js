@@ -162,36 +162,26 @@ app.post('/updateCnt', (req, res) => {
     const { my_np, other_np, date, img_path, record } = req.body;
     let newTotRecord = record + 20;
 
-    console.log(newTotRecord);
-    let sql = `INSERT INTO report (my_np, date, other_np, img_path) VALUES(hex(aes_encrypt(?,'m')), ?, hex(aes_encrypt(?,'o')), ?)`;
-
-    connection.query(sql, [my_np, date, other_np, img_path], (error, results) => {
-        if (error) {
-            return res.status(500).json({ error });
+    let sql2 = `UPDATE userinfo SET record = ? WHERE AES_DECRYPT(unhex(numplate), 'b') = ? `;
+    connection.query(sql2, [newTotRecord, my_np], (err2) => {
+        if (err2) {
+            return res.status(500).json({ err2 });
         }
 
-        let sql2 = `UPDATE userinfo SET record = ? WHERE AES_DECRYPT(unhex(numplate), 'b') = ? `;
-        connection.query(sql2, [newTotRecord, my_np], (err2) => {
-            if (err2) {
-                return res.status(500).json({ err2 });
+        let sql3 = `SELECT record FROM userinfo WHERE AES_DECRYPT(unhex(numplate), 'b') = ?`;
+        connection.query(sql3, [other_np], (err3, other_record) => {
+            if (err3) {
+                return res.status(500).json({ err3 });
             }
-            console.log('**: ', newTotRecord);
 
-            let sql3 = `SELECT record FROM userinfo WHERE AES_DECRYPT(unhex(numplate), 'b') = ?`;
-            connection.query(sql3, [other_np], (err3, other_record) => {
-                if (err3) {
-                    return res.status(500).json({ err3 });
+            let other = other_record[0].record - 10;
+
+            let sql4 = `UPDATE userinfo SET record = ? WHERE AES_DECRYPT(unhex(numplate), 'b') = ? `;
+            connection.query(sql4, [other, other_np], (err4) => {
+                if (err4) {
+                    return res.status(500).json({ err4 });
                 }
-
-                let other = other_record[0].record - 10;
-
-                let sql4 = `UPDATE userinfo SET record = ? WHERE AES_DECRYPT(unhex(numplate), 'b') = ? `;
-                connection.query(sql4, [other, other_np], (err4) => {
-                    if (err4) {
-                        return res.status(500).json({ err4 });
-                    }
-                    res.json({ success: true, newTotRecord: newTotRecord });
-                });
+                res.json({ success: true, newTotRecord: newTotRecord });
             });
         });
     });
@@ -327,7 +317,6 @@ app.post('/main', (req, res) => {
         if (error) {
             return res.status(500).json({ error });
         }
-        console.log('results:', results[0].count);
 
         //신고받은 횟수
         let sql2 = `SELECT COUNT(*) as count FROM report WHERE AES_DECRYPT(unhex(other_np), 'o') = ?`;
@@ -335,8 +324,7 @@ app.post('/main', (req, res) => {
             if (error2) {
                 return res.status(500).json({ error2 });
             }
-            console.log('results2: ', results2[0]);
-            console.log(results2[0].count);
+        
 
             //총점
             const sql3 = `SELECT record FROM userinfo WHERE AES_DECRYPT(unhex(numplate), 'b') = ?`;
@@ -440,8 +428,6 @@ app.post('/accel', (req, res) => {
                     });
                     return;
                 } else {
-                    console.log('-3');
-                    console.log(result);
                     res.json({
                         success: true,
                         newTotRecord: newTotRecord,
