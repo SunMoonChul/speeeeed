@@ -14,11 +14,14 @@ export default function Sanctions() {
             .post(`http://${context.ipLap}:3003/getSanctions`, {
                 userName: context.numplate,
             })
-            .then((response) => setPosts(response.data.results))
+            .then((response) => setPosts([response.data.results][0]))
             .catch((error) => console.error(error));
     }, []);
 
     const PostItem = ({ item }) => {
+        console.log('***');
+        console.log(item);
+        console.log('***');
         const filename = item.img_path.split('\\').pop();
         return (
             <View style={styles.post}>

@@ -22,19 +22,18 @@ export default function TotalReportNum() {
     const filename = item.img_path.split('\\').pop();
 
     return (
-      <View style={styles.post}>
-        <Text style={styles.date}>{item.date}</Text>
-        <View style={styles.imageContainer}>
-          <Image
-            style={styles.image}
-            source={{ uri: `http://${context.ipLap}:3003/images/${filename}` }}
-            onError={(error) => console.log(error.nativeEvent.error)}
-          />
+        <View style={styles.post}>
+            <Text style={styles.date}>{item.date}</Text>
+            <Image
+                style={styles.image}
+                source={{ uri: `http://${context.ipLap}:3003/images/${filename}` }}
+                onError={(error) => console.log(error.nativeEvent.error)}
+            />
+            <Text style={styles.content}> 신고한 차 번호 : {item.other_np}</Text>
         </View>
-        <Text style={styles.content}> 신고한 차 번호 : {item.other_np}</Text>
-      </View>
     );
-  };
+
+  }
 
     return (
         <SafeAreaView style={styles.container}>

@@ -10,7 +10,7 @@ export default function LoginScreen() {
     const [id, setId] = useState('');
     const [pw, setPw] = useState('');
     const [numplate, setNumplate] = useState('');
-    const [reportCount, setReportCount] = useState(0);
+    const [reportCnt, setReportCnt] = useState(0);
 
     const navigation = useNavigation();
 

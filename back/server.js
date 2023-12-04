@@ -182,7 +182,7 @@ app.post('/updateCnt', (req, res) => {
                 if (err3) {
                     return res.status(500).json({ err3 });
                 }
-                
+
                 let other = other_record[0].record - 10;
 
                 let sql4 = `UPDATE userinfo SET record = ? WHERE AES_DECRYPT(unhex(numplate), 'b') = ? `;
@@ -194,6 +194,18 @@ app.post('/updateCnt', (req, res) => {
                 });
             });
         });
+    });
+});
+
+app.post('/ReportedCnt', (req, res) => {
+    const { userName } = req.body;
+    let sql = 'SELECT COUNT(*) as count FROM report WHERE other_np = ?';
+
+    connection.query(sql, [userName], (error, results) => {
+        if (error) {
+            return res.status(500).json({ error });
+        }
+        res.json({ success: true, reportedCnt: results[0].count });
     });
 });
 
@@ -258,6 +270,47 @@ app.post('/signUp', (req, res) => {
             });
         });
     });
+});
+
+app.post('/login', (req, res) => {
+    const { id, pw } = req.body;
+
+    const sql = `SELECT id, AES_DECRYPT(unhex(pw), 'a'), AES_DECRYPT(unhex(numplate), 'b'), record FROM userinfo WHERE userinfo.id = ?`;
+
+    connection.query(sql, [id], (err, results) => {
+        if (err) {
+            console.error('쿼리 실행 실패:', err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+
+        else if (results.length === 0) {
+            // 일치하는 아이디가 없는 경우
+            res.json({ success: false, message: '일치하는 아이디가 없습니다.' });
+            return;
+        }
+
+        const user = results[0];
+        console.log('user: ', results[0]["AES_DECRYPT(unhex(pw), 'a')"]);
+        const pw2 = results[0]["AES_DECRYPT(unhex(pw), 'a')"].toString();
+        const numplate2 = results[0]["AES_DECRYPT(unhex(numplate), 'b')"].toString();
+        if (pw2 !== pw) {
+            // 비밀번호가 일치하지 않는 경우
+            res.json({ success: false, message: '비밀번호가 일치하지 않습니다.' });
+        } else {
+            // 로그인 성공
+            req.session.uid = user.id;
+            req.session.isLogined = true;
+
+            req.session.save((err) => {
+                if (err) {
+                    console.error('세션 저장 실패: ', err);
+                    res.status(500).send('Internal Server Error');
+                    return;
+                }
+            });
+            res.json({ success: true, message: '회원가입 성공' });
+        });
 });
 
 
@@ -339,83 +392,101 @@ app.post('/main', (req, res) => {
             });
         });
     });
-});
 
-app.post('/logout', (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            console.log(err);
-            return;
-        } else {
-            res.json({ success: true, message: '로그아웃 성공' });
-        }
+    app.post('/logout', (req, res) => {
+        req.session.destroy((err) => {
+            if (err) {
+                console.log(err);
+                return;
+            } else {
+                res.json({ success: true, message: '로그아웃 성공' });
+            }
+        });
     });
-});
 
-app.post('/delAccount', (req, res) => {
-    const { id } = req.body;
-    const sql = `DELETE FROM userinfo WHERE id=?`;
-    req.session.destroy((err) => {
-        if (err) {
-            console.log(err);
-            return;
-        } else {
-            connection.query(sql, [id], (err, results) => {
-                if (err) {
-                    console.error('쿼리 실행 실패:', err);
-                    res.status(500).send('Internal Server Error');
-                    return;
-                }
-                res.json({ success: true });
-            });
-        }
+    app.post('/delAccount', (req, res) => {
+        const { id } = req.body;
+        const sql = `DELETE FROM userinfo WHERE id=?`;
+        req.session.destroy((err) => {
+            if (err) {
+                console.log(err);
+                return;
+            } else {
+                connection.query(sql, [id], (err, results) => {
+                    if (err) {
+                        console.error('쿼리 실행 실패:', err);
+                        res.status(500).send('Internal Server Error');
+                        return;
+                    }
+                    res.json({ success: true });
+                });
+            }
+        });
     });
-});
 
-app.use('/images', express.static('C:/uploads')); //공유 테스트
+    app.use('/images', express.static('C:/uploads')); //공유 테스트
 
 
-app.post('/accel', (req, res) => {
-    //급가속 0
-    const insertSql = `INSERT INTO accelerator(user, time, latitude, longitude, accel) VALUES(hex(aes_encrypt(?,'u')), ?, ?, ?, ?)`;
-    const { user, time, latitude, longitude, accel, record } = req.body; // userName, time, accel 값을 req.body에서 가져옵니다.
-    const newTotRecord = record - 3;
+    app.post('/accel', (req, res) => {
+        //급가속 0
+        const insertSql = `INSERT INTO accelerator(user, time, latitude, longitude, accel) VALUES(hex(aes_encrypt(?,'u')), ?, ?, ?, ?)`;
+        const { user, time, latitude, longitude, accel, record } = req.body; // userName, time, accel 값을 req.body에서 가져옵니다.
+        const newTotRecord = record - 3;
 
-    connection.query(insertSql, [user, time, latitude, longitude, accel], (errInsert, resultInsert) => {
-        if (errInsert) {
-            console.error('데이터 저장 실패', errInsert);
-            res.json({
-                success: false,
-                message: 'Internal Server Error',
-            });
-            return;
-        }
-        if (accel == 0) {
-            console.log('급가속 데이터 저장 성공');
-        } else if (accel == 1) {
-            console.log('급감속 데이터 저장 성공');
-        } else if (accel == 2) {
-            console.log('과속 데이터 저장 성공');
-        }
-
-        const updateInfo = `UPDATE userinfo SET record = ? WHERE AES_DECRYPT(unhex(numplate), 'b') = ? `;
-        //const np = resultInsert[0]["AES_DECRYPT(unhex(numplate), 'b')"].toString();
-        connection.query(updateInfo, [newTotRecord, user], (errUpdate, result) => {
-            if (errUpdate) {
-                console.error('데이터 업데이트 실패', errUpdate);
+        connection.query(insertSql, [user, time, latitude, longitude, accel], (errInsert, resultInsert) => {
+            if (errInsert) {
+                console.error('데이터 저장 실패', errInsert);
                 res.json({
                     success: false,
                     message: 'Internal Server Error',
                 });
                 return;
-            } else {
-                console.log('-3');
-                console.log(result);
-                res.json({
-                    success: true,
-                    newTotRecord: newTotRecord,
-                });
             }
+            if (accel == 0) {
+                console.log('급가속 데이터 저장 성공');
+            } else if (accel == 1) {
+                console.log('급감속 데이터 저장 성공');
+            } else if (accel == 2) {
+                console.log('과속 데이터 저장 성공');
+            }
+
+            const updateInfo = `UPDATE userinfo SET record = ? WHERE AES_DECRYPT(unhex(numplate), 'b') = ? `;
+            //const np = resultInsert[0]["AES_DECRYPT(unhex(numplate), 'b')"].toString();
+            connection.query(updateInfo, [newTotRecord, user], (errUpdate, result) => {
+                if (errUpdate) {
+                    console.error('데이터 업데이트 실패', errUpdate);
+                    res.json({
+                        success: false,
+                        message: 'Internal Server Error',
+                    });
+                    return;
+                }
+                if (accel == 0) {
+                    console.log('급가속 데이터 저장 성공');
+                } else if (accel == 1) {
+                    console.log('급감속 데이터 저장 성공');
+                } else if (accel == 2) {
+                    console.log('과속 데이터 저장 성공');
+                }
+
+                const updateInfo = `UPDATE userinfo SET record = ? WHERE AES_DECRYPT(unhex(numplate), 'b') = ? `;
+                //const np = resultInsert[0]["AES_DECRYPT(unhex(numplate), 'b')"].toString();
+                connection.query(updateInfo, [newTotRecord, user], (errUpdate, result) => {
+                    if (errUpdate) {
+                        console.error('데이터 업데이트 실패', errUpdate);
+                        res.json({
+                            success: false,
+                            message: 'Internal Server Error',
+                        });
+                        return;
+                    } else {
+                        console.log('-3');
+                        console.log(result);
+                        res.json({
+                            success: true,
+                            newTotRecord: newTotRecord,
+                        });
+                    }
+                });
+            });
         });
-    });
-});
