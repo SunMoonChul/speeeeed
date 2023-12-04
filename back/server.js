@@ -158,46 +158,6 @@ app.post('/toReport', (req, res) => {
     });
 });
 
-app.post('/updateCnt', (req, res) => {
-    const { my_np, other_np, date, img_path, record } = req.body;
-    let newTotRecord = record + 20;
-
-    let sql2 = `UPDATE userinfo SET record = ? WHERE AES_DECRYPT(unhex(numplate), 'b') = ? `;
-    connection.query(sql2, [newTotRecord, my_np], (err2) => {
-        if (err2) {
-            return res.status(500).json({ err2 });
-        }
-
-        let sql3 = `SELECT record FROM userinfo WHERE AES_DECRYPT(unhex(numplate), 'b') = ?`;
-        connection.query(sql3, [other_np], (err3, other_record) => {
-            if (err3) {
-                return res.status(500).json({ err3 });
-            }
-
-            let other = other_record[0].record - 10;
-
-            let sql4 = `UPDATE userinfo SET record = ? WHERE AES_DECRYPT(unhex(numplate), 'b') = ? `;
-            connection.query(sql4, [other, other_np], (err4) => {
-                if (err4) {
-                    return res.status(500).json({ err4 });
-                }
-                res.json({ success: true, newTotRecord: newTotRecord });
-            });
-        });
-    });
-});
-
-app.post('/ReportedCnt', (req, res) => {
-    const { userName } = req.body;
-    let sql = 'SELECT COUNT(*) as count FROM report WHERE other_np = ?';
-
-    connection.query(sql, [userName], (error, results) => {
-        if (error) {
-            return res.status(500).json({ error });
-        }
-        res.json({ success: true, reportedCnt: results[0].count });
-    });
-});
 
 app.post('/signUp', (req, res) => {
     const { id, password, numplate } = req.body;
