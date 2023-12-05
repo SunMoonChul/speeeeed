@@ -28,25 +28,9 @@ export default function MyInfo() {
                 const response = await axios.post(`http://${context.ipLap}:3003/myInfo`, {
                     numplate: context.numplate,
                 });
-
                 if (response.data.success) {
                     console.log('item: ', response.data.item);
-
-                    const itemsWithAddress = await Promise.all(
-                        response.data.item
-                            .filter((item) => item.latitude != null && item.longitude != null) // latitude와 longitude가 null이 아닌 아이템만 필터링
-                            .map(async (item) => {
-                                const latitude = Number(item.latitude); // 문자열을 숫자로 변환
-                                const longitude = Number(item.longitude); // 문자열을 숫자로 변환
-                                const addresses = await Location.reverseGeocodeAsync({
-                                    latitude: latitude,
-                                    longitude: longitude,
-                                });
-                                return { ...item, address: addresses[0] };
-                            })
-                    );
-
-                    setPost(itemsWithAddress);
+                    setPost(response.data.item); // 데이터 저장
                 } else {
                     alert(response.data.message);
                 }
@@ -131,9 +115,7 @@ export default function MyInfo() {
                     <Text style={{ fontSize: 19, marginBottom: 5 }}>{item.time}</Text>
                     <Text>위도 : {item.latitude}</Text>
                     <Text>경도 : {item.longitude}</Text>
-                    <Text>
-                        주소 : {item.address.region} {item.address.city} {item.address.street}
-                    </Text>
+                    <Text>주소 : {item.address}</Text>
                 </View>
                 <Text
                     style={{

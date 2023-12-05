@@ -73,13 +73,13 @@ export default function Main() {
             await Location.watchPositionAsync(
                 {
                     // High, Highest, BestForNavigation 10m, 가장 높은, 네비 전용 정확도 ios 전용
-                    accuracy: Location.Accuracy.BestForNavigation,
+                    accuracy: Location.Accuracy.High,
                     timeInterval: 1000, // 위치를 얻는 간격을 1초로 설정
                     distanceInterval: 0, // 최소 이동 거리를 0m로 설정
                 },
-                (location) => {
+                async (location) => {
                     const currentSpeed = location.coords.speed * 3.6; // 현재 속도를 km/h 단위로 변환
-                    setSpeed(Math.round(currentSpeed)); //속도, 위도, 경도 받아옴
+                    setSpeed(Math.floor(currentSpeed)); //속도, 위도, 경도 받아옴
                     setLatitude(location.coords.latitude);
                     setLongitude(location.coords.longitude);
 
@@ -99,33 +99,44 @@ export default function Main() {
 
                     // 과속 상태일 때만 서버에 데이터를 전송 accel : 2
                     if (currentSpeed > 110) {
-                        // 현재 속도가 110km/h 이상일 경우
+                        // 현재 속도가 110km/h 이상일 경
                         if (!overSpeedTriggerTime.current) {
                             // 과속 시작 시간이 없으면 현재 시간을 저장
                             overSpeedTriggerTime.current = Date.now();
                             setIsRapid(true);
-                        } else if (Date.now() - overSpeedTriggerTime.current >= 10000) {
+                        } else if (Date.now() - overSpeedTriggerTime.current >= 1000) {
                             //10초동안 과속하면 으락캬 됨
                             // 과속 시작 후 10초가 지났으면 카운트
                             setOverSpeedCount((prev) => prev + 1);
+                            let addresses = await Location.reverseGeocodeAsync({
+                                //역지오코딩
+                                latitude: Number(location.coords.latitude.toFixed(6)),
+                                longitude: Number(location.coords.longitude.toFixed(6)),
+                            });
                             // 과속 상태일 때만 서버에 데이터를 전송
-                            axios
-                                .post(`http://${context.ipLap}:3003/accel`, {
-                                    user: context.numplate,
-                                    time: currenttime,
-                                    latitude: location.coords.latitude.toFixed(6),
-                                    longitude: location.coords.longitude.toFixed(6),
-                                    accel: 2,
-                                })
-                                .then((response) => {
-                                    console.log('과속 완' + response.data);
-                                    // 마지막 동작 시간 갱신
-                                    console.log(currenttime);
-                                })
-                                .catch((error) => {
-                                    console.error(error);
-                                    // 마지막 동작 시간 갱신
-                                });
+                            if (addresses.length > 0) {
+                                let address = addresses[0].region + ' ' + addresses[0].city + ' ' + addresses[0].street;
+                                axios
+                                    .post(`http://${context.ipLap}:3003/accel`, {
+                                        user: context.numplate,
+                                        time: currenttime,
+                                        latitude: location.coords.latitude.toFixed(6),
+                                        longitude: location.coords.longitude.toFixed(6),
+                                        address: address,
+                                        accel: 2,
+                                    })
+                                    .then((response) => {
+                                        console.log('과속 완' + response.data);
+                                        // 마지막 동작 시간 갱신
+                                        console.log(currenttime);
+                                    })
+                                    .catch((error) => {
+                                        console.error(error);
+                                        // 마지막 동작 시간 갱신
+                                    });
+                            } else {
+                                console.log('Could not find address information for the given coordinates');
+                            }
                             overSpeedTriggerTime.current = null; // 과속 시작 시간 초기화
                         }
                     } else {
@@ -137,23 +148,33 @@ export default function Main() {
                         setAccelerationCount((prev) => prev + 1);
                         setIsRapid(true);
                         // 여기에서 서버에 데이터를 전송합니다.
-                        axios
-                            .post(`http://${context.ipLap}:3003/accel`, {
-                                user: context.numplate,
-                                time: currenttime,
-                                latitude: location.coords.latitude.toFixed(6),
-                                longitude: location.coords.longitude.toFixed(6),
-                                accel: 0,
-                            })
-                            .then((response) => {
-                                console.log('급가속 완' + response.data);
-                                // 마지막 동작 시간 갱신
-                                console.log(currenttime);
-                            })
-                            .catch((error) => {
-                                console.error(error);
-                                // 마지막 동작 시간 갱신
-                            });
+                        let addresses = await Location.reverseGeocodeAsync({
+                            latitude: Number(location.coords.latitude.toFixed(6)),
+                            longitude: Number(location.coords.longitude.toFixed(6)),
+                        });
+                        if (addresses.length > 0) {
+                            let address = addresses[0].region + ' ' + addresses[0].city + ' ' + addresses[0].street;
+                            axios
+                                .post(`http://${context.ipLap}:3003/accel`, {
+                                    user: context.numplate,
+                                    time: currenttime,
+                                    latitude: location.coords.latitude.toFixed(6),
+                                    longitude: location.coords.longitude.toFixed(6),
+                                    address: address,
+                                    accel: 0,
+                                })
+                                .then((response) => {
+                                    console.log('급가속 완' + response.data);
+                                    // 마지막 동작 시간 갱신
+                                    console.log(currenttime);
+                                })
+                                .catch((error) => {
+                                    console.error(error);
+                                    // 마지막 동작 시간 갱신
+                                });
+                        } else {
+                            console.log('Could not find address information for the given coordinates');
+                        }
                     }
 
                     // 급감속 감지 accel : 1
@@ -166,23 +187,34 @@ export default function Main() {
                         setDecelerationCount((prev) => prev + 1);
                         setIsRapid(true);
                         // 여기에서 서버에 데이터를 전송합니다.
-                        axios
-                            .post(`http://${context.ipLap}:3003/accel`, {
-                                user: context.numplate,
-                                time: currenttime,
-                                latitude: location.coords.latitude.toFixed(6),
-                                longitude: location.coords.longitude.toFixed(6),
-                                accel: 1,
-                            })
-                            .then((response) => {
-                                console.log('급감속 완 ' + response.data);
-                                // 마지막 동작 시간 갱신
-                                console.log(currenttime);
-                            })
-                            .catch((error) => {
-                                console.error(error);
-                                // 마지막 동작 시간 갱신
-                            });
+                        let addresses = await Location.reverseGeocodeAsync({
+                            latitude: Number(location.coords.latitude.toFixed(6)),
+                            longitude: Number(location.coords.longitude.toFixed(6)),
+                        });
+                        if (addresses.length > 0) {
+                            let address = addresses[0].region + ' ' + addresses[0].city + ' ' + addresses[0].street;
+
+                            axios
+                                .post(`http://${context.ipLap}:3003/accel`, {
+                                    user: context.numplate,
+                                    time: currenttime,
+                                    latitude: location.coords.latitude.toFixed(6),
+                                    longitude: location.coords.longitude.toFixed(6),
+                                    address: address,
+                                    accel: 1,
+                                })
+                                .then((response) => {
+                                    console.log('급감속 완 ' + response.data);
+                                    // 마지막 동작 시간 갱신
+                                    console.log(currenttime);
+                                })
+                                .catch((error) => {
+                                    console.error(error);
+                                    // 마지막 동작 시간 갱신
+                                });
+                        } else {
+                            console.log('Could not find address information for the given coordinates');
+                        }
                     }
 
                     // 급가속, 급감속 쿨다운 타임 처리
